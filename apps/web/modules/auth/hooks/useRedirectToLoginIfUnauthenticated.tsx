@@ -1,7 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useEffect } from "react";
 
 import { WEBAPP_URL } from "@calcom/lib/constants";
@@ -9,7 +12,7 @@ import { WEBAPP_URL } from "@calcom/lib/constants";
 export function useRedirectToLoginIfUnauthenticated(isPublic = false) {
   const { data: session, status } = useSession();
   const loading = status === "loading";
-  const router = useRouter();
+  const router = useNavigate();
   useEffect(() => {
     if (isPublic) {
       return;
@@ -18,7 +21,7 @@ export function useRedirectToLoginIfUnauthenticated(isPublic = false) {
     if (!loading && !session) {
       const urlSearchParams = new URLSearchParams();
       urlSearchParams.set("callbackUrl", `${WEBAPP_URL}${location.pathname}${location.search}`);
-      router.replace(`/auth/login?${urlSearchParams.toString()}`);
+      router({ to: `/auth/login?${urlSearchParams.toString()}`, replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, session, isPublic]);

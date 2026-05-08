@@ -1,4 +1,3 @@
-import type { InferGetServerSidePropsType } from "next";
 import { useState } from "react";
 import { Toaster } from "sonner";
 
@@ -14,7 +13,8 @@ import { ClipboardIcon } from "@coss/ui/icons";
 
 const MAKE = "make";
 
-export default function MakeSetup({ inviteLink }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export default function MakeSetup({ inviteLink }: any<typeof getServerSideProps>) {
   const [newApiKeys, setNewApiKeys] = useState<Record<string, string>>({});
 
   const { t } = useLocale();

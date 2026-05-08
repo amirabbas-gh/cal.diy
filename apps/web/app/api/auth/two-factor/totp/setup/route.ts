@@ -1,9 +1,14 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { parseRequestData } from "app/api/parseRequestData";
 import crypto from "node:crypto";
-import { cookies, headers } from "next/headers";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getCookies, getHeaders } from "@tanstack/start/server";
+
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
+
 import { authenticator } from "otplib";
 import qrcode from "qrcode";
 
@@ -17,17 +22,17 @@ import { IdentityProvider } from "@calcom/prisma/enums";
 
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 
-async function postHandler(req: NextRequest) {
+async function postHandler(req: Request) {
   const body = await parseRequestData(req);
-  const session = await getServerSession({ req: buildLegacyRequest(await headers(), await cookies()) });
+  const session = await getServerSession({ req: buildLegacyRequest(new Headers(Object.entries(getHeaders()).map(([k, v]) => [k, Array.isArray(v) ? v.join(", ") : String(v ?? "")] as [string, string])), { getAll: () => Object.entries(getCookies()).map(([name, value]) => ({ name, value: String(value ?? "") })) }) });
 
   if (!session) {
-    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    return Response.json({ message: "Not authenticated" }, { status: 401 });
   }
 
   if (!session.user?.id) {
     console.error("Session is missing a user id.");
-    return NextResponse.json({ error: ErrorCode.InternalServerError }, { status: 500 });
+    return Response.json({ error: ErrorCode.InternalServerError }, { status: 500 });
   }
 
   await checkRateLimitAndThrowError({
@@ -39,29 +44,29 @@ async function postHandler(req: NextRequest) {
 
   if (!user) {
     console.error(`Session references user that no longer exists.`);
-    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    return Response.json({ message: "Not authenticated" }, { status: 401 });
   }
 
   if (user.identityProvider !== IdentityProvider.CAL && !user.password?.hash) {
-    return NextResponse.json({ error: ErrorCode.ThirdPartyIdentityProviderEnabled }, { status: 400 });
+    return Response.json({ error: ErrorCode.ThirdPartyIdentityProviderEnabled }, { status: 400 });
   }
 
   if (!user.password?.hash) {
-    return NextResponse.json({ error: ErrorCode.UserMissingPassword }, { status: 400 });
+    return Response.json({ error: ErrorCode.UserMissingPassword }, { status: 400 });
   }
 
   if (user.twoFactorEnabled) {
-    return NextResponse.json({ error: ErrorCode.TwoFactorAlreadyEnabled }, { status: 400 });
+    return Response.json({ error: ErrorCode.TwoFactorAlreadyEnabled }, { status: 400 });
   }
 
   if (!process.env.CALENDSO_ENCRYPTION_KEY) {
     console.error("Missing encryption key; cannot proceed with two factor setup.");
-    return NextResponse.json({ error: ErrorCode.InternalServerError }, { status: 500 });
+    return Response.json({ error: ErrorCode.InternalServerError }, { status: 500 });
   }
 
   const isCorrectPassword = await verifyPassword(body.password, user.password.hash);
   if (!isCorrectPassword) {
-    return NextResponse.json({ error: ErrorCode.IncorrectPassword }, { status: 400 });
+    return Response.json({ error: ErrorCode.IncorrectPassword }, { status: 400 });
   }
 
   // This generates a secret 32 characters in length. Do not modify the number of
@@ -86,7 +91,7 @@ async function postHandler(req: NextRequest) {
   const keyUri = authenticator.keyuri(name, "Cal", secret);
   const dataUri = await qrcode.toDataURL(keyUri);
 
-  return NextResponse.json({ secret, keyUri, dataUri, backupCodes });
+  return Response.json({ secret, keyUri, dataUri, backupCodes });
 }
 
 export const POST = defaultResponderForAppDir(postHandler);

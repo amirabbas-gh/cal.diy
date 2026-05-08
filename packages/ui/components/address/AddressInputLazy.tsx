@@ -1,7 +1,7 @@
-import dynamic from "next/dynamic";
+import { lazy } from 'react';
 
 /** These are like 40kb that not every user needs */
-const AddressInput = dynamic(
+const AddressInput = lazy(
   () => import("./AddressInput")
 ) as unknown as typeof import("./AddressInput").default;
 

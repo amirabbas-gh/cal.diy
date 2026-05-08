@@ -1,7 +1,12 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
-import { cookies, headers } from "next/headers";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getCookies, getHeaders } from "@tanstack/start/server";
+
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
+
 
 import { getServerSession } from "@calcom/features/auth/lib/getServerSession";
 import handleCancelBooking from "@calcom/features/bookings/lib/handleCancelBooking";
@@ -13,18 +18,18 @@ import { validateCsrfToken } from "@calcom/web/lib/validateCsrfToken";
 
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 
-async function handler(req: NextRequest) {
+async function handler(req: Request) {
   let appDirRequestBody;
   try {
     appDirRequestBody = await req.json();
   } catch {
-    return NextResponse.json({ success: false, message: "Invalid JSON" }, { status: 400 });
+    return Response.json({ success: false, message: "Invalid JSON" }, { status: 400 });
   }
   const bookingData = bookingCancelWithCsrfSchema.parse(appDirRequestBody);
 
   // Integer IDs are sequential/guessable — only accept high-entropy UIDs on this route
   if (!bookingData.uid) {
-    return NextResponse.json(
+    return Response.json(
       { success: false, message: "uid is required for booking cancellation" },
       { status: 400 }
     );
@@ -35,7 +40,7 @@ async function handler(req: NextRequest) {
     return csrfError;
   }
 
-  const session = await getServerSession({ req: buildLegacyRequest(await headers(), await cookies()) });
+  const session = await getServerSession({ req: buildLegacyRequest(new Headers(Object.entries(getHeaders()).map(([k, v]) => [k, Array.isArray(v) ? v.join(", ") : String(v ?? "")] as [string, string])), { getAll: () => Object.entries(getCookies()).map(([name, value]) => ({ name, value: String(value ?? "") })) }) });
 
   // Rate limit: 10 booking cancellations per 60 seconds per user (or IP if not authenticated)
   const identifier = session?.user?.id
@@ -64,7 +69,7 @@ async function handler(req: NextRequest) {
 
   const statusCode = result.success ? 200 : 400;
 
-  return NextResponse.json(result, { status: statusCode });
+  return Response.json(result, { status: statusCode });
 }
 
 export const DELETE = defaultResponderForAppDir(handler);

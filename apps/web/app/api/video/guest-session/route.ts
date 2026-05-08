@@ -1,6 +1,6 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import { z } from "zod";
 
 import {
@@ -21,12 +21,12 @@ const videoCallGuestWithCsrfSchema = z.object({
   csrfToken: z.string().length(64, "Invalid CSRF token"),
 });
 
-async function handler(req: NextRequest) {
+async function handler(req: Request) {
   let appDirRequestBody;
   try {
     appDirRequestBody = await req.json();
   } catch {
-    return NextResponse.json({ success: false, message: "Invalid JSON" }, { status: 400 });
+    return Response.json({ success: false, message: "Invalid JSON" }, { status: 400 });
   }
 
   const guestData = videoCallGuestWithCsrfSchema.parse(appDirRequestBody);
@@ -42,7 +42,7 @@ async function handler(req: NextRequest) {
   });
 
   if (!booking) {
-    return NextResponse.json({ error: "Booking not found" }, { status: 404 });
+    return Response.json({ error: "Booking not found" }, { status: 404 });
   }
 
   const { hosts, guests } = getHostsAndGuests(booking);
@@ -50,9 +50,9 @@ async function handler(req: NextRequest) {
   const isGuest = guests.some((guest) => guest.email.toLowerCase() === guestData.email.trim().toLowerCase());
 
   if (isHost) {
-    return NextResponse.json({ error: "hosts_must_use_login" }, { status: 403 });
+    return Response.json({ error: "hosts_must_use_login" }, { status: 403 });
   } else if (!isGuest) {
-    return NextResponse.json({ error: "invalid_guest_email" }, { status: 403 });
+    return Response.json({ error: "invalid_guest_email" }, { status: 403 });
   }
 
   const videoCallGuestRepo = new VideoCallGuestRepository(prisma);
@@ -65,7 +65,7 @@ async function handler(req: NextRequest) {
   const videoReference = getCalVideoReference(booking.references);
 
   if (!videoReference) {
-    return NextResponse.json({ error: "Video reference not found" }, { status: 404 });
+    return Response.json({ error: "Video reference not found" }, { status: 404 });
   }
 
   const endTime = new Date(booking.endTime);
@@ -84,7 +84,7 @@ async function handler(req: NextRequest) {
     userId: guestSession.id,
   });
 
-  return NextResponse.json({
+  return Response.json({
     guestSessionId: guestSession.id,
     meetingPassword: guestMeetingPassword,
     meetingUrl: videoReference.meetingUrl,

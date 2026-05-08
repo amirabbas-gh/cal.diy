@@ -1,6 +1,9 @@
+// TODO: Next.js pages/api route — convert the handler to TanStack Start server route handlers (Web Request/Response) — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import { getDownloadLinkOfCalVideoByRecordingId } from "@calcom/features/conferencing/lib/videoClient";
 import { verifyVideoToken } from "@calcom/lib/videoTokens";
-import { NextResponse } from "next/server";
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { GET } from "../route";
 
@@ -60,7 +63,7 @@ describe("GET /api/video/recording", () => {
     const request = new Request("http://example.com/api/video/recording?token=valid_token");
     const response = await GET(request);
 
-    expect(response instanceof NextResponse).toBe(true);
+    expect(response instanceof Response).toBe(true);
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe("https://example.com/download");
   });

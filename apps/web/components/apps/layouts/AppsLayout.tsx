@@ -1,4 +1,7 @@
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import type { ComponentProps } from "react";
 import React from "react";
 
@@ -16,7 +19,7 @@ type AppsLayoutProps = {
 
 export default function AppsLayout({ children, actions, emptyStore, isAdmin, ...rest }: AppsLayoutProps) {
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
 
   return (
     <Shell {...rest} actions={actions?.("block")}>
@@ -28,7 +31,7 @@ export default function AppsLayout({ children, actions, emptyStore, isAdmin, ...
               headline={isAdmin ? t("no_apps") : t("no_apps_configured")}
               description={isAdmin ? t("enable_in_settings") : t("please_contact_admin")}
               buttonText={isAdmin ? t("apps_settings") : ""}
-              buttonOnClick={() => router.push("/settings/admin/apps/calendar")}
+              buttonOnClick={() => router({ to: "/settings/admin/apps/calendar" })}
             />
           ) : (
             <>{children}</>

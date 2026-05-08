@@ -1,8 +1,13 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { createHmac } from "node:crypto";
-import { headers } from "next/headers";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getHeaders } from "@tanstack/start/server";
+
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
+
 
 import { getRoomNameFromRecordingId, getBatchProcessorJobAccessLink } from "@calcom/app-store/dailyvideo/lib";
 import { BookingRepository } from "@calcom/features/bookings/repositories/BookingRepository";
@@ -51,27 +56,27 @@ const getProxyDownloadLinkOfCalVideo = async (recordingId: string) => {
   return downloadLink;
 };
 
-export async function postHandler(request: NextRequest) {
+export async function postHandler(request: Request) {
   const body = await request.json();
 
   if (testRequestSchema.safeParse(body).success) {
-    return NextResponse.json({ message: "Test request successful" });
+    return Response.json({ message: "Test request successful" });
   }
 
-  const headersList = await headers();
+  const headersList = new Headers(Object.entries(getHeaders()).map(([k, v]) => [k, Array.isArray(v) ? v.join(", ") : String(v ?? "")] as [string, string]));
   const testMode = process.env.NEXT_PUBLIC_IS_E2E || process.env.INTEGRATION_TEST_MODE;
 
   if (!testMode) {
     const hmacSecret = process.env.DAILY_WEBHOOK_SECRET;
     if (!hmacSecret) {
-      return NextResponse.json({ message: "No Daily Webhook Secret" }, { status: 405 });
+      return Response.json({ message: "No Daily Webhook Secret" }, { status: 405 });
     }
 
     const webhookTimestamp = headersList.get("x-webhook-timestamp");
     const computed_signature = computeSignature(hmacSecret, body, webhookTimestamp);
 
     if (headersList.get("x-webhook-signature") !== computed_signature) {
-      return NextResponse.json({ message: "Signature does not match" }, { status: 403 });
+      return Response.json({ message: "Signature does not match" }, { status: 403 });
     }
   }
 
@@ -87,13 +92,13 @@ export async function postHandler(request: NextRequest) {
       const recordingReadyResponse = recordingReadySchema.safeParse(body);
 
       if (!recordingReadyResponse.success) {
-        return NextResponse.json({ message: "Invalid Payload" }, { status: 400 });
+        return Response.json({ message: "Invalid Payload" }, { status: 400 });
       }
 
       const { room_name, recording_id, status } = recordingReadyResponse.data.payload;
 
       if (status !== "finished") {
-        return NextResponse.json({ message: "Recording not finished" }, { status: 400 });
+        return Response.json({ message: "Recording not finished" }, { status: 400 });
       }
 
       const bookingReference = await getBookingReference(room_name);
@@ -148,11 +153,11 @@ export async function postHandler(request: NextRequest) {
         }
       });
 
-      return NextResponse.json({ message: "Success" });
+      return Response.json({ message: "Success" });
     } else if (body.type === "meeting.ended") {
       const meetingEndedResponse = meetingEndedSchema.safeParse(body);
       if (!meetingEndedResponse.success) {
-        return NextResponse.json({ message: "Invalid Payload" }, { status: 400 });
+        return Response.json({ message: "Invalid Payload" }, { status: 400 });
       }
 
       const { room, meeting_id } = meetingEndedResponse.data.payload;
@@ -161,7 +166,7 @@ export async function postHandler(request: NextRequest) {
       const booking = await getBooking(bookingReference.bookingId as number);
 
       if (!booking.eventType?.canSendCalVideoTranscriptionEmails) {
-        return NextResponse.json({
+        return Response.json({
           message: `Transcription emails are disabled for this event type ${booking.eventTypeId}`,
         });
       }
@@ -169,19 +174,19 @@ export async function postHandler(request: NextRequest) {
       const transcripts = await getAllTranscriptsAccessLinkFromMeetingId(meeting_id);
 
       if (!transcripts || !transcripts.length)
-        return NextResponse.json({
+        return Response.json({
           message: `No Transcripts found for room name ${room} and meeting id ${meeting_id}`,
         });
 
       const evt = await getCalendarEvent(booking);
       await sendDailyVideoTranscriptEmails(evt, transcripts);
 
-      return NextResponse.json({ message: "Success" });
+      return Response.json({ message: "Success" });
     } else if (body?.type === "batch-processor.job-finished") {
       const batchProcessorJobFinishedResponse = batchProcessorJobFinishedSchema.safeParse(body);
 
       if (!batchProcessorJobFinishedResponse.success) {
-        return NextResponse.json({ message: "Invalid Payload" }, { status: 400 });
+        return Response.json({ message: "Invalid Payload" }, { status: 400 });
       }
 
       const { id, input } = batchProcessorJobFinishedResponse.data.payload;
@@ -218,10 +223,10 @@ export async function postHandler(request: NextRequest) {
         },
       });
 
-      return NextResponse.json({ message: "Success" });
+      return Response.json({ message: "Success" });
     } else {
       log.error("Invalid type in /recorded-daily-video", body);
-      return NextResponse.json({
+      return Response.json({
         message: "Invalid type in /recorded-daily-video",
       });
     }
@@ -229,9 +234,9 @@ export async function postHandler(request: NextRequest) {
     log.error("Error in /recorded-daily-video", err);
 
     if (err instanceof HttpError) {
-      return NextResponse.json({ message: err.message }, { status: err.statusCode });
+      return Response.json({ message: err.message }, { status: err.statusCode });
     } else {
-      return NextResponse.json({ message: "something went wrong" }, { status: 500 });
+      return Response.json({ message: "something went wrong" }, { status: 500 });
     }
   }
 }

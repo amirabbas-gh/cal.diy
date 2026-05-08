@@ -1,5 +1,8 @@
 import { revalidateAvailabilityList } from "app/(use-page-wrapper)/(main-nav)/availability/actions";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useForm } from "react-hook-form";
 
 import { Dialog } from "@calcom/features/components/controlled-dialog";
@@ -19,7 +22,7 @@ export function NewScheduleButton({
   name?: string;
   fromEventType?: boolean;
 }) {
-  const router = useRouter();
+  const router = useNavigate();
   const { t } = useLocale();
 
   const form = useForm<{
@@ -30,7 +33,7 @@ export function NewScheduleButton({
 
   const createMutation = trpc.viewer.availability.schedule.create.useMutation({
     onSuccess: async ({ schedule }) => {
-      await router.push(`/availability/${schedule.id}${fromEventType ? "?fromEventType=true" : ""}`);
+      await router({ to: `/availability/${schedule.id}${fromEventType ? "?fromEventType=true" : ""}` });
       showToast(t("schedule_created_successfully", { scheduleName: schedule.name }), "success");
       revalidateAvailabilityList();
       utils.viewer.availability.list.setData(undefined, (data) => {

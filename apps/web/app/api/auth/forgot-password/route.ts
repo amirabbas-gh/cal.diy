@@ -6,15 +6,15 @@ import { piiHasher } from "@calcom/lib/server/PiiHasher";
 import prisma from "@calcom/prisma";
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { parseRequestData } from "app/api/parseRequestData";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
 
-async function handler(req: NextRequest) {
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
+async function handler(req: Request) {
   const body = await parseRequestData(req);
   const email = emailSchema.transform((val) => val.toLowerCase()).safeParse(body?.email);
 
   if (!email.success) {
-    return NextResponse.json({ message: "email is required" }, { status: 400 });
+    return Response.json({ message: "email is required" }, { status: 400 });
   }
 
   const ip = getIP(req) ?? email.data;
@@ -31,10 +31,10 @@ async function handler(req: NextRequest) {
     });
     // Don't leak info about whether the user exists
     if (user) passwordResetRequest(user).catch(console.error);
-    return NextResponse.json({ message: "password_reset_email_sent" }, { status: 201 });
+    return Response.json({ message: "password_reset_email_sent" }, { status: 201 });
   } catch (reason) {
     console.error(reason);
-    return NextResponse.json({ message: "Unable to create password reset request" }, { status: 500 });
+    return Response.json({ message: "Unable to create password reset request" }, { status: 500 });
   }
 }
 

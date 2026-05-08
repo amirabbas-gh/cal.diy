@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { stringify } from "node:querystring";
 
 import { renewSelectedCalendarCredentialId } from "@calcom/lib/connectedCalendar";
@@ -23,7 +22,8 @@ function getOAuthBaseUrl(domain: string): string {
   return `https://accounts.zoho.${domain}/oauth/v2`;
 }
 
-async function getHandler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function getHandler(req: any, res: any) {
   const { code, location } = req.query;
 
   const state = decodeOAuthState(req);

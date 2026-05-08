@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import stringify from "qs-stringify";
 import type Stripe from "stripe";
 import { z } from "zod";
@@ -8,7 +7,8 @@ import prisma from "@calcom/prisma";
 
 import { getStripeAppKeys } from "../lib/getStripeAppKeys";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export default async function handler(req: any, res: any) {
   const { client_id } = await getStripeAppKeys();
 
   if (req.method === "GET") {

@@ -1,6 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useMemo } from "react";
 
 import AdminAppsList from "~/apps/components/AdminAppsList";
@@ -22,7 +25,7 @@ const SETUP_VIEW_SETPS = {
 export type PageProps = inferSSRProps<typeof getServerSideProps>;
 export function Setup(props: PageProps) {
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
 
   const defaultStep = useMemo(() => {
     if (props.userCount > 0) {
@@ -73,7 +76,7 @@ export function Setup(props: PageProps) {
           useQueryParam={true}
           onSubmit={() => {
             setIsPending(true);
-            router.replace("/");
+            router({ to: "/", replace: true });
           }}
           nav={nav}
         />

@@ -1,4 +1,3 @@
-import type { NextApiRequest } from "next";
 import { stringify } from "node:querystring";
 
 import { WEBAPP_URL } from "@calcom/lib/constants";
@@ -7,7 +6,8 @@ import { defaultResponder } from "@calcom/lib/server/defaultResponder";
 
 import { encodeOAuthState } from "../../_utils/oauth/encodeOAuthState";
 
-async function handler(req: NextApiRequest) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function handler(req: any) {
   const state = encodeOAuthState(req);
 
   const params = {

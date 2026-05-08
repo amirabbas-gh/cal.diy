@@ -1,9 +1,9 @@
 import isAuthorized from "@calcom/features/auth/lib/oAuthAuthorization";
 import { HttpError } from "@calcom/lib/http-error";
-import type { NextApiRequest } from "next";
 import { findValidApiKey } from "../../_utils/findValidApiKey";
 
-export async function validateAccountOrApiKey(req: NextApiRequest, requiredScopes: string[] = []) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export async function validateAccountOrApiKey(req: any, requiredScopes: string[] = []) {
   const apiKey = req.query.apiKey as string;
 
   if (!apiKey) {

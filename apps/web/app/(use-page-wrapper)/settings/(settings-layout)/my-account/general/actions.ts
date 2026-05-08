@@ -1,7 +1,9 @@
-"use server";
 
-import { revalidatePath } from "next/cache";
+// TODO: next/cache migration (R4e): wire `queryClient` through QueryClientProvider or your app root; every `invalidateQueries({ queryKey })` must match a real `useQuery` key; former `unstable_cache` TTL/tags → `staleTime` / gcTime / loaders; if you relied on `unstable_noStore`, use `staleTime: 0` (or refetch) for that data — https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation
+import { queryClient } from "../../../../../../query-client";
 
-export async function revalidateSettingsGeneral() {
-  revalidatePath("/settings/my-account/general");
-}
+import { createServerFn } from '@tanstack/react-start';
+
+export const revalidateSettingsGeneral = createServerFn().handler(async () => {
+  queryClient.invalidateQueries({ queryKey: ["/settings/my-account/general"] });
+});

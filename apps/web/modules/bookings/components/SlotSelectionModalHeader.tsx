@@ -10,6 +10,7 @@ import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { CURRENT_TIMEZONE } from "@calcom/lib/timezoneConstants";
 import { Button } from "@calcom/ui/components/button";
 import { GlobeIcon } from "@coss/ui/icons";
+// TODO: this `next/dynamic` usage was not auto-ported — use React.lazy + Suspense, route-level code splitting, or manual loading UIs — https://react.dev/reference/react/lazy
 import dynamic from "next/dynamic";
 import type { ComponentType } from "react";
 import { useMemo } from "react";

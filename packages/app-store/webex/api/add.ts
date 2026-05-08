@@ -1,4 +1,3 @@
-import type { NextApiRequest } from "next";
 import { stringify } from "node:querystring";
 
 import { WEBAPP_URL_FOR_OAUTH } from "@calcom/lib/constants";
@@ -9,7 +8,8 @@ import prisma from "@calcom/prisma";
 import config from "../config.json";
 import { getWebexAppKeys } from "../lib/getWebexAppKeys";
 
-async function handler(req: NextApiRequest) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function handler(req: any) {
   // Get user
   await prisma.user.findFirstOrThrow({
     where: {

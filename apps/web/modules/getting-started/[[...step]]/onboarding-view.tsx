@@ -2,7 +2,10 @@
 
 import type { TFunction } from "i18next";
 import { signOut } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
 import { Suspense, useTransition } from "react";
 import { Toaster } from "sonner";
 import { z } from "zod";
@@ -90,10 +93,10 @@ type PageProps = {
 };
 
 const OnboardingPage = (props: PageProps) => {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const params = useParamsWithFallback();
   const user = props.user;
-  const router = useRouter();
+  const router = useNavigate();
   const { t } = useLocale();
   const [isNextStepLoading, startTransition] = useTransition();
 
@@ -129,7 +132,7 @@ const OnboardingPage = (props: PageProps) => {
   const goToStep = (step: number) => {
     const newStep = steps[step];
     startTransition(() => {
-      router.push(`/getting-started/${stepTransform(newStep)}`);
+      router({ to: `/getting-started/${stepTransform(newStep)}` });
     });
   };
 
@@ -143,7 +146,7 @@ const OnboardingPage = (props: PageProps) => {
     const nextIndex = currentStepIndex + 1;
     const newStep = steps[nextIndex];
     startTransition(() => {
-      router.push(`/getting-started/${stepTransform(newStep)}`);
+      router({ to: `/getting-started/${stepTransform(newStep)}` });
     });
   };
 

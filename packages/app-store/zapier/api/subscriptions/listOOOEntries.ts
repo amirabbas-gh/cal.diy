@@ -1,5 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-
 import { listOOOEntries } from "@calcom/features/webhooks/lib/scheduleTrigger";
 import { defaultHandler } from "@calcom/lib/server/defaultHandler";
 import { defaultResponder } from "@calcom/lib/server/defaultResponder";
@@ -41,7 +39,8 @@ export const selectOOOEntries = {
   uuid: true,
 };
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function handler(req: any, res: any) {
   const { account: authorizedAccount, appApiKey: validKey } = await validateAccountOrApiKey(req, [
     "READ_PROFILE",
   ]);

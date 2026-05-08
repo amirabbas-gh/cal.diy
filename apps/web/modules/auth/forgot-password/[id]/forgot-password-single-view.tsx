@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useReducer, type CSSProperties } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { useForm } from "react-hook-form";
@@ -14,6 +13,7 @@ import { PasswordField } from "@calcom/ui/components/form";
 import AuthContainer from "@components/ui/AuthContainer";
 
 import type { getServerSideProps } from "@server/lib/auth/forgot-password/[id]/getServerSideProps";
+import { Link } from '@tanstack/react-router';
 
 export type PageProps = inferSSRProps<typeof getServerSideProps>;
 
@@ -46,7 +46,7 @@ function Expired() {
         </div>
         <p>{t("request_is_expired_instructions")}</p>
         <Link
-          href="/auth/forgot-password"
+          to="/auth/forgot-password"
           className="flex w-full justify-center px-4 py-2 text-sm font-medium text-blue-600 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">
           {t("try_again")}
         </Link>

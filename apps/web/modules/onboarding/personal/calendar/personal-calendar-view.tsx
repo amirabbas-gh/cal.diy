@@ -1,6 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useEffect, useRef, useState } from "react";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -19,7 +22,7 @@ type PersonalCalendarViewProps = {
 };
 
 export const PersonalCalendarView = ({ userEmail }: PersonalCalendarViewProps) => {
-  const router = useRouter();
+  const router = useNavigate();
   const { t } = useLocale();
   const { installingAppSlug, setInstallingAppSlug, createInstallHandlers } = useAppInstallation();
   const { submitPersonalOnboarding, isSubmitting } = useSubmitPersonalOnboarding();
@@ -92,7 +95,7 @@ export const PersonalCalendarView = ({ userEmail }: PersonalCalendarViewProps) =
   };
 
   const handleBack = () => {
-    router.push("/onboarding/personal/settings");
+    router({ to: "/onboarding/personal/settings" });
   };
 
   return (

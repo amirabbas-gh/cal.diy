@@ -1,4 +1,7 @@
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate, useRouter } from "@tanstack/react-router";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Toaster } from "sonner";
@@ -11,6 +14,7 @@ import { TextField } from "@calcom/ui/components/form";
 
 export default function CalDavCalendarSetup() {
   const { t } = useLocale();
+  const navigate = useNavigate();
   const router = useRouter();
   const form = useForm({
     defaultValues: {
@@ -57,7 +61,7 @@ export default function CalDavCalendarSetup() {
                       setErrorActionUrl(json.actionUrl);
                     }
                   } else {
-                    router.push(json.url);
+                    navigate({ to: json.url });
                   }
                 }}>
                 <fieldset className="stack-y-2" disabled={form.formState.isSubmitting}>
@@ -104,7 +108,7 @@ export default function CalDavCalendarSetup() {
                   />
                 )}
                 <div className="mt-5 justify-end space-x-2 rtl:space-x-reverse sm:mt-4 sm:flex">
-                  <Button type="button" color="secondary" onClick={() => router.back()}>
+                  <Button type="button" color="secondary" onClick={() => router.history.back()}>
                     {t("cancel")}
                   </Button>
                   <Button type="submit" loading={form.formState.isSubmitting}>

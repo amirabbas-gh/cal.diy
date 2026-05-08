@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 
 import { IS_PRODUCTION } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -11,6 +10,7 @@ import type { AppDataProps } from "@lib/apps/[slug]/getStaticProps";
 import useRouterQuery from "@lib/hooks/useRouterQuery";
 
 import App from "@components/apps/App";
+import { Link } from '@tanstack/react-router';
 
 function SingleAppPage(props: AppDataProps) {
   const { error, setQuery: setError } = useRouterQuery("error");
@@ -26,7 +26,7 @@ function SingleAppPage(props: AppDataProps) {
       return (
         <div className="p-2">
           This App seems to be disabled. If you are an admin, you can enable this app from{" "}
-          <Link href="/settings/admin/apps" className="cursor-pointer text-blue-500 underline">
+          <Link to="/settings/admin/apps" className="cursor-pointer text-blue-500 underline">
             here
           </Link>
         </div>

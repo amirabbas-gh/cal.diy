@@ -4,7 +4,7 @@ import { WEBAPP_URL } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import classNames from "@calcom/ui/classNames";
 import { ArrowRightIcon, CheckIcon, CircleXIcon } from "@coss/ui/icons";
-import Link from "next/link";
+import { Link } from '@tanstack/react-router';
 
 export const AppDependencyComponent = ({
   appName,
@@ -63,7 +63,7 @@ export const AppDependencyComponent = ({
                     <div>
                       <>
                         <Link
-                          href={`${WEBAPP_URL}/apps/${dependency.slug}`}
+                          to={`${WEBAPP_URL}/apps/${dependency.slug}`}
                           className="text-error flex items-center underline">
                           <span className="mr-1">
                             {t("connect_app", { dependencyName: dependency.name })}

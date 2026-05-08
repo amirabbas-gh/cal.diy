@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import type { inferSSRProps } from "@calcom/types/inferSSRProps";
@@ -10,6 +9,7 @@ import { SkeletonText } from "@calcom/ui/components/skeleton";
 import type { getServerSideProps } from "@lib/apps/categories/getServerSideProps";
 
 import Shell from "~/shell/Shell";
+import { Link } from '@tanstack/react-router';
 
 export type PageProps = inferSSRProps<typeof getServerSideProps>;
 
@@ -20,7 +20,7 @@ export default function Apps({ categories }: PageProps) {
     <Shell isPublic large title={t("app_store")} description={t("app_store_description")}>
       <div className="text-md flex items-center gap-1 px-4 pb-3 pt-3 font-normal md:px-8 lg:px-0 lg:pt-0">
         <Link
-          href="/apps"
+          to="/apps"
           className="text-emphasis inline-flex items-center justify-start gap-1 rounded-sm py-2">
           <ArrowLeftIcon className="h-4 w-4" />
           {isLocaleReady ? t("app_store") : <SkeletonText className="h-6 w-24" />}{" "}
@@ -31,7 +31,7 @@ export default function Apps({ categories }: PageProps) {
           {categories.map((category) => (
             <Link
               key={category.name}
-              href={`/apps/categories/${category.name}`}
+              to={`/apps/categories/${category.name}`}
               data-testid={`app-store-category-${category.name}`}
               className="bg-subtle relative flex rounded-sm px-6 py-4 sm:block">
               <div className="self-center">

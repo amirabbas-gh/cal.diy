@@ -9,9 +9,9 @@ import { EmptyScreen } from "@calcom/ui/components/empty-screen";
 import { Switch } from "@calcom/ui/components/form";
 import { ListItem, ListItemText, ListItemTitle } from "@calcom/ui/components/list";
 import { SkeletonContainer, SkeletonText } from "@calcom/ui/components/skeleton";
-import Image from "next/image";
-import Link from "next/link";
 import { Fragment } from "react";
+import { Link } from '@tanstack/react-router';
+import { Image } from '@unpic/react';
 
 type IOverlayCalendarSettingsModalProps = {
   open?: boolean;
@@ -81,7 +81,7 @@ export function OverlayCalendarSettingsModal({
               )}
               <div className="grow truncate pl-2">
                 <ListItemTitle component="h3" className="space-x-2 rtl:space-x-reverse">
-                  <Link href={`/apps/${item.integration.slug}`}>
+                  <Link to={`/apps/${item.integration.slug}`}>
                     {item.integration.name || item.integration.title}
                   </Link>
                 </ListItemTitle>

@@ -1,5 +1,4 @@
 // page can be a server component
-import type { GetServerSidePropsContext } from "next";
 import { URLSearchParams } from "node:url";
 import { z } from "zod";
 
@@ -21,7 +20,8 @@ const querySchema = z.object({
     .optional(),
 });
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export async function getServerSideProps(context: any) {
   const session = await getServerSession({ req: context.req });
 
   const {

@@ -1,5 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-
 import publicProcedure from "../../../procedures/publicProcedure";
 import { router } from "../../../trpc";
 import { ZIsAvailableInputSchema, ZIsAvailableOutputSchema } from "./isAvailable.schema";
@@ -26,8 +24,9 @@ export const slotsRouter = router({
   reserveSlot: publicProcedure.input(ZReserveSlotInputSchema).mutation(async ({ input, ctx }) => {
     const { reserveSlotHandler } = await import("./reserveSlot.handler");
 
+    // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
     return reserveSlotHandler({
-      ctx: { ...ctx, req: ctx.req as NextApiRequest, res: ctx.res as NextApiResponse },
+      ctx: { ...ctx, req: ctx.req as any, res: ctx.res as any },
       input,
     });
   }),
@@ -37,8 +36,9 @@ export const slotsRouter = router({
     .query(async ({ input, ctx }) => {
       const { isAvailableHandler } = await import("./isAvailable.handler");
 
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
       return isAvailableHandler({
-        ctx: { ...ctx, req: ctx.req as NextApiRequest },
+        ctx: { ...ctx, req: ctx.req as any },
         input,
       });
     }),

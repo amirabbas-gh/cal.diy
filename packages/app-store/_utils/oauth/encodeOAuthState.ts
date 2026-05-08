@@ -1,9 +1,9 @@
 import { createHmac, randomUUID } from "node:crypto";
 import process from "node:process";
-import type { NextApiRequest } from "next";
 import type { IntegrationOAuthCallbackState } from "../../types";
 
-export function encodeOAuthState(req: NextApiRequest) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export function encodeOAuthState(req: any) {
   if (typeof req.query.state !== "string") {
     return undefined;
   }

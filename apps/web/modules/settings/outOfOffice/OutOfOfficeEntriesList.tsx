@@ -20,7 +20,8 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DataTableFilters,
@@ -66,7 +67,7 @@ export default function OutOfOfficeEntriesList({
   onOpenEditDialog: (entry: BookingRedirectForm) => void;
 }) {
   const { t } = useLocale();
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
 
   if (!pathname) return null;
 

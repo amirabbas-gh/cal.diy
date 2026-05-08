@@ -1,4 +1,3 @@
-import type { NextApiRequest } from "next";
 import { z } from "zod";
 
 import getAppKeysFromSlug from "@calcom/app-store/_utils/getAppKeysFromSlug";
@@ -17,7 +16,8 @@ interface IDock {
 
 const ZProjectMutationInputSchema = z.object({ projectId: z.string() });
 
-async function handler(req: NextApiRequest) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function handler(req: any) {
   const userId = req.session?.user?.id;
   if (!userId) {
     throw new HttpError({ statusCode: 401, message: "Unauthorized" });

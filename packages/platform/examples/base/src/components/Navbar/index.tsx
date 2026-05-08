@@ -1,48 +1,46 @@
-import { Poppins } from "next/font/google";
-import Link from "next/link";
+import { Link } from '@tanstack/react-router';
 
-const poppins = Poppins({ subsets: ["latin"], weight: ["400", "800"] });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function Navbar({ username }: { username?: string }) {
   return (
     <nav className="flex h-[75px] w-full items-center justify-between bg-black px-14 py-3 text-white">
-      <div className={`flex h-full items-center text-lg ${poppins.className}`}>
-        <Link href="/">
+      <div className={"flex h-full items-center text-lg"}>
+        <Link to="/">
           <h1 className="bg-linear-to-r from-[#8A2387] via-[#E94057] to-[#F27121] bg-clip-text text-2xl font-bold text-transparent">
             CalSync
           </h1>
         </Link>
       </div>
-      <div className={`${poppins.className}`}>
+      <div className={"font-sans antialiased"}>
         <ul className="flex gap-x-7">
           <li>
-            <Link href="/calendar-view">Week View</Link>
+            <Link to="/calendar-view">Week View</Link>
           </li>
           <li>
-            <Link href="/calendars">Calendar</Link>
+            <Link to="/calendars">Calendar</Link>
           </li>
           <li>
-            <Link href="/availability">Availability</Link>
+            <Link to="/availability">Availability</Link>
           </li>
           <li>
-            <Link href="/troubleshooter">Troubleshooter</Link>
+            <Link to="/troubleshooter">Troubleshooter</Link>
           </li>
           <li>
-            <Link href="/event-types">EventTypes</Link>
+            <Link to="/event-types">EventTypes</Link>
           </li>
           <li>
-            <Link href="/booking">Book Me</Link>
+            <Link to="/booking">Book Me</Link>
           </li>
           <li>
-            <Link href="/bookings">My Bookings</Link>
+            <Link to="/bookings">My Bookings</Link>
           </li>
           <li>
-            <Link href="/embed">Embed</Link>
+            <Link to="/embed">Embed</Link>
           </li>
 
           <li>
-            <Link href="/conferencing-apps">Conferencing Apps</Link>
+            <Link to="/conferencing-apps">Conferencing Apps</Link>
           </li>
         </ul>
       </div>

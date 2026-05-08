@@ -1,7 +1,10 @@
 "use client";
 
 import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import type { ParsedUrlQuery } from "node:querystring";
 import { useEffect, useState } from "react";
 
@@ -20,10 +23,10 @@ export function Logout(props: PageProps) {
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
   const { status } = useSession();
   if (status === "authenticated") signOut({ redirect: false });
-  const router = useRouter();
+  const router = useNavigate();
   useEffect(() => {
     if (props.query?.survey === "true") {
-      router.push(`${WEBSITE_URL}/cancellation`);
+      router({ to: `${WEBSITE_URL}/cancellation` });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.query?.survey]);
@@ -37,7 +40,7 @@ export function Logout(props: PageProps) {
 
   const navigateToLogin = () => {
     setBtnLoading(true);
-    router.push("/auth/login");
+    router({ to: "/auth/login" });
   };
 
   return (

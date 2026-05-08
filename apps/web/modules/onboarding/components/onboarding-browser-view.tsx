@@ -7,7 +7,8 @@ import { Button } from "@calcom/ui/components/button";
 import { Icon, type IconName } from "@calcom/ui/components/icon";
 import classNames from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 
 type OnboardingBrowserViewProps = {
   avatar?: string | null;
@@ -40,7 +41,7 @@ export const OnboardingBrowserView = ({
   teamSlug,
 }: OnboardingBrowserViewProps) => {
   const { t } = useLocale();
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const orgBranding = null as { slug: string } | null;
 
   const displayUrl = getDisplayUrl(orgBranding?.slug, username, teamSlug);

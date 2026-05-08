@@ -1,6 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useEffect, useState } from "react";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -10,7 +13,7 @@ import { XIcon } from "@coss/ui/icons";
 import { useOnboardingStore } from "../store/onboarding-store";
 
 export const OnboardingContinuationPrompt = () => {
-  const router = useRouter();
+  const router = useNavigate();
   const { t } = useLocale();
   const { selectedPlan, organizationDetails, teamDetails, resetOnboarding } = useOnboardingStore();
   const [isVisible, setIsVisible] = useState(false);
@@ -50,10 +53,10 @@ export const OnboardingContinuationPrompt = () => {
     // Navigate to the next step based on plan type
     if (entityType === "organization") {
       // Organization flow: details -> brand -> teams -> invite
-      router.push("/onboarding/organization/brand");
+      router({ to: "/onboarding/organization/brand" });
     } else if (entityType === "team") {
       // Team flow: details -> invite
-      router.push("/onboarding/teams/invite");
+      router({ to: "/onboarding/teams/invite" });
     }
   };
 

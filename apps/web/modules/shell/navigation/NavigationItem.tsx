@@ -7,12 +7,13 @@ import type { IconName } from "@calcom/ui/components/icon";
 import { Icon } from "@calcom/ui/components/icon";
 import { SkeletonText } from "@calcom/ui/components/skeleton";
 import { Tooltip } from "@calcom/ui/components/tooltip";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import posthog from "posthog-js";
 import type React from "react";
 import { Fragment, useEffect, useState } from "react";
 import { useShouldDisplayNavigationItem } from "./useShouldDisplayNavigationItem";
+import { Link } from '@tanstack/react-router';
 
 const usePersistedExpansionState = (itemName: string) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -74,7 +75,7 @@ export const NavigationItem: React.FC<{
 }> = (props) => {
   const { item, isChild } = props;
   const { t, isLocaleReady } = useLocale();
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const isCurrent: NavigationItemType["isCurrent"] = item.isCurrent || defaultIsCurrent;
   const current = isCurrent({ isChild: !!isChild, item, pathname });
   const shouldDisplayNavigationItem = useShouldDisplayNavigationItem(props.item);
@@ -121,7 +122,7 @@ export const NavigationItem: React.FC<{
                     return (
                       <Link
                         key={childItem.name}
-                        href={childItem.href}
+                        to={childItem.href}
                         aria-current={childIsCurrent ? "page" : undefined}
                         onClick={() => {
                           setIsTooltipOpen(false);
@@ -206,7 +207,7 @@ export const NavigationItem: React.FC<{
           <Link
             data-test-id={item.name}
             onClick={() => trackNavigationClick(item.name)}
-            href={item.href}
+            to={item.href}
             aria-label={t(item.name)}
             target={item.target}
             className={classNames(
@@ -271,7 +272,7 @@ export const MobileNavigationItem: React.FC<{
   isChild?: boolean;
 }> = (props) => {
   const { item, isChild } = props;
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const { t, isLocaleReady } = useLocale();
   const isCurrent: NavigationItemType["isCurrent"] = item.isCurrent || defaultIsCurrent;
   const current = isCurrent({ isChild: !!isChild, item, pathname });
@@ -281,7 +282,7 @@ export const MobileNavigationItem: React.FC<{
   return (
     <Link
       key={item.name}
-      href={item.href}
+      to={item.href}
       target={item.target}
       className="[&[aria-current='page']]:text-emphasis hover:text-default text-muted bg-transparent! relative my-2 min-w-0 flex-1 overflow-hidden rounded-md p-1 text-center text-xs font-medium focus:z-10 sm:text-sm"
       aria-current={current ? "page" : undefined}>
@@ -351,7 +352,7 @@ export const MobileNavigationMoreItem: React.FC<{
                   {item.child.map((childItem) => (
                     <li key={childItem.name} className="border-subtle border-t">
                       <Link
-                        href={childItem.href}
+                        to={childItem.href}
                         className="hover:bg-cal-muted flex items-center p-4 pl-12 transition">
                         <span className="text-default font-medium">
                           {isLocaleReady ? t(childItem.name) : <SkeletonText />}
@@ -372,7 +373,7 @@ export const MobileNavigationMoreItem: React.FC<{
         </button>
       ) : (
         <Link
-          href={item.href}
+          to={item.href}
           target={item.target}
           className="hover:bg-subtle flex items-center justify-between p-5 transition">
           {itemContent}

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -11,6 +10,7 @@ import { ToggleGroup } from "@calcom/ui/components/form";
 import { ExternalLinkIcon, GlobeIcon, MailIcon } from "@coss/ui/icons";
 
 import type { GroupedBookingReport, BlocklistScope } from "@calcom/features/blocklist/types";
+import { Link } from '@tanstack/react-router';
 
 interface FormData {
   blockType: WatchlistType;
@@ -127,7 +127,7 @@ export function BookingReportDetailsModal<T extends GroupedBookingReport>({
                   </label>
                   <div className="max-h-32 space-y-1 overflow-y-auto">
                     {entry.reports.map((report) => (
-                      <Link key={report.id} href={`/booking/${report.booking.uid}`}>
+                      <Link key={report.id} to={`/booking/${report.booking.uid}`}>
                         <div className="text-subtle hover:text-emphasis flex items-center gap-1 text-sm">
                           {report.booking.title || t("untitled")}
                           <ExternalLinkIcon className="h-3 w-3" />

@@ -10,7 +10,10 @@ import { ImageUploader } from "@calcom/ui/components/image-uploader";
 import { showToast } from "@calcom/ui/components/toast";
 import { UsernameAvailabilityField } from "@components/ui/UsernameAvailability";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -31,7 +34,7 @@ export const PersonalSettingsView = ({
   userName,
   fromTeamOnboarding = false,
 }: PersonalSettingsViewProps) => {
-  const router = useRouter();
+  const router = useNavigate();
   const { t } = useLocale();
   const { data: user } = trpc.viewer.me.get.useQuery();
   const { personalDetails, setPersonalDetails } = useOnboardingStore();
@@ -103,7 +106,7 @@ export const PersonalSettingsView = ({
       bio: data.bio || "",
     });
 
-    router.push("/onboarding/personal/calendar");
+    router({ to: "/onboarding/personal/calendar" });
   });
 
   if (!user) {
@@ -123,7 +126,7 @@ export const PersonalSettingsView = ({
                 <Button
                   color="minimal"
                   className="rounded-[10px]"
-                  onClick={() => router.push("/onboarding/getting-started")}>
+                  onClick={() => router({ to: "/onboarding/getting-started" })}>
                   {t("back")}
                 </Button>
               )}

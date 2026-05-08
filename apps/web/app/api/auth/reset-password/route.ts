@@ -1,8 +1,13 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { parseRequestData } from "app/api/parseRequestData";
-import { cookies } from "next/headers";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getCookies } from "@tanstack/start/server";
+
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
+
 import { z } from "zod";
 
 import { validPassword } from "@calcom/features/auth/lib/validPassword";
@@ -21,19 +26,19 @@ const passwordResetRequestSchema = z.object({
   requestId: z.string(), // format doesn't matter.
 });
 
-async function handler(req: NextRequest) {
+async function handler(req: Request) {
   const body = await parseRequestData(req);
   const {
     password: rawPassword,
     requestId: rawRequestId,
     csrfToken: submittedToken,
   } = passwordResetRequestSchema.parse(body);
-  const cookieStore = await cookies();
+  const cookieStore = { getAll: () => Object.entries(getCookies()).map(([name, value]) => ({ name, value: String(value ?? "") })) };
 
   const cookieToken = cookieStore.get("calcom.csrf_token")?.value;
 
   if (submittedToken !== cookieToken) {
-    return NextResponse.json({ error: "Invalid CSRF token" }, { status: 403 });
+    return Response.json({ error: "Invalid CSRF token" }, { status: 403 });
   }
 
   // token verified, delete the cookie / a resubmit on failure requires a new csrf token.
@@ -81,12 +86,12 @@ async function handler(req: NextRequest) {
       },
     });
   } catch (e) {
-    return NextResponse.json({}, { status: 404 });
+    return Response.json({}, { status: 404 });
   }
 
   await expireResetPasswordRequest(rawRequestId);
 
-  return NextResponse.json({ message: "Password reset." }, { status: 201 });
+  return Response.json({ message: "Password reset." }, { status: 201 });
 }
 
 async function expireResetPasswordRequest(rawRequestId: string) {

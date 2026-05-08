@@ -1,4 +1,7 @@
-import { NextRequest } from "next/server";
+// TODO: Next.js pages/api route — convert the handler to TanStack Start server route handlers (Web Request/Response) — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
 import { describe, test, expect, vi, beforeEach } from "vitest";
 
 import { CalendarCacheEventService } from "@calcom/features/calendar-subscription/lib/cache/CalendarCacheEventService";
@@ -79,7 +82,7 @@ describe("/api/cron/calendar-subscriptions-cleanup", () => {
 
   describe("Authentication", () => {
     test("should return 403 when no API key is provided", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions-cleanup");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions-cleanup");
 
       const { GET } = await import("../route");
       const response = await GET(request, { params: Promise.resolve({}) });
@@ -90,7 +93,7 @@ describe("/api/cron/calendar-subscriptions-cleanup", () => {
     });
 
     test("should return 403 when invalid API key is provided", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions-cleanup");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions-cleanup");
       request.headers.set("authorization", "invalid-key");
 
       const { GET } = await import("../route");
@@ -102,7 +105,7 @@ describe("/api/cron/calendar-subscriptions-cleanup", () => {
     });
 
     test("should accept CRON_API_KEY in authorization header", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions-cleanup");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions-cleanup");
       request.headers.set("authorization", "test-cron-key");
 
       const mockCleanupStaleCache = vi.fn().mockResolvedValue(undefined);
@@ -116,7 +119,7 @@ describe("/api/cron/calendar-subscriptions-cleanup", () => {
     });
 
     test("should accept CRON_SECRET as Bearer token", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions-cleanup");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions-cleanup");
       request.headers.set("authorization", "Bearer test-cron-secret");
 
       const mockCleanupStaleCache = vi.fn().mockResolvedValue(undefined);
@@ -130,7 +133,7 @@ describe("/api/cron/calendar-subscriptions-cleanup", () => {
     });
 
     test("should accept API key as query parameter", async () => {
-      const request = new NextRequest(
+      const request = new Request(
         "http://localhost/api/cron/calendar-subscriptions-cleanup?apiKey=test-cron-key"
       );
 
@@ -147,7 +150,7 @@ describe("/api/cron/calendar-subscriptions-cleanup", () => {
 
   describe("Cleanup functionality", () => {
     test("should successfully cleanup stale cache", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions-cleanup");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions-cleanup");
       request.headers.set("authorization", "test-cron-key");
 
       const mockCleanupStaleCache = vi.fn().mockResolvedValue(undefined);
@@ -163,7 +166,7 @@ describe("/api/cron/calendar-subscriptions-cleanup", () => {
     });
 
     test("should handle cleanup errors gracefully", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions-cleanup");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions-cleanup");
       request.headers.set("authorization", "test-cron-key");
 
       const mockError = new Error("Database connection failed");
@@ -179,7 +182,7 @@ describe("/api/cron/calendar-subscriptions-cleanup", () => {
     });
 
     test("should handle non-Error exceptions", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions-cleanup");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions-cleanup");
       request.headers.set("authorization", "test-cron-key");
 
       const mockCleanupStaleCache = vi.fn().mockRejectedValue("String error");
@@ -196,7 +199,7 @@ describe("/api/cron/calendar-subscriptions-cleanup", () => {
 
   describe("Service instantiation", () => {
     test("should instantiate CalendarCacheEventService with correct dependencies", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions-cleanup");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions-cleanup");
       request.headers.set("authorization", "test-cron-key");
 
       const mockCleanupStaleCache = vi.fn().mockResolvedValue(undefined);

@@ -3,8 +3,10 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import classNames from "classnames";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
 import { Fragment, useEffect, useState } from "react";
 import { Toaster } from "sonner";
 import { z } from "zod";
@@ -69,6 +71,7 @@ import { timeZone } from "@calcom/web/lib/clock";
 
 import { usePaymentStatus } from "../hooks/usePaymentStatus";
 import type { PageProps } from "./bookings-single-view.getServerSideProps";
+import { Link } from '@tanstack/react-router';
 
 const stringToBoolean = z
   .string()
@@ -107,9 +110,9 @@ const useBrandColors = ({
 
 export default function Success(props: PageProps) {
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
   const routerQuery = useRouterQuery();
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const searchParams = useCompatSearchParams();
 
   const {
@@ -252,7 +255,7 @@ export default function Success(props: PageProps) {
       }
     }
 
-    router.replace(`${pathname}?${_searchParams.toString()}`);
+    router({ to: `${pathname}?${_searchParams.toString()}`, replace: true });
   }
 
   let evtName = eventType.eventName;
@@ -478,7 +481,7 @@ export default function Success(props: PageProps) {
       {isLoggedIn && !isEmbed && !isFeedbackMode && (
         <div className="-mb-4 ml-4 mt-2">
           <Link
-            href={allRemainingBookings ? "/bookings/recurring" : "/bookings/upcoming"}
+            to={allRemainingBookings ? "/bookings/recurring" : "/bookings/upcoming"}
             data-testid="back-to-bookings"
             className="hover:bg-subtle text-subtle hover:text-default mt-2 inline-flex px-1 py-2 text-sm transition dark:hover:bg-transparent">
             <ChevronLeftIcon className="h-5 w-5 rtl:rotate-180" /> {t("back_to_bookings")}
@@ -590,7 +593,7 @@ export default function Success(props: PageProps) {
                             <div className="font-medium">{t("rescheduled_by")}</div>
                             <div className="col-span-2 mb-6 last:mb-0">
                               <p className="wrap-break-word">{previousBooking?.rescheduledBy}</p>
-                              <Link className="text-sm underline" href={`/booking/${previousBooking?.uid}`}>
+                              <Link className="text-sm underline" to={`/booking/${previousBooking?.uid}`}>
                                 {t("original_booking")}
                               </Link>
                             </div>
@@ -851,7 +854,7 @@ export default function Success(props: PageProps) {
                           {/* Login button but redirect to here */}
                           <span className="text-default inline">
                             <Link
-                              href={`/auth/login?callbackUrl=${encodeURIComponent(
+                              to={`/auth/login?callbackUrl=${encodeURIComponent(
                                 `/booking/${bookingInfo?.uid}`
                               )}`}
                               className="underline"
@@ -888,7 +891,7 @@ export default function Success(props: PageProps) {
                                     !isRescheduleDisabled && (
                                       <span className="text-default inline">
                                         <Link
-                                          href={`/reschedule/${seatReferenceUid || bookingInfo?.uid}${
+                                          to={`/reschedule/${seatReferenceUid || bookingInfo?.uid}${
                                             currentUserEmail
                                               ? `?rescheduledBy=${encodeURIComponent(currentUserEmail)}`
                                               : ""
@@ -970,7 +973,7 @@ export default function Success(props: PageProps) {
                           <div className="justify-left mt-1 flex text-left sm:mt-0">
                             {googleCalendarLink && (
                               <Link
-                                href={googleCalendarLink}
+                                to={googleCalendarLink}
                                 className="text-default border-subtle h-10 w-10 rounded-sm border px-3 py-2 ltr:mr-2 rtl:ml-2"
                                 target="_blank">
                                 <svg
@@ -985,7 +988,7 @@ export default function Success(props: PageProps) {
                             )}
                             {microsoftOutlookLink && (
                               <Link
-                                href={microsoftOutlookLink}
+                                to={microsoftOutlookLink}
                                 className="border-subtle text-default mx-2 h-10 w-10 rounded-sm border px-3 py-2"
                                 target="_blank">
                                 <svg
@@ -1000,7 +1003,7 @@ export default function Success(props: PageProps) {
                             )}
                             {microsoftOfficeLink && (
                               <Link
-                                href={microsoftOfficeLink}
+                                to={microsoftOfficeLink}
                                 className="text-default border-subtle mx-2 h-10 w-10 rounded-sm border px-3 py-2"
                                 target="_blank">
                                 <svg
@@ -1015,7 +1018,7 @@ export default function Success(props: PageProps) {
                             )}
                             {icsLink && (
                               <Link
-                                href={icsLink}
+                                to={icsLink}
                                 className="border-subtle text-default mx-2 h-10 w-10 rounded-sm border px-3 py-2"
                                 download={`${eventType.title}.ics`}>
                                 <svg
@@ -1048,7 +1051,7 @@ export default function Success(props: PageProps) {
                               const target = e.target as typeof e.target & {
                                 email: { value: string };
                               };
-                              router.push(`https://cal.com/signup?email=${target.email.value}`);
+                              router({ to: `https://cal.com/signup?email=${target.email.value}` });
                             }}
                             className="mt-4 flex">
                             <EmailInput
@@ -1170,7 +1173,7 @@ const RescheduledToLink = ({ rescheduledToUid }: { rescheduledToUid: string }) =
       <div className="mt-3 font-medium">{t("rescheduled")}</div>
       <div className="col-span-2 mb-2 mt-3">
         <span className="underline">
-          <Link href={`/booking/${rescheduledToUid}`}>
+          <Link to={`/booking/${rescheduledToUid}`}>
             <div className="flex items-center gap-1">
               {t("view_booking")}
               <ExternalLinkIcon className="h-4 w-4" />

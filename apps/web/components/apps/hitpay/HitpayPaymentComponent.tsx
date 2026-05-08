@@ -1,6 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import qs from "qs";
 import { useEffect, useRef } from "react";
 import { z } from "zod";
@@ -26,7 +29,7 @@ interface IPaymentComponentProps {
 export const HitpayPaymentComponent = (props: IPaymentComponentProps) => {
   const { isInitialized, init } = useHitPayDropIn();
   const isSucceeded = useRef<boolean>(false);
-  const router = useRouter();
+  const router = useNavigate();
   const { payment } = props;
   const { data } = payment;
   const wrongUrl = (
@@ -61,7 +64,7 @@ export const HitpayPaymentComponent = (props: IPaymentComponentProps) => {
           );
         }
       } else {
-        router.replace(parsedData.data.url);
+        router({ to: parsedData.data.url, replace: true });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,7 +86,7 @@ export const HitpayPaymentComponent = (props: IPaymentComponentProps) => {
 
         const query = qs.stringify(queryParams);
         const url = `/booking/${parsedData.data.bookingUid}?${query}`;
-        router.replace(url);
+        router({ to: url, replace: true });
       }
     }
   };
@@ -91,7 +94,7 @@ export const HitpayPaymentComponent = (props: IPaymentComponentProps) => {
   const onError = (error: unknown) => {
     if (parsedData.success) {
       const url = `/${parsedData.data.bookingUserName}/${parsedData.data.eventTypeSlug}`;
-      router.replace(url);
+      router({ to: url, replace: true });
     }
   };
 

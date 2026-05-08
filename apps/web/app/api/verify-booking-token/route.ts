@@ -5,8 +5,8 @@ import { confirmHandler } from "@calcom/trpc/server/routers/viewer/bookings/conf
 import { TRPCError } from "@trpc/server";
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { parseRequestData } from "app/api/parseRequestData";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import { z } from "zod";
 
 enum DirectAction {
@@ -21,7 +21,7 @@ const querySchema = z.object({
   userId: z.string(),
 });
 
-async function getHandler(request: NextRequest) {
+async function getHandler(request: Request) {
   const queryParams = Object.fromEntries(request.nextUrl.searchParams.entries());
 
   try {
@@ -29,7 +29,7 @@ async function getHandler(request: NextRequest) {
 
     if (action === DirectAction.REJECT) {
       // Rejections should use POST method
-      return NextResponse.redirect(
+      return Response.redirect(
         new URL(
           `/booking/${bookingUid}?error=${encodeURIComponent("Rejection requires POST method")}`,
           WEBAPP_URL
@@ -40,13 +40,13 @@ async function getHandler(request: NextRequest) {
     return await handleBookingAction(action, token, bookingUid, userId, request, undefined);
   } catch {
     const bookingUid = queryParams.bookingUid || "";
-    return NextResponse.redirect(
+    return Response.redirect(
       new URL(`/booking/${bookingUid}?error=${encodeURIComponent("Error confirming booking")}`, WEBAPP_URL)
     );
   }
 }
 
-async function postHandler(request: NextRequest) {
+async function postHandler(request: Request) {
   const queryParams = Object.fromEntries(request.nextUrl.searchParams.entries());
 
   try {
@@ -57,7 +57,7 @@ async function postHandler(request: NextRequest) {
     return await handleBookingAction(action, token, bookingUid, userId, request, reason);
   } catch {
     const bookingUid = queryParams.bookingUid || "";
-    return NextResponse.redirect(
+    return Response.redirect(
       new URL(`/booking/${bookingUid}?error=${encodeURIComponent("Error confirming booking")}`, WEBAPP_URL),
       { status: 303 }
     );
@@ -69,7 +69,7 @@ async function handleBookingAction(
   token: string,
   bookingUid: string,
   userId: string,
-  _request: NextRequest,
+  _request: Request,
   reason?: string
 ) {
   const booking = await prisma.booking.findUnique({
@@ -77,7 +77,7 @@ async function handleBookingAction(
   });
 
   if (!booking) {
-    return NextResponse.redirect(
+    return Response.redirect(
       new URL(`/booking/${bookingUid}?error=${encodeURIComponent("Error confirming booking")}`, WEBAPP_URL),
       { status: 303 }
     );
@@ -120,7 +120,7 @@ async function handleBookingAction(
   } catch (e) {
     let message = "Error confirming booking";
     if (e instanceof TRPCError) message = (e as TRPCError).message;
-    return NextResponse.redirect(
+    return Response.redirect(
       new URL(`/booking/${booking.uid}?error=${encodeURIComponent(message)}`, WEBAPP_URL),
       { status: 303 }
     );
@@ -131,7 +131,7 @@ async function handleBookingAction(
     data: { oneTimePassword: null },
   });
 
-  return NextResponse.redirect(new URL(`/booking/${booking.uid}`, WEBAPP_URL), { status: 303 });
+  return Response.redirect(new URL(`/booking/${booking.uid}`, WEBAPP_URL), { status: 303 });
 }
 
 export const GET = defaultResponderForAppDir(getHandler);

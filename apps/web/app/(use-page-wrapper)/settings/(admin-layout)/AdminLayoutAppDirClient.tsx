@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import type { ComponentProps } from "react";
 import React from "react";
 
@@ -14,7 +15,7 @@ export type AdminLayoutProps = {
   userRole: UserPermissionRole | "INACTIVE_ADMIN" | undefined;
 } & ComponentProps<typeof Shell>;
 export default function AdminLayoutAppDirClient({ children }: AdminLayoutProps) {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
 
   const isAppsPage = pathname?.startsWith("/settings/admin/apps");
   return (

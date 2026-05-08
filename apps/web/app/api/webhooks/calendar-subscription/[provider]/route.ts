@@ -13,8 +13,8 @@ import logger from "@calcom/lib/logger";
 import { prisma } from "@calcom/prisma";
 import { defaultResponderForAppDir } from "@calcom/web/app/api/defaultResponderForAppDir";
 import type { Params } from "app/_types";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 
 const log = logger.getSubLogger({ prefix: ["calendar-webhook"] });
 
@@ -40,10 +40,10 @@ function extractAndValidateProviderFromParams(params: Params): CalendarSubscript
  * @param {Promise<Params>} context.params - A promise that resolves to the route parameters.
  * @returns {Promise<NextResponse>} - A promise that resolves to the response object.
  */
-async function postHandler(request: NextRequest, ctx: { params: Promise<Params> }) {
+async function postHandler(request: Request, ctx: { params: Promise<Params> }) {
   const providerFromParams = extractAndValidateProviderFromParams(await ctx.params);
   if (!providerFromParams) {
-    return NextResponse.json({ message: "Unsupported provider" }, { status: 400 });
+    return Response.json({ message: "Unsupported provider" }, { status: 400 });
   }
 
   try {
@@ -75,15 +75,15 @@ async function postHandler(request: NextRequest, ctx: { params: Promise<Params> 
 
     if (!isCacheEnabled && !isSyncEnabled) {
       log.debug("No cache or sync enabled");
-      return NextResponse.json({ message: "No cache or sync enabled" }, { status: 200 });
+      return Response.json({ message: "No cache or sync enabled" }, { status: 200 });
     }
 
     await calendarSubscriptionService.processWebhook(providerFromParams, request);
-    return NextResponse.json({ message: "Webhook processed" }, { status: 200 });
+    return Response.json({ message: "Webhook processed" }, { status: 200 });
   } catch (error) {
     log.error("Error processing webhook", { error });
     const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ message }, { status: 500 });
+    return Response.json({ message }, { status: 500 });
   }
 }
 

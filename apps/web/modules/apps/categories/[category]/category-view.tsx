@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 
 import { AppCard } from "@calcom/web/modules/apps/components/AppCard";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -9,6 +8,7 @@ import { SkeletonText } from "@calcom/ui/components/skeleton";
 import type { CategoryDataProps } from "@lib/apps/categories/[category]/getStaticProps";
 
 import Shell from "~/shell/Shell";
+import { Link } from '@tanstack/react-router';
 
 export default function Apps({ apps, category }: CategoryDataProps) {
   const { t, isLocaleReady } = useLocale();
@@ -24,7 +24,7 @@ export default function Apps({ apps, category }: CategoryDataProps) {
         heading={
           <>
             <Link
-              href="/apps"
+              to="/apps"
               className="text-emphasis inline-flex items-center justify-start gap-1 rounded-sm py-2">
               {isLocaleReady ? t("app_store") : <SkeletonText className="h-4 w-24" />}{" "}
             </Link>

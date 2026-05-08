@@ -12,7 +12,8 @@ import { SchedulingType } from "@calcom/prisma/enums";
 import { Alert } from "@calcom/ui/components/alert";
 import { Switch } from "@calcom/ui/components/form";
 import { Section } from "@calcom/ui/components/section";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import type { appDataSchema } from "../zod";
 import { WhenToWrite } from "../zod";
 
@@ -21,7 +22,7 @@ const EventTypeAppCard: EventTypeAppCardComponent = function EventTypeAppCard({
   eventType,
   onAppInstallSuccess,
 }) {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const { t } = useLocale();
   const { getAppData, setAppData } = useAppContextWithSchema<typeof appDataSchema>();
   const { enabled, updateEnabled } = useIsAppEnabled(app);

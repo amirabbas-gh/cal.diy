@@ -1,9 +1,8 @@
-import type { GetServerSidePropsContext } from "next";
-
 import { getAppRegistry, getAppRegistryWithCredentials } from "@calcom/app-store/_appRegistry";
 import { getServerSession } from "@calcom/features/auth/lib/getServerSession";
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export const getServerSideProps = async (context: any) => {
   const { req } = context;
 
   const session = await getServerSession({ req });

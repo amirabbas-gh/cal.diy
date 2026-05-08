@@ -7,7 +7,6 @@ import { emailSchema } from "@calcom/lib/emailSchema";
 import slugify from "@calcom/lib/slugify";
 import { teamMetadataSchema } from "@calcom/prisma/zod-utils";
 import { IS_GOOGLE_LOGIN_ENABLED } from "@server/lib/constants";
-import type { GetServerSidePropsContext } from "next";
 import { z } from "zod";
 
 const checkValidEmail = (email: string) => emailSchema.safeParse(email).success;
@@ -20,7 +19,8 @@ const querySchema = z.object({
   email: emailSchema.optional(),
 });
 
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export const getServerSideProps = async (ctx: any) => {
   const prisma = await import("@calcom/prisma").then((mod) => mod.default);
   const featuresRepository = new FeaturesRepository(prisma);
   const emailVerificationEnabled =

@@ -1,13 +1,13 @@
-import type { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from "next";
-
 import { WebAppURL } from "@calcom/lib/WebAppURL";
 
 export type EmbedProps = {
   isEmbed?: boolean;
 };
 
-export default function withEmbedSsr(getServerSideProps: GetServerSideProps) {
-  return async (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<EmbedProps>> => {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export default function withEmbedSsr(getServerSideProps: any) {
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+  return async (context: any): Promise<any<EmbedProps>> => {
     const ssrResponse = await getServerSideProps(context);
     const embed = context.query.embed;
     const layout = context.query.layout;

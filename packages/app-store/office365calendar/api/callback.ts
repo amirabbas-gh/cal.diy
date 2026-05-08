@@ -1,6 +1,4 @@
 import type { Calendar as OfficeCalendar } from "@microsoft/microsoft-graph-types-beta";
-import type { NextApiRequest, NextApiResponse } from "next";
-
 import { renewSelectedCalendarCredentialId } from "@calcom/lib/connectedCalendar";
 import { WEBAPP_URL, WEBAPP_URL_FOR_OAUTH } from "@calcom/lib/constants";
 import { handleErrorsJson } from "@calcom/lib/errors";
@@ -15,7 +13,8 @@ import { decodeOAuthState } from "../../_utils/oauth/decodeOAuthState";
 
 const scopes = ["offline_access", "Calendars.Read", "Calendars.ReadWrite"];
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export default async function handler(req: any, res: any) {
   const { code } = req.query;
   const state = decodeOAuthState(req);
 

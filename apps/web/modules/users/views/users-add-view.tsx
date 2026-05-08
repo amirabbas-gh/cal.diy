@@ -3,14 +3,17 @@
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
 import { showToast } from "@calcom/ui/components/toast";
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
 import type { FormValues } from "../components/UserForm";
 import { UserForm } from "../components/UserForm";
 
 export default function UsersAddView() {
   const { t } = useLocale();
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = useLocation().pathname;
+  const router = useNavigate();
   const utils = trpc.useUtils();
 
   const mutation = trpc.viewer.users.add.useMutation({
@@ -18,7 +21,7 @@ export default function UsersAddView() {
       showToast(t("user_added_successfully"), "success");
       await utils.viewer.users.list.invalidate();
       if (pathname !== null) {
-        router.replace(pathname.replace("/add", ""));
+        router({ to: pathname.replace("/add", ""), replace: true });
       }
     },
     onError: (err) => {

@@ -3,9 +3,9 @@ import { trpc } from "@calcom/trpc/react";
 import type { AppRouter } from "@calcom/trpc/types/server/routers/_app";
 import useRouterQuery from "@lib/hooks/useRouterQuery";
 import type { TRPCClientErrorLike } from "@trpc/client";
-import dynamic from "next/dynamic";
-import { useSearchParams } from "next/navigation";
-import type { ReactNode, RefCallback } from "react";
+import { useSearch } from "@tanstack/react-router";
+
+import type { ReactNode, RefCallback, lazy } from "react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -26,10 +26,10 @@ interface ICustomUsernameProps extends UsernameAvailabilityFieldProps {
   isPremium: boolean;
 }
 
-const PremiumTextfield = dynamic(() => import("./PremiumTextfield").then((m) => m.PremiumTextfield), {
+const PremiumTextfield = lazy(() => import("./PremiumTextfield").then((m) => m.PremiumTextfield), {
   ssr: false,
 });
-const UsernameTextfield = dynamic(() => import("./UsernameTextfield").then((m) => m.UsernameTextfield), {
+const UsernameTextfield = lazy(() => import("./UsernameTextfield").then((m) => m.UsernameTextfield), {
   ssr: false,
 });
 
@@ -46,7 +46,7 @@ export const UsernameAvailabilityField = ({
   onErrorMutation,
   disabled,
 }: UsernameAvailabilityFieldProps) => {
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
   const [user] = trpc.viewer.me.get.useSuspenseQuery();
   const [currentUsernameState, setCurrentUsernameState] = useState(user.username || "");
   const { username: usernameFromQuery, setQuery: setUsernameFromQuery } = useRouterQuery("username");

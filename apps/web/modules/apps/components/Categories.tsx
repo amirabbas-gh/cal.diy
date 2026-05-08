@@ -1,11 +1,11 @@
-import Image from "next/image";
-import Link from "next/link";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { SkeletonText } from "@calcom/ui/components/skeleton";
 import { ArrowRightIcon } from "@coss/ui/icons";
 
 import { Slider } from "./Slider";
+import { Link } from '@tanstack/react-router';
+import { Image } from '@unpic/react';
 
 export function AppStoreCategories({
   categories,
@@ -33,7 +33,7 @@ export function AppStoreCategories({
         renderItem={(category) => (
           <Link
             key={category.name}
-            href={`/apps/categories/${category.name}`}
+            to={`/apps/categories/${category.name}`}
             data-testid={`app-store-category-${category.name}`}
             className="relative flex rounded-md"
             style={{ background: "radial-gradient(farthest-side at top right, #a2abbe 0%, #E3E3E3 100%)" }}>

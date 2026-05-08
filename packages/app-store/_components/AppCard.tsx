@@ -1,5 +1,4 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import Link from "next/link";
 import posthog from "posthog-js";
 
 import { useAppContextWithSchema } from "@calcom/app-store/EventTypeAppContext";
@@ -13,6 +12,7 @@ import { Section } from "@calcom/ui/components/section";
 
 import type { AppCardApp } from "../types";
 import OmniInstallAppButton from "./OmniInstallAppButton";
+import { Link } from '@tanstack/react-router';
 
 export default function AppCard({
   app,
@@ -63,7 +63,7 @@ export default function AppCard({
           </div>
         }
         iconSlot={
-          <Link href={`/apps/${app.slug}`} className="flex h-8 w-8 items-center justify-center">
+          <Link to={`/apps/${app.slug}`} className="flex h-8 w-8 items-center justify-center">
             <img
               className={classNames(
                 app?.logo.includes("-dark") && "dark:invert",
@@ -132,7 +132,7 @@ export default function AppCard({
             {app.isSetupAlready === undefined || app.isSetupAlready ? (
               <div className="relative text-sm [&_input]:mb-0 [&_input]:leading-4">
                 {!hideSettingsIcon && !isPlatform && (
-                  <Link href={`/apps/${app.slug}/setup`} className="absolute right-0 top-0 ">
+                  <Link to={`/apps/${app.slug}/setup`} className="absolute right-0 top-0 ">
                     <Icon name="settings" className="text-default h-4 w-4" aria-hidden="true" />
                   </Link>
                 )}
@@ -141,7 +141,7 @@ export default function AppCard({
             ) : (
               <div className="flex h-64 w-full flex-col items-center justify-center gap-4 ">
                 <p>{t("this_app_is_not_setup_already")}</p>
-                <Link href={`/apps/${app.slug}/setup`}>
+                <Link to={`/apps/${app.slug}/setup`}>
                   <Button StartIcon="settings">{t("setup")}</Button>
                 </Link>
               </div>

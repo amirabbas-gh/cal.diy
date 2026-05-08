@@ -3,8 +3,8 @@
  *
  * It works in conjunction with `/api/cron/credentials` route(which creates the Credential records for all the members of an organization that has delegation credentials enabled)
  */
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 
 import { findUniqueDelegationCalendarCredential } from "@calcom/app-store/delegationCredential";
 import {
@@ -24,7 +24,7 @@ import { defaultResponderForAppDir } from "../../defaultResponderForAppDir";
 
 const limitOnQueryingGoogleCalendar = 50;
 const log = logger.getSubLogger({ prefix: ["[api]", "[delegation]", "[selected-calendars/cron]"] });
-const validateRequest = (req: NextRequest) => {
+const validateRequest = (req: Request) => {
   const url = new URL(req.url);
   const apiKey = req.headers.get("authorization") || url.searchParams.get("apiKey");
   if (![process.env.CRON_API_KEY, `Bearer ${process.env.CRON_SECRET}`].includes(`${apiKey}`)) {
@@ -296,9 +296,9 @@ export async function handleCreateSelectedCalendars() {
   };
 }
 
-const handler = async (request: NextRequest) => {
+const handler = async (request: Request) => {
   validateRequest(request);
-  return NextResponse.json(await handleCreateSelectedCalendars());
+  return Response.json(await handleCreateSelectedCalendars());
 };
 
 export const GET = defaultResponderForAppDir(handler);
