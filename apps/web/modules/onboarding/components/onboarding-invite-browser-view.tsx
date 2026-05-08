@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
@@ -36,7 +37,7 @@ export const OnboardingInviteBrowserView = ({
   useOrganizationInvites = false,
   watchedInvites,
 }: OnboardingInviteBrowserViewProps) => {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const { data: user } = trpc.viewer.me.get.useQuery();
   const {
     teamBrand,

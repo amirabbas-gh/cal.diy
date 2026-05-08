@@ -1,11 +1,11 @@
 import classNames from "@calcom/ui/classNames";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import Link from "next/link";
 import type { ComponentProps } from "react";
 import { forwardRef } from "react";
 import type { ButtonColor } from "../button";
 import type { IconName } from "../icon";
 import { Icon } from "../icon";
+import { Link } from '@tanstack/react-router';
 
 export const Dropdown = DropdownMenuPrimitive.Root;
 
@@ -184,7 +184,7 @@ export function ButtonOrLink({ href, ...props }: ButtonOrLinkProps) {
   if (isLink) {
     // Strip ref from props when using Link (Link manages its own anchor element)
     const { ref: _ref, ...linkProps } = props;
-    return <Link href={href} {...linkProps} />;
+    return <Link to={href} {...linkProps} />;
   }
 
   return <button {...props} />;

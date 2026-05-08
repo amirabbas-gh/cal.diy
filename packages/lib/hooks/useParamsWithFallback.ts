@@ -1,6 +1,8 @@
 "use client";
 
+// TODO: port or remove this `next/compat/router` import for TanStack Start — https://tanstack.com/start/latest/docs/framework/react/migrate-from-next-js
 import { useRouter as useCompatRouter } from "next/compat/router";
+// TODO: remaining `next/navigation` usage was not auto-ported (e.g. `notFound`, `useSelectedLayoutSegments`, `router.prefetch`, multi-arg `redirect`, or redirects in components) — move auth to route loaders when possible — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
 import { useParams } from "next/navigation";
 import type { ParsedUrlQuery } from "node:querystring";
 

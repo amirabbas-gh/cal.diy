@@ -1,9 +1,14 @@
 import { checkUsername } from "@calcom/features/profile/lib/checkUsername";
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
-import { cookies, headers } from "next/headers";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getCookies, getHeaders } from "@tanstack/start/server";
+
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
+
 import { z } from "zod";
 
 const bodySchema = z.object({
@@ -11,12 +16,12 @@ const bodySchema = z.object({
   orgSlug: z.string().optional(),
 });
 
-async function postHandler(request: NextRequest) {
+async function postHandler(request: Request) {
   try {
     const body = await request.json();
     const { username, orgSlug } = bodySchema.parse(body);
 
-    const legacyReq = buildLegacyRequest(await headers(), await cookies());
+    const legacyReq = buildLegacyRequest(new Headers(Object.entries(getHeaders()).map(([k, v]) => [k, Array.isArray(v) ? v.join(", ") : String(v ?? "")] as [string, string])), { getAll: () => Object.entries(getCookies()).map(([name, value]) => ({ name, value: String(value ?? "") })) });
 
     // Get current org domain from request headers
     const currentOrgDomain = null;
@@ -24,10 +29,10 @@ async function postHandler(request: NextRequest) {
 
     const result = await checkUsername(username, currentOrgDomain || orgSlug);
 
-    return NextResponse.json(result);
+    return Response.json(result);
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Failed to check username availability" }, { status: 400 });
+    return Response.json({ error: "Failed to check username availability" }, { status: 400 });
   }
 }
 

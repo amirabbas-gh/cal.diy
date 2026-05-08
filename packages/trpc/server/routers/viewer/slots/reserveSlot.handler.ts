@@ -1,5 +1,4 @@
 import { serialize } from "cookie";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { v4 as uuid } from "uuid";
 
 import dayjs from "@calcom/dayjs";
@@ -13,11 +12,12 @@ import { TRPCError } from "@trpc/server";
 
 import type { TReserveSlotInputSchema } from "./reserveSlot.schema";
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 interface ReserveSlotOptions {
   ctx: {
     prisma: PrismaClient;
-    req?: NextApiRequest | undefined;
-    res?: NextApiResponse | undefined;
+    req?: any | undefined;
+    res?: any | undefined;
   };
   input: TReserveSlotInputSchema;
 }

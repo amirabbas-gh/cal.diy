@@ -10,7 +10,10 @@ import { Button } from "@calcom/ui/components/button";
 import { ToggleGroup } from "@calcom/ui/components/form";
 import { WipeMyCalActionButton } from "@calcom/web/components/apps/wipemycalother/wipeMyCalActionButton";
 import { getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useBookingFilters } from "~/bookings/hooks/useBookingFilters";
 import { useBookingListColumns } from "~/bookings/hooks/useBookingListColumns";
@@ -91,7 +94,7 @@ function BookingListInner({
   const { t } = useLocale();
   const user = useMeQuery().data;
   const setSelectedBookingUid = useBookingDetailsSheetStore((state) => state.setSelectedBookingUid);
-  const router = useRouter();
+  const router = useNavigate();
   const [showFilters, setShowFilters] = useState(true);
 
   // Handle auto-selection for list view
@@ -169,7 +172,7 @@ function BookingListInner({
                 if (!value) return;
                 const selectedTab = tabOptions.find((tab) => tab.value === value);
                 if (selectedTab?.href) {
-                  router.push(selectedTab.href);
+                  router({ to: selectedTab.href });
                 }
               }}
               options={tabOptions}

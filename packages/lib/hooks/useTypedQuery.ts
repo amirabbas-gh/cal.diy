@@ -1,5 +1,6 @@
 "use client";
 
+// TODO: remaining `next/navigation` usage was not auto-ported (e.g. `notFound`, `useSelectedLayoutSegments`, `router.prefetch`, multi-arg `redirect`, or redirects in components) — move auth to route loaders when possible — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useMemo, useEffect } from "react";
 import { z } from "zod";

@@ -1,4 +1,3 @@
-import Script from "next/script";
 
 import { getEventTypeAppData } from "@calcom/app-store/_utils/getEventTypeAppData";
 import { appStoreMetadata } from "@calcom/app-store/bookerAppsMetaData";
@@ -134,20 +133,7 @@ export default function BookingPageTagManager({
 
           return (
             // biome-ignore lint/security/noDangerouslySetInnerHtml: Analytics script injection
-            <Script
-              data-testid={`cal-analytics-app-${appId}`}
-              src={parseValue(script.src)}
-              id={`${appId}-${index}`}
-              key={`${appId}-${index}`}
-              // It is strictly not necessary to disable, but in a future update of react/no-danger this will error.
-              // And we don't want it to error here anyways
-              // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={{
-                __html: parseValue(script.content) || "",
-              }}
-              {...parsedAttributes}
-              defer
-            />
+            <script data-testid={`cal-analytics-app-${appId}`} src={parseValue(script.src)} id={`${appId}-${index}`} key={`${appId}-${index}`} // It is strictly not necessary to disable, but in a future update of react/no-danger this will error. // And we don't want it to error here anyways // eslint-disable-next-line react/no-danger dangerouslySetInnerHTML={{ __html: parseValue(script.content) || "", }} {...parsedAttributes} defer />
           );
         });
       })}

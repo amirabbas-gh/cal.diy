@@ -1,4 +1,7 @@
-import { NextRequest } from "next/server";
+// TODO: Next.js pages/api route — convert the handler to TanStack Start server route handlers (Web Request/Response) — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
 import { describe, test, expect, vi, beforeEach } from "vitest";
 
 import { CalendarSubscriptionService } from "@calcom/features/calendar-subscription/lib/CalendarSubscriptionService";
@@ -52,7 +55,7 @@ describe("/api/cron/calendar-subscriptions", () => {
 
   describe("Authentication", () => {
     test("should return 403 when no API key is provided", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions");
 
       const { GET } = await import("../route");
       const response = await GET(request, { params: Promise.resolve({}) });
@@ -63,7 +66,7 @@ describe("/api/cron/calendar-subscriptions", () => {
     }, 10000);
 
     test("should return 403 when invalid API key is provided", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions");
       request.headers.set("authorization", "invalid-key");
 
       const { GET } = await import("../route");
@@ -75,7 +78,7 @@ describe("/api/cron/calendar-subscriptions", () => {
     });
 
     test("should accept valid API key", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions");
       request.headers.set("authorization", "test-cron-key");
 
       const mockIsCacheEnabled = vi.fn().mockResolvedValue(true);
@@ -95,7 +98,7 @@ describe("/api/cron/calendar-subscriptions", () => {
 
   describe("Feature flag checks", () => {
     test("should return early when cache AND sync are disabled", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions");
       request.headers.set("authorization", "test-cron-key");
 
       const mockIsCacheEnabled = vi.fn().mockResolvedValue(false);
@@ -116,7 +119,7 @@ describe("/api/cron/calendar-subscriptions", () => {
     });
 
     test("should proceed when both cache and sync are enabled", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions");
       request.headers.set("authorization", "test-cron-key");
 
       const mockIsCacheEnabled = vi.fn().mockResolvedValue(true);
@@ -139,7 +142,7 @@ describe("/api/cron/calendar-subscriptions", () => {
 
   describe("Subscription checking functionality", () => {
     test("should successfully check for new subscriptions", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions");
       request.headers.set("authorization", "test-cron-key");
 
       const mockIsCacheEnabled = vi.fn().mockResolvedValue(true);
@@ -160,7 +163,7 @@ describe("/api/cron/calendar-subscriptions", () => {
     });
 
     test("should handle subscription checking errors gracefully", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions");
       request.headers.set("authorization", "test-cron-key");
 
       const mockError = new Error("Subscription service unavailable");
@@ -181,7 +184,7 @@ describe("/api/cron/calendar-subscriptions", () => {
     });
 
     test("should handle non-Error exceptions", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions");
       request.headers.set("authorization", "test-cron-key");
 
       const mockIsCacheEnabled = vi.fn().mockResolvedValue(true);
@@ -203,7 +206,7 @@ describe("/api/cron/calendar-subscriptions", () => {
 
   describe("Service instantiation", () => {
     test("should instantiate all services with correct dependencies", async () => {
-      const request = new NextRequest("http://localhost/api/cron/calendar-subscriptions");
+      const request = new Request("http://localhost/api/cron/calendar-subscriptions");
       request.headers.set("authorization", "test-cron-key");
 
       const mockIsCacheEnabled = vi.fn().mockResolvedValue(true);

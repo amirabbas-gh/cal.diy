@@ -1,6 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useEffect, useState } from "react";
 import posthog from "posthog-js";
 
@@ -31,7 +34,7 @@ interface AppCardProps {
 
 export function AppCard({ app, credentials, searchText, userAdminTeams }: AppCardProps) {
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
   const allowedMultipleInstalls = app.categories && app.categories.indexOf("calendar") > -1;
   const appAdded = (credentials && credentials.length) || 0;
   const enabledOnTeams = doesAppSupportTeamInstall({
@@ -92,7 +95,7 @@ export function AppCard({ app, credentials, searchText, userAdminTeams }: AppCar
     ) {
       mutation.mutate({ type: app.type });
     } else {
-      router.push(getAppOnboardingUrl({ slug: app.slug, step: AppOnboardingSteps.ACCOUNTS_STEP }));
+      router({ to: getAppOnboardingUrl({ slug: app.slug, step: AppOnboardingSteps.ACCOUNTS_STEP }) });
     }
   };
 

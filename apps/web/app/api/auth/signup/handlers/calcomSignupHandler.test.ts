@@ -1,3 +1,4 @@
+// TODO: Next.js pages/api route — convert the handler to TanStack Start server route handlers (Web Request/Response) — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import type { MockResponse } from "@calcom/features/auth/signup/handlers/__tests__/mocks/next.mocks";
 import {
   prismaMock,

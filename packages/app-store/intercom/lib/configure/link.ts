@@ -1,5 +1,3 @@
-import type { NextApiRequest } from "next";
-
 import { WEBAPP_URL } from "@calcom/lib/constants";
 import prisma from "@calcom/prisma";
 
@@ -13,7 +11,8 @@ import type {
 } from "../../lib";
 import { isValidCalURL } from "../../lib/isValidCalURL";
 
-export async function handleLinkStep(req: NextApiRequest): Promise<NewCanvas | string> {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export async function handleLinkStep(req: any): Promise<NewCanvas | string> {
   const { admin, component_id, input_values } = req.body;
 
   const url = component_id === "submit_booking_url" ? input_values?.submit_booking_url : component_id;

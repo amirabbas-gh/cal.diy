@@ -1,27 +1,27 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { parseUrlFormData } from "app/api/parseRequestData";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 
 import { getOAuthService } from "@calcom/features/oauth/di/OAuthService.container";
 import { OAUTH_ERROR_REASONS } from "@calcom/features/oauth/services/OAuthService";
 import { ErrorWithCode } from "@calcom/lib/errors";
 import { getHttpStatusCode } from "@calcom/lib/server/getServerErrorFromUnknown";
 
-async function handler(req: NextRequest) {
+async function handler(req: Request) {
   const { code, client_id, client_secret, grant_type, redirect_uri, code_verifier } =
     await parseUrlFormData(req);
 
   if (!process.env.CALENDSO_ENCRYPTION_KEY) {
-    return NextResponse.json({ message: OAUTH_ERROR_REASONS["encryption_key_missing"] }, { status: 500 });
+    return Response.json({ message: OAUTH_ERROR_REASONS["encryption_key_missing"] }, { status: 500 });
   }
 
   if (!client_id || !code || !redirect_uri) {
-    return NextResponse.json({ error: "invalid_request" }, { status: 400 });
+    return Response.json({ error: "invalid_request" }, { status: 400 });
   }
 
   if (grant_type !== "authorization_code") {
-    return NextResponse.json({ error: "invalid_request" }, { status: 400 });
+    return Response.json({ error: "invalid_request" }, { status: 400 });
   }
 
   try {
@@ -34,7 +34,7 @@ async function handler(req: NextRequest) {
       code_verifier
     );
 
-    return NextResponse.json(
+    return Response.json(
       {
         access_token: tokens.accessToken,
         token_type: "bearer",
@@ -52,10 +52,10 @@ async function handler(req: NextRequest) {
     );
   } catch (err) {
     if (err instanceof ErrorWithCode) {
-      return NextResponse.json({ error: err.message }, { status: getHttpStatusCode(err) });
+      return Response.json({ error: err.message }, { status: getHttpStatusCode(err) });
     }
   }
-  return NextResponse.json({ error: "error_code_exchange" }, { status: 500 });
+  return Response.json({ error: "error_code_exchange" }, { status: 500 });
 }
 
 export const POST = defaultResponderForAppDir(handler);

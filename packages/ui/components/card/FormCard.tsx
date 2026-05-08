@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 
 import classNames from "@calcom/ui/classNames";
@@ -12,6 +11,7 @@ import { Dropdown, DropdownMenuTrigger, DropdownMenuContent, DropdownItem } from
 import { Input } from "../form/inputs/TextField";
 import { Icon } from "../icon";
 import type { IconName } from "../icon";
+import { Link } from '@tanstack/react-router';
 
 type Action = { check: () => boolean; fn: () => void; color?: "destructive" | "minimal"; disabled?: boolean };
 
@@ -190,7 +190,7 @@ export default function FormCard({
             )}
             {badge && (
               <Badge className="ml-2" variant={badge.variant}>
-                {badge.href ? <Link href={badge.href}>{badge.text}</Link> : badge.text}
+                {badge.href ? <Link to={badge.href}>{badge.text}</Link> : badge.text}
               </Badge>
             )}
           </div>

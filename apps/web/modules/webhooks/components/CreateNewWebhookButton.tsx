@@ -7,7 +7,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@coss/ui/components/avatar"
 import { Button } from "@coss/ui/components/button";
 import { Menu, MenuGroup, MenuGroupLabel, MenuItem, MenuPopup, MenuTrigger } from "@coss/ui/components/menu";
 import { ChevronDownIcon, PlusIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 
 function getInitials(name: string): string {
   return name
@@ -19,7 +22,7 @@ function getInitials(name: string): string {
 }
 
 export const CreateNewWebhookButton = ({ isEmptyState }: { isEmptyState?: boolean }) => {
-  const router = useRouter();
+  const router = useNavigate();
   const { t } = useLocale();
 
   const query = trpc.viewer.loggedInViewerRouter.teamsAndUserProfilesQuery.useQuery({
@@ -43,9 +46,9 @@ export const CreateNewWebhookButton = ({ isEmptyState }: { isEmptyState?: boolea
 
   const handleSelect = (option: { teamId?: number | null; platform?: boolean }) => {
     if (option.platform) {
-      router.push(`webhooks/new?platform=${option.platform}`);
+      router({ to: `webhooks/new?platform=${option.platform}` });
     } else {
-      router.push(`webhooks/new${option.teamId ? `?teamId=${option.teamId}` : ""}`);
+      router({ to: `webhooks/new${option.teamId ? `?teamId=${option.teamId}` : ""}` });
     }
   };
 

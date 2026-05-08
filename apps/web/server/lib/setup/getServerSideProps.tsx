@@ -2,9 +2,8 @@ import process from "node:process";
 import { getServerSession } from "@calcom/features/auth/lib/getServerSession";
 import prisma from "@calcom/prisma";
 import { UserPermissionRole } from "@calcom/prisma/enums";
-import type { GetServerSidePropsContext } from "next";
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export async function getServerSideProps(context: any) {
   const { req } = context;
 
   const userCount = await prisma.user.count();

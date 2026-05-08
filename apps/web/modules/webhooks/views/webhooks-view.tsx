@@ -21,7 +21,10 @@ import {
   AppHeaderDescription,
 } from "@coss/ui/shared/app-header";
 import { WebhookIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { CreateNewWebhookButton, WebhookListItem } from "../components";
 
 type WebhooksByViewer = RouterOutputs["viewer"]["webhook"]["getByViewer"];
@@ -40,7 +43,7 @@ const WebhooksView = ({ data }: Props) => {
 
 const WebhooksList = ({ webhooksByViewer }: { webhooksByViewer: WebhooksByViewer }) => {
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
   const { webhookGroups } = webhooksByViewer;
   const bookerUrl = useBookerUrl();
 
@@ -89,7 +92,7 @@ const WebhooksList = ({ webhooksByViewer }: { webhooksByViewer: WebhooksByViewer
                               canDeleteWebhook: group?.metadata?.canDelete ?? false,
                             }}
                             onEditWebhookAction={() =>
-                              router.push(`${WEBAPP_URL}/settings/developer/webhooks/${webhook.id}`)
+                              router({ to: `${WEBAPP_URL}/settings/developer/webhooks/${webhook.id}` })
                             }
                           />
                         ))}

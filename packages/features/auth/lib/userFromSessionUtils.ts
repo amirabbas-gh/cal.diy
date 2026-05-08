@@ -7,13 +7,13 @@ import logger from "@calcom/lib/logger";
 import { safeStringify } from "@calcom/lib/safeStringify";
 import prisma from "@calcom/prisma";
 import { teamMetadataSchema, userMetadata } from "@calcom/prisma/zod-utils";
-import type { GetServerSidePropsContext, NextApiRequest } from "next";
 import type { Session } from "next-auth";
 
 type Maybe<T> = T | null | undefined;
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 export type SessionContext = {
-  req?: NextApiRequest | GetServerSidePropsContext["req"];
+  req?: any | any["req"];
   locale?: string;
   session?: Session | null;
 };

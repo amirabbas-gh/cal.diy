@@ -17,10 +17,11 @@ import { useNuqsParams } from "@lib/hooks/useNuqsParams";
 import type { WithLocaleProps } from "@lib/withLocale";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { dir } from "i18next";
+// TODO: port or remove this `next/app` import for TanStack Start — https://tanstack.com/start/latest/docs/framework/react/migrate-from-next-js
 import type { AppProps as NextAppProps, AppProps as NextJsAppProps } from "next/app";
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import { appWithTranslation } from "next-i18next";
+import { appWithTranslation } from "react-i18next";
 import type { SSRConfig } from "next-i18next/dist/types/types";
 import { ThemeProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/pages";

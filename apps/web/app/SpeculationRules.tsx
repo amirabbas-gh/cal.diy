@@ -1,3 +1,4 @@
+// TODO: replace `next/script` with plain <script>/<head> or TanStack router head APIs as needed — https://tanstack.com/start/latest/docs/framework/react/migrate-from-next-js
 import Script from "next/script";
 
 export function SpeculationRules({

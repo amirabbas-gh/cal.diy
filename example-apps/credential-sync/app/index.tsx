@@ -1,0 +1,65 @@
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate, useSearch, useLocation } from "@tanstack/react-router";
+
+import { useEffect, useState } from "react";
+import { createFileRoute } from '@tanstack/react-router';
+
+function Index() {
+  const [data, setData] = useState("");
+  const router = useNavigate();
+  const searchParams = useSearch();
+  const pathname = useLocation().pathname;
+  const appSlug = searchParams?.get("appSlug");
+  const userId = searchParams?.get("userId");
+
+  useEffect(() => {
+    let isRedirectNeeded = false;
+    const newSearchParams = new URLSearchParams(new URL(document.URL).searchParams);
+    if (!userId) {
+      newSearchParams.set("userId", "1");
+      isRedirectNeeded = true;
+    }
+
+    if (!appSlug) {
+      newSearchParams.set("appSlug", "google-calendar");
+      isRedirectNeeded = true;
+    }
+
+    if (isRedirectNeeded) {
+      router({ to: `${pathname}?${newSearchParams.toString()}` });
+    }
+  }, [router, pathname, userId, appSlug]);
+
+  async function updateToken({ invalid } = { invalid: false }) {
+    const res = await fetch(
+      `/api/setTokenInCalCom?invalid=${invalid ? 1 : 0}&userId=${userId}&appSlug=${appSlug}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = await res.json();
+    setData(JSON.stringify(data));
+  }
+
+  return (
+    <div>
+      <h1>Welcome to Credential Sync Playground</h1>
+      <p>
+        You are managing credentials for cal.com <strong>userId={userId}</strong> for{" "}
+        <strong>appSlug={appSlug}</strong>. Update query params to manage a different user or app{" "}
+      </p>
+      <button onClick={() => updateToken({ invalid: true })}>Give an invalid token to Cal.diy</button>
+      <button onClick={() => updateToken()}>Give a valid token to Cal.diy</button>
+      <div>{data}</div>
+    </div>
+  );
+}
+
+export const Route = createFileRoute("/")({
+  component: Index,
+});

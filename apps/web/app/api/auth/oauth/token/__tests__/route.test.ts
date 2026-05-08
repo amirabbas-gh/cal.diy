@@ -1,8 +1,11 @@
+// TODO: Next.js pages/api route — convert the handler to TanStack Start server route handlers (Web Request/Response) — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import prismaMock from "@calcom/testing/lib/__mocks__/prismaMock";
 
 import jwt from "jsonwebtoken";
 // Import mocked dependencies after mocks are set up
-import { NextRequest } from "next/server";
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 
 import { generateSecret } from "@calcom/features/oauth/utils/generateSecret";
@@ -74,18 +77,18 @@ vi.mock("app/api/defaultResponderForAppDir", async () => {
   return {
     defaultResponderForAppDir:
       (
-        handler: (req: NextRequest, context: { params: Promise<Record<string, string>> }) => Promise<Response>
+        handler: (req: Request, context: { params: Promise<Record<string, string>> }) => Promise<Response>
       ) =>
-      async (req: NextRequest, context?: { params: Promise<Record<string, string>> }) => {
+      async (req: Request, context?: { params: Promise<Record<string, string>> }) => {
         try {
           const result = await handler(req, context || { params: Promise.resolve({}) });
           if (result) {
             return result;
           }
-          return NextResponse.json({});
+          return Response.json({});
         } catch (error: unknown) {
           const errorMessage = error instanceof Error ? error.message : "Internal server error";
-          return NextResponse.json(
+          return Response.json(
             {
               message: errorMessage,
             },
@@ -97,7 +100,7 @@ vi.mock("app/api/defaultResponderForAppDir", async () => {
 });
 
 vi.mock("app/api/parseRequestData", () => ({
-  parseUrlFormData: async (req: NextRequest): Promise<Record<string, string>> => {
+  parseUrlFormData: async (req: Request): Promise<Record<string, string>> => {
     const text = await req.text();
     const params = new URLSearchParams(text);
     return Object.fromEntries(params);
@@ -114,7 +117,7 @@ vi.stubEnv("CALENDSO_ENCRYPTION_KEY", "test_encryption_key");
 // Helper to create token exchange request
 function createTokenRequest(data: Record<string, string>) {
   const formData = new URLSearchParams(data);
-  const request = new NextRequest("http://localhost:3000/api/auth/oauth/token", {
+  const request = new Request("http://localhost:3000/api/auth/oauth/token", {
     method: "POST",
     body: formData.toString(),
     headers: {

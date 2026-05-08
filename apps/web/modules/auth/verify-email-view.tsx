@@ -1,7 +1,10 @@
 "use client";
 
 import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import posthog from "posthog-js";
 import { useEffect } from "react";
 
@@ -40,7 +43,7 @@ const EMAIL_CLIENTS = [
 function VerifyEmailPage() {
   const { data } = useEmailVerifyCheck();
   const { data: session } = useSession();
-  const router = useRouter();
+  const router = useNavigate();
   const { t, isLocaleReady } = useLocale();
   const mutation = trpc.viewer.auth.resendVerifyEmail.useMutation();
   const flags = useFlagMap();
@@ -51,7 +54,7 @@ function VerifyEmailPage() {
         onboarding_v3_enabled: flags["onboarding-v3"],
       });
       const gettingStartedPath = flags["onboarding-v3"] ? "/onboarding/getting-started" : "/getting-started";
-      router.replace(gettingStartedPath);
+      router({ to: gettingStartedPath, replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.isVerified, flags]);

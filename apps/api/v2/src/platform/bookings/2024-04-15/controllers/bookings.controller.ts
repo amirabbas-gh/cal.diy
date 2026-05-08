@@ -44,7 +44,6 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { ApiQuery, ApiExcludeController as DocsExcludeController } from "@nestjs/swagger";
 import { Request } from "express";
-import { NextApiRequest } from "next/types";
 import { v4 as uuidv4 } from "uuid";
 import { CreateBookingInput_2024_04_15 } from "@/platform/bookings/2024-04-15/inputs/create-booking.input";
 import { CreateRecurringBookingInput_2024_04_15 } from "@/platform/bookings/2024-04-15/inputs/create-recurring-booking.input";
@@ -101,6 +100,7 @@ const DEFAULT_PLATFORM_PARAMS = {
   areCalendarEventsEnabled: false,
 };
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 @Controller({
   path: "/v2/bookings",
   version: [VERSION_2024_04_15, VERSION_2024_06_11, VERSION_2024_06_14],
@@ -526,7 +526,7 @@ export class BookingsController_2024_04_15 {
     oAuthClientId?: string,
     platformBookingLocation?: string,
     isEmbed?: string
-  ): Promise<NextApiRequest & { userId?: number; userUuid?: string } & OAuthRequestParams> {
+  ): Promise<any & { userId?: number; userUuid?: string } & OAuthRequestParams> {
     const requestId = req.get("X-Request-Id");
     const clone = { ...req };
     const owner = clone.body.rescheduleUid
@@ -559,7 +559,8 @@ export class BookingsController_2024_04_15 {
     if (oAuthClientId) {
       await this.setPlatformAttendeesEmails(clone.body, oAuthClientId);
     }
-    return clone as unknown as NextApiRequest & { userId?: number; userUuid?: string } & OAuthRequestParams;
+    // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+    return clone as unknown as any & { userId?: number; userUuid?: string } & OAuthRequestParams;
   }
 
   async setPlatformAttendeesEmails(

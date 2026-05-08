@@ -1,4 +1,3 @@
-import Link from "next/link";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { useUrlMatchesCurrentUrl } from "@calcom/lib/hooks/useUrlMatchesCurrentUrl";
@@ -7,6 +6,7 @@ import classNames from "@calcom/ui/classNames";
 import { Avatar } from "../../avatar";
 import { Icon } from "../../icon";
 import type { IconName } from "../../icon";
+import { Link } from '@tanstack/react-router';
 
 export type HorizontalTabItemProps = {
   name: string;
@@ -45,9 +45,9 @@ const HorizontalTabItem = function ({
         }
       }}
       key={name}
-      href={href}
-      shallow={linkShallow}
-      scroll={linkScroll}
+      to={href}
+
+      resetScroll={linkScroll}
       aria-disabled={props.disabled ? "true" : undefined}
       className={classNames(
         isCurrent ? "bg-subtle text-emphasis" : "hover:bg-cal-muted hover:text-default text-subtle",

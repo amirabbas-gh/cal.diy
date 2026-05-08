@@ -1,0 +1,16 @@
+{
+  "fonts": [
+    {
+      "importSource": "next/font/google",
+      "family": "Inter",
+      "packageKey": "inter",
+      "variable": "--font-sans"
+    },
+    {
+      "importSource": "next/font/local",
+      "family": "calFont",
+      "packageKey": "cal-font",
+      "variable": "--font-cal"
+    }
+  ]
+}

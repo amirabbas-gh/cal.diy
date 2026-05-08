@@ -18,7 +18,6 @@ import type { TrpcSessionUser } from "@calcom/trpc/server/types";
 import type { JsonValue } from "@calcom/types/Json";
 import { TRPCError } from "@trpc/server";
 import { keyBy } from "lodash";
-import type { GetServerSidePropsContext, NextApiResponse } from "next";
 import { type TUpdateProfileInputSchema, updateUserMetadataAllowedKeys } from "./updateProfile.schema";
 
 const getBillingProviderService = async (..._args: unknown[]) => ({
@@ -30,10 +29,11 @@ const getBillingProviderService = async (..._args: unknown[]) => ({
 const updateNewTeamMemberEventTypes = async (..._args: unknown[]) => {};
 
 const log = logger.getSubLogger({ prefix: ["updateProfile"] });
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 type UpdateProfileOptions = {
   ctx: {
     user: NonNullable<TrpcSessionUser>;
-    res?: NextApiResponse | GetServerSidePropsContext["res"];
+    res?: any | any["res"];
   };
   input: TUpdateProfileInputSchema;
 };

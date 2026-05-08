@@ -8,10 +8,10 @@ import { trpc } from "@calcom/trpc/react";
 import { Button } from "@calcom/ui/components/button";
 import { Spinner } from "@calcom/ui/components/icon";
 import { showToast } from "@calcom/ui/components/toast";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import z from "zod";
+import { Link } from '@tanstack/react-router';
 
 type PaymentPageProps = {
   payment: {
@@ -125,7 +125,7 @@ export const AlbyPaymentComponent = (props: IAlbyPaymentComponentProps) => {
               </div>
               <p className="text-sm">Click or scan the invoice below to pay</p>
               <Link
-                href={`lightning:${paymentRequest}`}
+                to={`lightning:${paymentRequest}`}
                 className="inline-flex items-center justify-center rounded-2xl border border-transparent bg-white p-2 font-medium text-black shadow-sm hover:brightness-95 focus:outline-none focus:ring-offset-2">
                 <QRCode size={192} value={paymentRequest} />
               </Link>
@@ -138,14 +138,14 @@ export const AlbyPaymentComponent = (props: IAlbyPaymentComponentProps) => {
                 StartIcon={isCopied ? "clipboard-check" : "clipboard"}>
                 Copy Invoice
               </Button>
-              <Link target="_blank" href="https://getalby.com" className="link mt-4 text-sm underline">
+              <a target="_blank" href="https://getalby.com" className="link mt-4 text-sm underline">
                 Don&apos;t have a lightning wallet?
-              </Link>
+              </a>
             </>
           )}
         </>
       )}
-      <Link target="_blank" href="https://getalby.com">
+      <a target="_blank" href="https://getalby.com">
         <div className="mt-4 flex items-center text-sm">
           Powered by&nbsp;
           <img title="Alby" src="/app-store/alby/logo.svg" alt="Alby" className="h-8 dark:hidden" />
@@ -156,7 +156,7 @@ export const AlbyPaymentComponent = (props: IAlbyPaymentComponentProps) => {
             className="hidden h-8 dark:block"
           />
         </div>
-      </Link>
+      </a>
     </div>
   );
 };

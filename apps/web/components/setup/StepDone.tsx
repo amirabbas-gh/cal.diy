@@ -1,4 +1,7 @@
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import type { Dispatch, SetStateAction } from "react";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -9,7 +12,7 @@ const StepDone = (props: {
   nextStepPath: string;
   setIsPending: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const router = useRouter();
+  const router = useNavigate();
   const { t } = useLocale();
 
   return (
@@ -20,7 +23,7 @@ const StepDone = (props: {
       onSubmit={(e) => {
         props.setIsPending(true);
         e.preventDefault();
-        router.replace(props.nextStepPath);
+        router({ to: props.nextStepPath, replace: true });
       }}>
       <div className="min-h-36 my-6 flex flex-col items-center justify-center">
         <div className="dark:bg-default flex h-[72px] w-[72px] items-center justify-center rounded-full bg-gray-600">

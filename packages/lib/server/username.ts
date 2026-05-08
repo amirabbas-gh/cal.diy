@@ -1,4 +1,5 @@
-import type { NextResponse } from "next/server";
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 
 import { ErrorCode } from "@calcom/lib/errorCodes";
 import { ErrorWithCode } from "@calcom/lib/errors";
@@ -35,7 +36,7 @@ export type CustomNextApiHandler = (
   body: Record<string, string>,
   usernameStatus: UsernameStatus,
   query?: Record<string, string>
-) => Promise<NextResponse<any>>;
+) => Promise<Response<any>>;
 
 export async function isBlacklisted(username: string) {
   // NodeJS forEach is very, very fast (these days) so even though we only have to construct the Set

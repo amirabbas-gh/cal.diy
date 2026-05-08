@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import queue from "queue";
 
 import dayjs from "@calcom/dayjs";
@@ -37,7 +36,8 @@ const getOuraSleepScore = async (user_id: string, bedtime_start: Date) => {
  * @param req
  * @param res
  */
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export default async function handler(req: any, res: any) {
   try {
     if (req.method !== "POST") {
       throw new HttpCode({ statusCode: 405, message: "Method Not Allowed" });

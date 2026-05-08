@@ -1,7 +1,8 @@
 "use client";
 
  
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import React, { useEffect, useState } from "react";
 import { Toaster } from "sonner";
 
@@ -24,7 +25,7 @@ export function WizardLayout({
 } & { maxSteps?: number; currentStep?: number; isOptionalCallback?: () => void; footer?: React.ReactNode }) {
   const { t, isLocaleReady } = useLocale();
   const [meta, setMeta] = useState({ title: "", subtitle: " " });
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const { title, subtitle } = meta;
 
   useEffect(() => {

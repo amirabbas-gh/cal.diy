@@ -3,13 +3,13 @@ import { checkRateLimitAndThrowError } from "@calcom/lib/checkRateLimitAndThrowE
 import { prisma } from "@calcom/prisma";
 import type { TrpcSessionUser } from "@calcom/trpc/server/types";
 import { TRPCError } from "@trpc/server";
-import type { GetServerSidePropsContext, NextApiResponse } from "next";
 import type { TAddSecondaryEmailInputSchema } from "./addSecondaryEmail.schema";
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 type AddSecondaryEmailOptions = {
   ctx: {
     user: NonNullable<TrpcSessionUser>;
-    res?: NextApiResponse | GetServerSidePropsContext["res"];
+    res?: any | any["res"];
   };
   input: TAddSecondaryEmailInputSchema;
 };

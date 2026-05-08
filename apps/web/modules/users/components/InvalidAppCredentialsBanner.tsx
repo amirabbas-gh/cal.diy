@@ -2,7 +2,10 @@ import type { InvalidAppCredentialBannerProps } from "@calcom/features/users/typ
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import type { RouterOutputs } from "@calcom/trpc/react";
 import { TopBanner } from "@calcom/ui/components/top-banner";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 
 export type InvalidAppCredentialBannersProps = {
   data: RouterOutputs["viewer"]["me"]["getUserTopBanners"]["invalidAppCredentialBanners"];
@@ -26,10 +29,10 @@ export type { InvalidAppCredentialBannerProps };
 
 export function InvalidAppCredentialBanner({ name, slug }: InvalidAppCredentialBannerProps) {
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
 
   const handleClick = () => {
-    router.push(`/apps/${slug}`);
+    router({ to: "/apps/$slug", params: { slug } });
   };
 
   return (

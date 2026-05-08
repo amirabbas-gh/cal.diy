@@ -12,12 +12,12 @@ import { DialogContent } from "@calcom/ui/components/dialog";
 import { EmptyScreen } from "@calcom/ui/components/empty-screen";
 import { showToast } from "@calcom/ui/components/toast";
 import { revalidateEventTypeEditPage } from "@calcom/web/app/(use-page-wrapper)/event-types/[type]/actions";
-import Link from "next/link";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { WebhookForm } from "~/webhooks/components";
 import WebhookListItem from "~/webhooks/components/WebhookListItem";
 import type { TWebhook, WebhookFormSubmitData } from "~/webhooks/components/WebhookForm";
+import { Link } from '@tanstack/react-router';
 
 export const EventWebhooksTab = ({ eventType }: Pick<EventTypeSetupProps, "eventType">) => {
   const { t } = useLocale();
@@ -187,7 +187,7 @@ export const EventWebhooksTab = ({ eventType }: Pick<EventTypeSetupProps, "event
                         <Link
                           key="edit_or_manage_webhooks"
                           className="cursor-pointer font-semibold underline"
-                          href="/settings/developer/webhooks">
+                          to="/settings/developer/webhooks">
                           webhooks settings
                         </Link>,
                       ]}

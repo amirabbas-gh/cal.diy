@@ -1,5 +1,8 @@
 import { type TFunction } from "i18next";
-import { cookies, headers } from "next/headers";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getCookies, getHeaders } from "@tanstack/start/server";
+
 
 import { getLocale } from "@calcom/features/auth/lib/getLocale";
 import type { AppImageProps, MeetingImageProps } from "@calcom/lib/OgImages";
@@ -13,7 +16,7 @@ import { truncateOnWord } from "@calcom/lib/text";
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 
 export const getTranslate = async () => {
-  const locale = await getLocale(buildLegacyRequest(await headers(), await cookies()));
+  const locale = await getLocale(buildLegacyRequest(new Headers(Object.entries(getHeaders()).map(([k, v]) => [k, Array.isArray(v) ? v.join(", ") : String(v ?? "")] as [string, string])), { getAll: () => Object.entries(getCookies()).map(([name, value]) => ({ name, value: String(value ?? "") })) }));
 
   return await getTranslation(locale ?? "en", "common");
 };

@@ -1,4 +1,3 @@
-import type { NextApiRequest } from "next";
 import { z } from "zod";
 
 const utmTrackingDataSchema = z.object({
@@ -30,9 +29,10 @@ export type TrackingData = {
   utmData?: UtmTrackingData;
 };
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 export function getTrackingFromCookies(
-  cookies?: NextApiRequest["cookies"],
-  query?: NextApiRequest["query"]
+  cookies?: any["cookies"],
+  query?: any["query"]
 ): TrackingData {
   const tracking: TrackingData = {};
 

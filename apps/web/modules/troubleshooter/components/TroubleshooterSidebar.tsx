@@ -1,4 +1,3 @@
-import Link from "next/link";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { Skeleton } from "@calcom/ui/components/skeleton";
@@ -7,11 +6,12 @@ import { ArrowLeftIcon } from "@coss/ui/icons";
 import { CalendarToggleContainer } from "./CalendarToggleContainer";
 import { EventScheduleItem } from "./EventScheduleItem";
 import { EventTypeSelect } from "./EventTypeSelect";
+import { Link } from '@tanstack/react-router';
 
 const BackButtonInSidebar = ({ name }: { name: string }) => {
   return (
     <Link
-      href="/availability"
+      to="/availability"
       className="hover:bg-subtle group-hover:text-default text-emphasis group flex h-6 max-h-6 w-full flex-row items-center rounded-md px-3 py-2 transition">
       <ArrowLeftIcon className="h-4 w-4 stroke-[2px] ltr:mr-[10px] rtl:ml-[10px] rtl:rotate-180 md:mt-0" />
       <Skeleton

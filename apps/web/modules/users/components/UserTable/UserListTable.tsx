@@ -29,7 +29,8 @@ import {
   type HeaderContext,
   useReactTable,
 } from "@tanstack/react-table";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import { useSession } from "next-auth/react";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import posthog from "posthog-js";
@@ -159,7 +160,7 @@ type UserListTableProps = {
 };
 
 function UserListTable(props: UserListTableProps): JSX.Element | null {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   if (!pathname) return null;
   return (
     <DataTableProvider tableIdentifier={pathname} useSegments={useSegments} defaultPageSize={25}>

@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 
 import { symmetricEncrypt } from "@calcom/lib/crypto";
@@ -18,7 +17,8 @@ const bodySchema = z
   })
   .strict();
 
-async function postHandler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function postHandler(req: any, res: any) {
   const body = bodySchema.parse(req.body);
   // Get user
   const user = await prisma.user.findFirstOrThrow({

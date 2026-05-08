@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Fragment } from "react";
 import posthog from "posthog-js";
 
@@ -8,6 +7,7 @@ import classNames from "@calcom/ui/classNames";
 
 import { Icon } from "../../icon";
 import type { IconName } from "../../icon";
+import { Link } from '@tanstack/react-router';
 
 export type VerticalTabItemProps = {
   name: string;
@@ -62,9 +62,9 @@ const VerticalTabItem = ({
               }
             }}
             key={name}
-            href={href}
-            shallow={linkShallow}
-            scroll={linkScroll}
+            to={href}
+
+            resetScroll={linkScroll}
             aria-disabled={props.disabled ? "true" : undefined}
             target={props.isExternalLink ? "_blank" : "_self"}
             className={classNames(

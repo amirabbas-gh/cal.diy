@@ -4,7 +4,6 @@ import { IS_STRIPE_ENABLED, WEBAPP_URL } from "@calcom/lib/constants";
 import { prisma } from "@calcom/prisma";
 import { CreationSource, MembershipRole } from "@calcom/prisma/enums";
 import { userMetadata } from "@calcom/prisma/zod-utils";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 
 const verifySchema = z.object({
@@ -25,7 +24,8 @@ export async function moveUserToMatchingOrg({ email }: { email: string }) {
   ({});
 }
 
-export async function handler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export async function handler(req: any, res: any) {
   const { token } = verifySchema.parse(req.query);
 
   const foundToken = await prisma.verificationToken.findFirst({

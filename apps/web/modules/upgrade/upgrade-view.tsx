@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useNavigate } from "@tanstack/react-router";
+
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import type { RouterOutputs } from "@calcom/trpc/react";
@@ -18,7 +19,7 @@ export type OrgUpgradeBannerProps = {
 export default function UpgradePage() {
   const { t } = useLocale();
 
-  const router = useRouter();
+  const router = useNavigate();
   const publishOrgMutation = { mutate: (..._args: unknown[]) => {}, mutateAsync: async () => ({}), isPending: false };
 
 

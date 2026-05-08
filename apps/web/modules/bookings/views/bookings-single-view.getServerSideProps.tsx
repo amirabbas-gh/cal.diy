@@ -13,7 +13,6 @@ import { customInputSchema } from "@calcom/prisma/zod-utils";
 import { meRouter } from "@calcom/trpc/server/routers/viewer/me/_router";
 import type { inferSSRProps } from "@lib/types/inferSSRProps";
 import { createRouterCaller } from "app/_trpc/context";
-import type { GetServerSidePropsContext } from "next";
 import { z } from "zod";
 
 const stringToBoolean = z
@@ -36,7 +35,8 @@ const querySchema = z.object({
 
 export type PageProps = inferSSRProps<typeof getServerSideProps>;
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export async function getServerSideProps(context: any) {
   // this is needed to prevent bundling of lib/booking to the client bundle
   // usually functions that are used in getServerSideProps are tree shaken from client bundle
   // but not in case when they are exported. So we have to dynamically load them, or to copy paste them to the /future/page.

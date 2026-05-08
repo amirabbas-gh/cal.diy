@@ -1,4 +1,5 @@
-import { unstable_cache } from "next/cache";
+
+// TODO: next/cache migration (R4e): wire `queryClient` through QueryClientProvider or your app root; every `invalidateQueries({ queryKey })` must match a real `useQuery` key; former `unstable_cache` TTL/tags → `staleTime` / gcTime / loaders; if you relied on `unstable_noStore`, use `staleTime: 0` (or refetch) for that data — https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation
 import { z } from "zod";
 
 import prisma from "@calcom/prisma";
@@ -29,10 +30,7 @@ const computeInstallCountsFromDB = async (): Promise<Record<string, number>> => 
 };
 
 const getInstallCountPerApp = async (): Promise<Record<string, number>> => {
-  return unstable_cache(async () => computeInstallCountsFromDB(), ["app-install-counts"], {
-    revalidate: 300,
-    tags: ["app-install-counts"],
-  })();
+  return async () => computeInstallCountsFromDB()();
 };
 
 export default getInstallCountPerApp;

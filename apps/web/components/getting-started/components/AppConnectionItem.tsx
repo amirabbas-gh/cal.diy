@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { useState } from "react";
 import posthog from "posthog-js";
 
@@ -12,6 +11,7 @@ import { Badge } from "@calcom/ui/components/badge";
 import { Button } from "@calcom/ui/components/button";
 import { showToast } from "@calcom/ui/components/toast";
 import { ArrowRightIcon, CircleAlertIcon } from "@coss/ui/icons";
+import { Link } from '@tanstack/react-router';
 
 interface IAppConnectionItem {
   title: string;
@@ -94,7 +94,7 @@ const AppConnectionItem = (props: IAppConnectionItem) => {
                           <div>
                             <>
                               <Link
-                                href={`${WEBAPP_URL}/getting-started/connected-calendar`}
+                                to={`${WEBAPP_URL}/getting-started/connected-calendar`}
                                 className="flex items-center text-xs underline">
                                 <span className="mr-1">
                                   {t("connect_app", { dependencyName: dependency.name })}

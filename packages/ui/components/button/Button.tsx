@@ -1,7 +1,7 @@
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
+// TODO: this `next/link` import survived the codemod — port to @tanstack/react-router or unpic manually — https://tanstack.com/router/latest/docs/framework/react/routing/routing-concepts
 import type { LinkProps } from "next/link";
-import Link from "next/link";
 import React, { forwardRef } from "react";
 
 import classNames from "@calcom/ui/classNames";
@@ -9,6 +9,7 @@ import classNames from "@calcom/ui/classNames";
 import { Icon } from "../icon/Icon";
 import type { IconName } from "../icon/Icon";
 import { Tooltip } from "../tooltip/Tooltip";
+import { Link } from '@tanstack/react-router';
 
 type InferredVariantProps = VariantProps<typeof buttonClasses>;
 
@@ -332,7 +333,7 @@ export const Button = forwardRef<HTMLAnchorElement | HTMLButtonElement, ButtonPr
     return (
       <Link
         {...(passThroughProps as Omit<JSX.IntrinsicElements["a"], "href" | "onClick" | "ref"> & LinkProps)}
-        shallow={shallow && shallow}
+
         className={buttonClassName}
         onClick={handleClick}>
         {buttonContent}

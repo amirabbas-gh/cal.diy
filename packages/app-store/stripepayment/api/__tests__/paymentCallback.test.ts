@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import sendVerificationRequest from "@calcom/features/auth/lib/sendVerificationRequest";
@@ -39,8 +38,10 @@ const mockPrisma = prisma as unknown as {
 };
 
 describe("paymentCallback", () => {
-  let mockReq: Partial<NextApiRequest>;
-  let mockRes: Partial<NextApiResponse>;
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+  let mockReq: Partial<any>;
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+  let mockRes: Partial<any>;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -96,7 +97,8 @@ describe("paymentCallback", () => {
     it("should call VerificationTokenService.create with correct parameters", async () => {
       const { default: handler } = await import("../paymentCallback");
 
-      await handler(mockReq as NextApiRequest, mockRes as NextApiResponse);
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+      await handler(mockReq as any, mockRes as any);
 
       expect(mockVerificationTokenServiceCreate).toHaveBeenCalledWith({
         identifier: "test@example.com",
@@ -116,7 +118,8 @@ describe("paymentCallback", () => {
     it("should send verification email with token from service", async () => {
       const { default: handler } = await import("../paymentCallback");
 
-      await handler(mockReq as NextApiRequest, mockRes as NextApiResponse);
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+      await handler(mockReq as any, mockRes as any);
 
       expect(mockSendVerificationRequest).toHaveBeenCalledWith({
         identifier: "test@example.com",
@@ -137,7 +140,8 @@ describe("paymentCallback", () => {
         callOrder.push("send-email");
       });
 
-      await handler(mockReq as NextApiRequest, mockRes as NextApiResponse);
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+      await handler(mockReq as any, mockRes as any);
 
       expect(callOrder).toEqual(["create-token", "send-email"]);
     });
@@ -156,7 +160,8 @@ describe("paymentCallback", () => {
 
       const { default: handler } = await import("../paymentCallback");
 
-      await handler(mockReq as NextApiRequest, mockRes as NextApiResponse);
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+      await handler(mockReq as any, mockRes as any);
 
       expect(mockVerificationTokenServiceCreate).not.toHaveBeenCalled();
       expect(mockSendVerificationRequest).not.toHaveBeenCalled();
@@ -175,7 +180,8 @@ describe("paymentCallback", () => {
 
       const { default: handler } = await import("../paymentCallback");
 
-      await handler(mockReq as NextApiRequest, mockRes as NextApiResponse);
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+      await handler(mockReq as any, mockRes as any);
 
       expect(mockVerificationTokenServiceCreate).toHaveBeenCalledWith({
         identifier: "different@example.com", // Should use user.email from found user
@@ -197,7 +203,8 @@ describe("paymentCallback", () => {
         return "token";
       });
 
-      await handler(mockReq as NextApiRequest, mockRes as NextApiResponse);
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+      await handler(mockReq as any, mockRes as any);
 
       expect(callOrder).toEqual(["update-user", "create-token"]);
     });
@@ -205,7 +212,8 @@ describe("paymentCallback", () => {
     it("should redirect with correct parameters after successful payment", async () => {
       const { default: handler } = await import("../paymentCallback");
 
-      await handler(mockReq as NextApiRequest, mockRes as NextApiResponse);
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+      await handler(mockReq as any, mockRes as any);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const redirectUrl = (mockRes.redirect as any).mock.calls[0][0] as string;
@@ -223,7 +231,8 @@ describe("paymentCallback", () => {
       const { default: handler } = await import("../paymentCallback");
 
       try {
-        await handler(mockReq as NextApiRequest, mockRes as NextApiResponse);
+        // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+        await handler(mockReq as any, mockRes as any);
       } catch (error) {
         expect(error).toBeInstanceOf(HttpError);
         expect((error as HttpError).statusCode).toBe(404);
@@ -238,7 +247,8 @@ describe("paymentCallback", () => {
       const { default: handler } = await import("../paymentCallback");
 
       try {
-        await handler(mockReq as NextApiRequest, mockRes as NextApiResponse);
+        // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+        await handler(mockReq as any, mockRes as any);
       } catch (error) {
         expect(error).toBeInstanceOf(HttpError);
         expect((error as HttpError).statusCode).toBe(404);
@@ -259,7 +269,8 @@ describe("paymentCallback", () => {
 
       const { default: handler } = await import("../paymentCallback");
 
-      await handler(mockReq as NextApiRequest, mockRes as NextApiResponse);
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+      await handler(mockReq as any, mockRes as any);
 
       expect(mockVerificationTokenServiceCreate).toHaveBeenCalledWith({
         identifier: "test@example.com", // Should use user.email

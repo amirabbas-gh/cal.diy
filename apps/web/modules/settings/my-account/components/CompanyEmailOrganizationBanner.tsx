@@ -1,6 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import posthog from "posthog-js";
 
 import { useFlagMap } from "@calcom/features/flags/context/provider";
@@ -15,7 +18,7 @@ type CompanyEmailOrganizationBannerProps = {
 
 export const CompanyEmailOrganizationBanner = ({ onDismissAction }: CompanyEmailOrganizationBannerProps) => {
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
   const flags = useFlagMap();
 
   const handleLearnMore = () => {
@@ -25,7 +28,7 @@ export const CompanyEmailOrganizationBanner = ({ onDismissAction }: CompanyEmail
 
     posthog.capture("company_email_banner_upgrade_clicked");
 
-    router.push(redirectPath);
+    router({ to: redirectPath });
   };
 
   const handleDismiss = () => {

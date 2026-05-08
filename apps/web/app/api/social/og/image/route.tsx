@@ -1,5 +1,6 @@
-import { ImageResponse } from "next/og";
-import type { NextRequest } from "next/server";
+import { ImageResponse } from "@vercel/og";
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import type { SatoriOptions } from "satori";
 import { z, ZodError } from "zod";
 
@@ -31,7 +32,7 @@ const genericSchema = z.object({
   description: z.string(),
 });
 
-async function handler(req: NextRequest) {
+async function handler(req: Request) {
   const { searchParams } = req.nextUrl;
   const imageType = searchParams.get("type");
 

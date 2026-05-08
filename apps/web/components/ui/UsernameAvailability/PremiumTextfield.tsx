@@ -2,7 +2,10 @@ import classNames from "classnames";
 // eslint-disable-next-line no-restricted-imports
 import { noop } from "lodash";
 import { useSession } from "next-auth/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate, useSearch } from "@tanstack/react-router";
+
 import type { RefCallback } from "react";
 import { useEffect, useState } from "react";
 
@@ -53,9 +56,9 @@ const obtainNewUsernameChangeCondition = ({
 };
 
 const PremiumTextfield = (props: ICustomUsernameProps) => {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
+  const searchParams = useSearch();
+  const pathname = useLocation().pathname;
+  const router = useNavigate();
   const { t } = useLocale();
   const { update } = useSession();
   const {
@@ -233,7 +236,7 @@ const PremiumTextfield = (props: ICustomUsernameProps) => {
               const _searchParams = new URLSearchParams(searchParams ?? undefined);
               _searchParams.delete("paymentStatus");
               if (searchParams?.toString() !== _searchParams.toString()) {
-                router.replace(`${pathname}?${_searchParams.toString()}`);
+                router({ to: `${pathname}?${_searchParams.toString()}`, replace: true });
               }
               setInputUsernameValue(event.target.value);
             }}

@@ -16,7 +16,6 @@ import { Prisma } from "@calcom/prisma/client";
 import { EventTypeAutoTranslatedField, RRTimestampBasis, SchedulingType } from "@calcom/prisma/enums";
 import { eventTypeLocations } from "@calcom/prisma/zod-utils";
 import { TRPCError } from "@trpc/server";
-import type { GetServerSidePropsContext, NextApiResponse } from "next";
 import type { TrpcSessionUser } from "../../../../types";
 import { setDestinationCalendarHandler } from "../../../viewer/calendars/setDestinationCalendar.handler";
 import {
@@ -46,10 +45,11 @@ type User = {
   locale: string;
 };
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 type UpdateOptions = {
   ctx: {
     user: User;
-    res?: NextApiResponse | GetServerSidePropsContext["res"];
+    res?: any | any["res"];
     prisma: PrismaClient;
   };
   input: TUpdateInputSchema;
@@ -768,7 +768,8 @@ export const updateHandler = async ({ ctx, input }: UpdateOptions) => {
     });
   }
 
-  const res = ctx.res as NextApiResponse;
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+  const res = ctx.res as any;
   if (typeof res?.revalidate !== "undefined") {
     try {
       await res?.revalidate(`/${ctx.user.username}/${updatedEventType.slug}`);

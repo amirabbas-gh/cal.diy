@@ -5,10 +5,10 @@ import { getSafeRedirectUrl } from "@calcom/lib/getSafeRedirectUrl";
 import prisma from "@calcom/prisma";
 import { IS_GOOGLE_LOGIN_ENABLED } from "@server/lib/constants";
 import { jwtVerify } from "jose";
-import type { GetServerSidePropsContext } from "next";
 import { getCsrfToken } from "next-auth/react";
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export async function getServerSideProps(context: any) {
   const { req, query } = context;
 
   const session = await getServerSession({ req });

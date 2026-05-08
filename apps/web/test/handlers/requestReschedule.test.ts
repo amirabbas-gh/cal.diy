@@ -16,12 +16,13 @@ import { test } from "@calcom/testing/lib/fixtures/fixtures";
 import type { TRequestRescheduleInputSchema } from "@calcom/trpc/server/routers/viewer/bookings/requestReschedule.schema";
 import type { TrpcSessionUser } from "@calcom/trpc/server/types";
 import type { Request, Response } from "express";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { describe, expect } from "vitest";
 
-export type CustomNextApiRequest = NextApiRequest & Request;
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export type CustomNextApiRequest = any & Request;
 
-export type CustomNextApiResponse = NextApiResponse & Response;
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export type CustomNextApiResponse = any & Response;
 
 describe("Handler: requestReschedule", () => {
   setupAndTeardown();

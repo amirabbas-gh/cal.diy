@@ -1,7 +1,11 @@
+// TODO: Next.js pages/api route — convert the handler to TanStack Start server route handlers (Web Request/Response) — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import type { Params } from "app/_types";
+// TODO: port or remove this `next/dist/server/api-utils` import for TanStack Start — https://tanstack.com/start/latest/docs/framework/react/migrate-from-next-js
 import { ApiError } from "next/dist/server/api-utils";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
+
 
 import { HttpError } from "@calcom/lib/http-error";
 import { getServerErrorFromUnknown } from "@calcom/lib/server/getServerErrorFromUnknown";
@@ -10,16 +14,16 @@ import { performance } from "@calcom/lib/server/perfObserver";
 import { TRPCError } from "@trpc/server";
 import { getHTTPStatusCodeFromError } from "@trpc/server/http";
 
-type Handler<T extends NextResponse | Response = NextResponse> = (
-  req: NextRequest,
+type Handler<T extends Response | Response = Response> = (
+  req: Request,
   { params }: { params: Promise<Params> }
 ) => Promise<T>;
 
-export const defaultResponderForAppDir = <T extends NextResponse | Response = NextResponse>(
+export const defaultResponderForAppDir = <T extends Response | Response = Response>(
   handler: Handler<T>,
   endpointRoute?: string
 ) => {
-  return async (req: NextRequest, { params }: { params: Promise<Params> }) => {
+  return async (req: Request, { params }: { params: Promise<Params> }) => {
     let ok = false;
     try {
       performance.mark("Start");
@@ -36,7 +40,7 @@ export const defaultResponderForAppDir = <T extends NextResponse | Response = Ne
         return result;
       }
 
-      return NextResponse.json({});
+      return Response.json({});
     } catch (error) {
       let serverError: HttpError;
 
@@ -61,7 +65,7 @@ export const defaultResponderForAppDir = <T extends NextResponse | Response = Ne
         captureException(error);
       }
 
-      return NextResponse.json(
+      return Response.json(
         {
           message: serverError.message,
           url: serverError.url,

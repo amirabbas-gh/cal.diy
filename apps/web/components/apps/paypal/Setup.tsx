@@ -1,4 +1,7 @@
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useState } from "react";
 import { Toaster } from "sonner";
 
@@ -13,7 +16,7 @@ import { showToast } from "@calcom/ui/components/toast";
 export default function PayPalSetup() {
   const [newClientId, setNewClientId] = useState("");
   const [newSecretKey, setNewSecretKey] = useState("");
-  const router = useRouter();
+  const router = useNavigate();
   const { t } = useLocale();
   const integrations = trpc.viewer.apps.integrations.useQuery({ variant: "payment", appId: "paypal" });
   const [paypalPaymentAppCredentials] = integrations.data?.items || [];
@@ -22,7 +25,7 @@ export default function PayPalSetup() {
   const saveKeysMutation = trpc.viewer.apps.updateAppCredentials.useMutation({
     onSuccess: () => {
       showToast(t("keys_have_been_saved"), "success");
-      router.push("/event-types");
+      router({ to: "/event-types" });
     },
     onError: (error) => {
       showToast(error.message, "error");

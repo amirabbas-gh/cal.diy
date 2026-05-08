@@ -1,10 +1,10 @@
-import dynamic from "next/dynamic";
 
 import { formatPrice } from "@calcom/lib/currencyConversions";
 
 import type { EventPrice } from "@calcom/features/bookings/types";
+import { lazy } from 'react';
 
-const AlbyPriceComponent = dynamic(
+const AlbyPriceComponent = lazy(
   () => import("@calcom/app-store/alby/components/AlbyPriceComponent").then((m) => m.AlbyPriceComponent),
   {
     ssr: false,

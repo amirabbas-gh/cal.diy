@@ -1,5 +1,3 @@
-import type { NextApiRequest } from "next";
-
 import { symmetricEncrypt } from "@calcom/lib/crypto";
 import { HttpError } from "@calcom/lib/http-error";
 import logger from "@calcom/lib/logger";
@@ -9,7 +7,8 @@ import prisma from "@calcom/prisma";
 import checkSession from "../../_utils/auth";
 import getInstalledAppPath from "../../_utils/getInstalledAppPath";
 
-export async function getHandler(req: NextApiRequest) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export async function getHandler(req: any) {
   const session = checkSession(req);
 
   const { api_key } = req.body;

@@ -1,4 +1,3 @@
-import type { NextApiRequest } from "next";
 import { stringify } from "node:querystring";
 import { z } from "zod";
 
@@ -15,7 +14,8 @@ const feishuKeysSchema = z.object({
   app_secret: z.string(),
 });
 
-async function getHandler(req: NextApiRequest) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function getHandler(req: any) {
   const appKeys = await getAppKeysFromSlug("feishu-calendar");
   const { app_secret, app_id } = feishuKeysSchema.parse(appKeys);
 

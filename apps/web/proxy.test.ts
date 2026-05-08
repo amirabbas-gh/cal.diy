@@ -2,6 +2,7 @@
 
 import { WEBAPP_URL } from "@calcom/lib/constants";
 import { get as edgeConfigGet } from "@vercel/edge-config";
+// TODO: remaining `next/server` imports (`userAgent`, `after`, middleware-only `NextResponse` helpers, etc.) — complete the port to Web APIs and TanStack Start server routes — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import { NextRequest, NextResponse } from "next/server";
 import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

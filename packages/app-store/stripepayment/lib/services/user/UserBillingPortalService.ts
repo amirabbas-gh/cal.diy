@@ -1,5 +1,3 @@
-import type { NextApiResponse } from "next";
-
 import logger from "@calcom/lib/logger";
 
 import { getStripeCustomerIdFromUserId } from "../../customer";
@@ -8,6 +6,7 @@ import stripe from "../../server";
 /**
  * Billing portal service for individual users
  */
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 export class UserBillingPortalService {
   /**
    * Get customer ID for a user
@@ -19,7 +18,7 @@ export class UserBillingPortalService {
   /**
    * Process billing portal request for a user
    */
-  async processBillingPortal(userId: number, returnUrl: string, res: NextApiResponse): Promise<void> {
+  async processBillingPortal(userId: number, returnUrl: string, res: any): Promise<void> {
     const customerId = await this.getCustomerId(userId);
     if (!customerId) {
       res.status(404).json({ message: "CustomerId not found" });

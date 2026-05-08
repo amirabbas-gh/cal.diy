@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Fragment, useState } from "react";
 
 import { availabilityAsString } from "@calcom/lib/availability";
@@ -19,6 +18,7 @@ import {
 import { ConfirmationDialogContent } from "@calcom/ui/components/dialog";
 import { showToast } from "@calcom/ui/components/toast";
 import { GlobeIcon } from "@coss/ui/icons";
+import { Link } from '@tanstack/react-router';
 
 interface Schedule {
   id: number;
@@ -66,7 +66,7 @@ export function ScheduleListItem({
   return (
     <li key={schedule.id}>
       <div className="hover:bg-cal-muted flex items-center justify-between px-3 py-5 transition sm:px-4">
-        <Link href={redirectUrl} className="grow truncate text-sm" title={schedule.name}>
+        <Link to={redirectUrl} className="grow truncate text-sm" title={schedule.name}>
           <div className="space-x-2 rtl:space-x-reverse">
             <span className="text-emphasis truncate font-medium">{schedule.name}</span>
             {schedule.isDefault && (

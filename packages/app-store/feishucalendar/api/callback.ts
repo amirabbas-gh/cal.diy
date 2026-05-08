@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 
 import { getSafeRedirectUrl } from "@calcom/lib/getSafeRedirectUrl";
@@ -19,7 +18,8 @@ const callbackQuerySchema = z.object({
   code: z.string().min(1),
 });
 
-async function getHandler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function getHandler(req: any, res: any) {
   const { code } = callbackQuerySchema.parse(req.query);
   const state = decodeOAuthState(req);
 

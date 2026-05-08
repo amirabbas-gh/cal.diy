@@ -1,6 +1,6 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 
 import { getAppWithMetadata } from "@calcom/app-store/_appRegistry";
 import { shouldEnableApp } from "@calcom/app-store/_utils/validateAppKeys";
@@ -17,11 +17,11 @@ const log = logger.getSubLogger({
  * syncAppMeta makes sure any app metadata that has been replicated into the database
  * remains synchronized with any changes made to the app config files.
  */
-async function postHandler(request: NextRequest) {
+async function postHandler(request: Request) {
   const apiKey = request.headers.get("authorization") || request.nextUrl.searchParams.get("apiKey");
 
   if (process.env.CRON_API_KEY !== apiKey) {
-    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    return Response.json({ message: "Not authenticated" }, { status: 401 });
   }
 
   log.info(`🧐 Checking DB apps are in-sync with app metadata`);
@@ -73,7 +73,7 @@ async function postHandler(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true });
+  return Response.json({ ok: true });
 }
 
 export const POST = defaultResponderForAppDir(postHandler);

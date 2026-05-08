@@ -23,10 +23,10 @@ import {
   SettingsIcon,
   UserIcon,
 } from "@coss/ui/icons";
-import Link from "next/link";
 import { signOut } from "next-auth/react";
 import type { MouseEvent } from "react";
 import { useEffect, useState } from "react";
+import { Link } from '@tanstack/react-router';
 
 declare global {
   interface Window {
@@ -162,15 +162,15 @@ export function UserDropdown({ small }: UserDropdownProps) {
       <>
         <MenuPopup align="start">
           <>
-            <MenuItem render={<Link href="/settings/my-account/profile" />}>
+            <MenuItem render={<Link to="/settings/my-account/profile" />}>
               <UserIcon />
               {t("my_profile")}
             </MenuItem>
-            <MenuItem render={<Link href="/settings/my-account/general" />}>
+            <MenuItem render={<Link to="/settings/my-account/general" />}>
               <SettingsIcon />
               {t("my_settings")}
             </MenuItem>
-            <MenuItem render={<Link href="/settings/my-account/out-of-office" />}>
+            <MenuItem render={<Link to="/settings/my-account/out-of-office" />}>
               <MoonIcon />
               {t("out_of_office")}
             </MenuItem>

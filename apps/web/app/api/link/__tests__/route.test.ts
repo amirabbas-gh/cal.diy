@@ -1,5 +1,8 @@
+// TODO: Next.js pages/api route — convert the handler to TanStack Start server route handlers (Web Request/Response) — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import { confirmHandler } from "@calcom/trpc/server/routers/viewer/bookings/confirm.handler";
-import type { NextRequest } from "next/server";
+
+// TODO: next/server migration (R4h): confirm `Request`/`Response` types match your runtime; port remaining `next/server` helpers — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -7,8 +10,8 @@ const mockConfirmHandler = confirmHandler as unknown as Mock<typeof confirmHandl
 
 vi.mock("app/api/defaultResponderForAppDir", () => ({
   defaultResponderForAppDir:
-    (handler: (req: NextRequest) => Promise<Response>) =>
-    (req: NextRequest, _context: { params: Promise<Record<string, string>> }) =>
+    (handler: (req: Request) => Promise<Response>) =>
+    (req: Request, _context: { params: Promise<Record<string, string>> }) =>
       handler(req),
 }));
 
@@ -86,7 +89,7 @@ import prisma from "@calcom/prisma";
 // Import after mocks are set up
 import { GET } from "../route";
 
-const createMockRequest = (url: string): NextRequest => {
+const createMockRequest = (url: string): Request => {
   const urlObj = new URL(url);
   return {
     method: "GET",
@@ -94,7 +97,7 @@ const createMockRequest = (url: string): NextRequest => {
     nextUrl: {
       searchParams: urlObj.searchParams,
     },
-  } as unknown as NextRequest;
+  } as unknown as Request;
 };
 
 // Vitest sets NEXT_PUBLIC_WEBAPP_URL to http://app.cal.local:3000 (see vitest.config.mts)

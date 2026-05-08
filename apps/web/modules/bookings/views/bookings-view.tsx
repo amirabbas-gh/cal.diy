@@ -3,9 +3,9 @@
 import { ColumnFilterType, type SystemFilterSegment } from "@calcom/features/data-table";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import classNames from "@calcom/ui/classNames";
-import dynamic from "next/dynamic";
-import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
+import { useCallback, useMemo, lazy } from "react";
 import { DataTableProvider } from "~/data-table/DataTableProvider";
 import { useSegments } from "~/data-table/hooks/useSegments";
 import { BookingListContainer } from "../components/BookingListContainer";
@@ -13,7 +13,7 @@ import { useActiveFiltersValidator } from "../hooks/useActiveFiltersValidator";
 import { useBookingsView } from "../hooks/useBookingsView";
 import type { validStatuses } from "../lib/validStatuses";
 
-const BookingCalendarContainer = dynamic(() =>
+const BookingCalendarContainer = lazy(() =>
   import("../components/BookingCalendarContainer").then((mod) => ({
     default: mod.BookingCalendarContainer,
   }))
@@ -58,7 +58,7 @@ function useSystemSegments(userId?: number) {
 }
 
 export default function Bookings(props: BookingsProps) {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const systemSegments = useSystemSegments(props.userId);
   const validateActiveFilters = useActiveFiltersValidator({
     canReadOthersBookings: props.permissions.canReadOthersBookings,

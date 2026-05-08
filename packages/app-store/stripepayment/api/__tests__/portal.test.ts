@@ -1,5 +1,4 @@
 import { WEBAPP_URL } from "@calcom/lib/constants";
-import type { NextApiRequest } from "next";
 import type { Session } from "next-auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -20,7 +19,8 @@ vi.mock("@calcom/prisma", () => ({
 
 const mockCustomerModule = vi.mocked(customerModule);
 
-interface RequestWithSession extends NextApiRequest {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+interface RequestWithSession extends any {
   session?: Session | null;
 }
 
@@ -40,13 +40,15 @@ describe("Portal API - Service-Based Architecture", () => {
         } as Session,
       } as RequestWithSession;
 
-      const result = validateAuthentication(req as NextApiRequest);
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+      const result = validateAuthentication(req as any);
 
       expect(result).toEqual({ id: 123 });
     });
 
     it("should return null when session is missing", () => {
-      const req = {} as NextApiRequest;
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+      const req = {} as any;
 
       const result = validateAuthentication(req);
 
@@ -63,7 +65,8 @@ describe("Portal API - Service-Based Architecture", () => {
         } as Session,
       } as RequestWithSession;
 
-      const result = validateAuthentication(req as NextApiRequest);
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+      const result = validateAuthentication(req as any);
 
       expect(result).toBeNull();
     });

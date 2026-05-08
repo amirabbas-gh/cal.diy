@@ -1,7 +1,7 @@
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import type { RouterOutputs } from "@calcom/trpc/react";
 import { TopBanner } from "@calcom/ui/components/top-banner";
-import Link from "next/link";
+import { Link } from '@tanstack/react-router';
 
 export type CalendarCredentialBannerProps = {
   data: RouterOutputs["viewer"]["me"]["getUserTopBanners"]["calendarCredentialBanner"];
@@ -18,7 +18,7 @@ function CalendarCredentialBanner({ data }: CalendarCredentialBannerProps) {
         text={`${t("something_went_wrong")} ${t("calendar_error")}`}
         variant="error"
         actions={
-          <Link href="/apps/installed/calendar" className="border-b border-b-black">
+          <Link to="/apps/installed/calendar" className="border-b border-b-black">
             {t("check_here")}
           </Link>
         }

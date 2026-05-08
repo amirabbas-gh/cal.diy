@@ -6,9 +6,13 @@ import useIsThemeSupported from "@lib/hooks/useIsThemeSupported";
 import { useNuqsParams } from "@lib/hooks/useNuqsParams";
 import type { WithLocaleProps } from "@lib/withLocale";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
+// TODO: port or remove this `next/app` import for TanStack Start — https://tanstack.com/start/latest/docs/framework/react/migrate-from-next-js
 import type { AppProps as NextAppProps } from "next/app";
-import type { ReadonlyURLSearchParams } from "next/navigation";
-import { usePathname, useSearchParams } from "next/navigation";
+// TODO: remaining `next/navigation` usage was not auto-ported (e.g. `notFound`, `useSelectedLayoutSegments`, `router.prefetch`, multi-arg `redirect`, or redirects in components) — move auth to route loaders when possible — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { ReadonlyURLSearchParams } from "next/navigation";
+
+import { useLocation, useSearch } from "@tanstack/react-router";
+
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
@@ -53,10 +57,10 @@ const CalcomThemeProvider = (props: CalcomThemeProps) => {
   // Use namespace of embed to ensure same namespaced embed are displayed with same theme. This allows different embeds on the same website to be themed differently
   // One such example is our Embeds Demo and Testing page at http://localhost:3100
   // Having `getEmbedNamespace` defined on window before react initializes the app, ensures that embedNamespace is available on the first mount and can be used as part of storageKey
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
   const embedNamespace = searchParams ? getEmbedNamespace(searchParams) : null;
   const isEmbedMode = typeof embedNamespace === "string";
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const { key, ...themeProviderProps } = getThemeProviderProps({
     props,
     isEmbedMode,
