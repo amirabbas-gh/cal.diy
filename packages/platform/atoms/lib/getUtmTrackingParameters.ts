@@ -1,4 +1,6 @@
-import type { ReadonlyURLSearchParams } from "next/navigation";
+// TODO: ReadonlyURLSearchParams — narrow to TanStack Route search types (best-effort alias): https://tanstack.com/router/latest/docs/framework/react/guide/search-params
+type ReadonlyURLSearchParams = URLSearchParams;
+
 
 export function getUtmTrackingParameters(searchParams: ReadonlyURLSearchParams | null) {
   if (!searchParams) return undefined;

@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 
 import notEmpty from "@calcom/lib/notEmpty";
@@ -6,7 +5,8 @@ import { isPremiumUserName, generateUsernameSuggestion } from "@calcom/lib/serve
 import slugify from "@calcom/lib/slugify";
 import prisma from "@calcom/prisma";
 
-export type RequestWithUsernameStatus = NextApiRequest & {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export type RequestWithUsernameStatus = any & {
   usernameStatus: {
     /**
      * ```text
@@ -36,14 +36,16 @@ export const usernameStatusSchema = z.object({
   }),
 });
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 type CustomNextApiHandler<T = unknown> = (
   req: RequestWithUsernameStatus,
-  res: NextApiResponse<T>
+  res: any<T>
 ) => void | Promise<void>;
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 const usernameHandler =
   (handler: CustomNextApiHandler) =>
-  async (req: RequestWithUsernameStatus, res: NextApiResponse): Promise<void> => {
+  async (req: RequestWithUsernameStatus, res: any): Promise<void> => {
     const username = slugify(req.body.username);
     const check = await usernameCheck(username);
 

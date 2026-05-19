@@ -1,9 +1,10 @@
+// TODO: next/dist migration (R4dist): ensure `path-to-regexp` is in package.json — replaced Next's bundled copy
 import { it, expect, describe, beforeAll } from "vitest";
 
 import { getRegExpThatMatchesAllOrgDomains } from "../../getNextjsOrgRewriteConfig";
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-const { match, pathToRegexp } = require("next/dist/compiled/path-to-regexp");
+const { match, pathToRegexp } = require("path-to-regexp");
 type MatcherRes = (path: string) => { params: Record<string, string> };
 let orgUserTypeRouteMatch: MatcherRes;
 let orgUserRouteMatch: MatcherRes;

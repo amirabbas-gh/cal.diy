@@ -6,9 +6,11 @@ import useIsThemeSupported from "@lib/hooks/useIsThemeSupported";
 import { useNuqsParams } from "@lib/hooks/useNuqsParams";
 import type { WithLocaleProps } from "@lib/withLocale";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
-import type { AppProps as NextAppProps } from "next/app";
-import type { ReadonlyURLSearchParams } from "next/navigation";
-import { usePathname, useSearchParams } from "next/navigation";
+// TODO: ReadonlyURLSearchParams — narrow to TanStack Route search types (best-effort alias): https://tanstack.com/router/latest/docs/framework/react/guide/search-params
+type ReadonlyURLSearchParams = URLSearchParams;
+
+import { useLocation, useSearch } from "@tanstack/react-router";
+
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
@@ -16,8 +18,9 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { getThemeProviderProps } from "./getThemeProviderProps";
 
 // Workaround for https://github.com/vercel/next.js/issues/8592
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 export type AppProps = Omit<
-  NextAppProps<
+  any<
     WithLocaleProps<{
       nonce: string | undefined;
       themeBasis?: string;
@@ -26,9 +29,9 @@ export type AppProps = Omit<
   >,
   "Component"
 > & {
-  Component: NextAppProps["Component"] & {
+  Component: any["Component"] & {
     requiresLicense?: boolean;
-    isBookingPage?: boolean | ((arg: { router: NextAppProps["router"] }) => boolean);
+    isBookingPage?: boolean | ((arg: { router: any["router"] }) => boolean);
     PageWrapper?: (props: AppProps) => JSX.Element;
   };
 
@@ -53,10 +56,10 @@ const CalcomThemeProvider = (props: CalcomThemeProps) => {
   // Use namespace of embed to ensure same namespaced embed are displayed with same theme. This allows different embeds on the same website to be themed differently
   // One such example is our Embeds Demo and Testing page at http://localhost:3100
   // Having `getEmbedNamespace` defined on window before react initializes the app, ensures that embedNamespace is available on the first mount and can be used as part of storageKey
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
   const embedNamespace = searchParams ? getEmbedNamespace(searchParams) : null;
   const isEmbedMode = typeof embedNamespace === "string";
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const { key, ...themeProviderProps } = getThemeProviderProps({
     props,
     isEmbedMode,

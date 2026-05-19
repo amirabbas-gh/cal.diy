@@ -1,6 +1,9 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
@@ -16,11 +19,11 @@ export default function AppListCardWebWrapper(props: AppListCardProps) {
   const {
     data: { hl },
   } = useTypedQuery(schema);
-  const router = useRouter();
+  const router = useNavigate();
   const [highlight, setHighlight] = useState(shouldHighlight && hl === slug);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const searchParams = useCompatSearchParams();
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
 
   useEffect(() => {
     if (shouldHighlight && highlight && searchParams !== null && pathname !== null) {
@@ -33,7 +36,7 @@ export default function AppListCardWebWrapper(props: AppListCardProps) {
 
         const stringifiedSearchParams = _searchParams.toString();
 
-        router.replace(`${pathname}${stringifiedSearchParams !== "" ? `?${stringifiedSearchParams}` : ""}`);
+        router({ to: `${pathname}${stringifiedSearchParams !== "" ? `?${stringifiedSearchParams}` : ""}`, replace: true });
       }, 3000);
     }
     return () => {

@@ -1,6 +1,9 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
-import { cookies, headers } from "next/headers";
-import { NextResponse } from "next/server";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getCookies, getHeaders } from "@tanstack/start/server";
+
+
 
 import { getServerSession } from "@calcom/features/auth/lib/getServerSession";
 import { performance } from "@calcom/lib/server/perfObserver";
@@ -13,22 +16,22 @@ async function getHandler() {
   const preSessionDate = performance.now();
 
   // Create a legacy request object for compatibility
-  const legacyReq = buildLegacyRequest(await headers(), await cookies());
+  const legacyReq = buildLegacyRequest(new Headers(Object.entries(getHeaders()).map(([k, v]) => [k, Array.isArray(v) ? v.join(", ") : String(v ?? "")] as [string, string])), { getAll: () => Object.entries(getCookies()).map(([name, value]) => ({ name, value: String(value ?? "") })) });
 
   const session = await getServerSession({ req: legacyReq });
   if (!session) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 409 });
+    return Response.json({ message: "Unauthorized" }, { status: 409 });
   }
 
   const preUserDate = performance.now();
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
   if (!user) {
-    return NextResponse.json({ message: "No user found" }, { status: 404 });
+    return Response.json({ message: "No user found" }, { status: 404 });
   }
 
   const lastUpdate = performance.now();
 
-  const response = NextResponse.json({
+  const response = Response.json({
     message: `Hello ${user.name}`,
     prePrismaDate,
     prismaDuration: `Prisma took ${preSessionDate - prePrismaDate}ms`,

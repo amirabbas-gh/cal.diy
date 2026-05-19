@@ -1,9 +1,10 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearch } from "@tanstack/react-router";
+
 
 export const useOnboardingQueryParams = () => {
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
 
   const bpParam = searchParams?.get("bp");
   const billingPeriod = bpParam === "a" ? ("ANNUALLY" as const) : ("MONTHLY" as const);

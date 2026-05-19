@@ -1,7 +1,10 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
-import { cookies, headers } from "next/headers";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getCookies, getHeaders } from "@tanstack/start/server";
+
+
+
 import { z } from "zod";
 
 import { getServerSession } from "@calcom/features/auth/lib/getServerSession";
@@ -26,7 +29,7 @@ const selectedCalendarSelectSchema = z.object({
 });
 
 async function authMiddleware() {
-  const session = await getServerSession({ req: buildLegacyRequest(await headers(), await cookies()) });
+  const session = await getServerSession({ req: buildLegacyRequest(new Headers(Object.entries(getHeaders()).map(([k, v]) => [k, Array.isArray(v) ? v.join(", ") : String(v ?? "")] as [string, string])), { getAll: () => Object.entries(getCookies()).map(([name, value]) => ({ name, value: String(value ?? "") })) }) });
 
   if (!session?.user?.id) {
     throw new HttpError({ statusCode: 401, message: "Not authenticated" });
@@ -65,10 +68,10 @@ async function getHandler() {
     return { selected: selectedCalendarIds.findIndex((s) => s.externalId === cal.externalId) > -1, ...cal };
   });
 
-  return NextResponse.json(selectableCalendars);
+  return Response.json(selectableCalendars);
 }
 
-async function postHandler(req: NextRequest) {
+async function postHandler(req: Request) {
   const user = await authMiddleware();
 
   const body = await req.json();
@@ -84,12 +87,12 @@ async function postHandler(req: NextRequest) {
     eventTypeId: eventTypeId ?? null,
   });
 
-  return NextResponse.json({ message: "Calendar Selection Saved" });
+  return Response.json({ message: "Calendar Selection Saved" });
 }
 
-async function deleteHandler(req: NextRequest) {
+async function deleteHandler(req: Request) {
   const user = await authMiddleware();
-  const searchParams = Object.fromEntries(req.nextUrl.searchParams.entries());
+  const searchParams = Object.fromEntries(new URL(req.url).searchParams.entries());
 
   const { integration, externalId, eventTypeId } = selectedCalendarSelectSchema.parse(searchParams);
 
@@ -102,7 +105,7 @@ async function deleteHandler(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({ message: "Calendar Selection Saved" });
+  return Response.json({ message: "Calendar Selection Saved" });
 }
 
 export const POST = defaultResponderForAppDir(postHandler);

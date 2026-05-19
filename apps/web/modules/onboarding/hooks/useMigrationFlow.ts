@@ -1,10 +1,11 @@
 "use client";
 
 import { trpc } from "@calcom/trpc/react";
-import { useSearchParams } from "next/navigation";
+import { useSearch } from "@tanstack/react-router";
+
 
 export const useMigrationFlow = () => {
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
   const migrateParam = searchParams?.get("migrate");
   const isMigrationFlow = migrateParam === "true";
 

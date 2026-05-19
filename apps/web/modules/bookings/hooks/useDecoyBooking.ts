@@ -1,6 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useEffect, useState } from "react";
 
 import { getDecoyBooking } from "@calcom/features/bookings/lib/client/decoyBookingStore";
@@ -12,14 +15,14 @@ import type { DecoyBookingData } from "@calcom/features/bookings/lib/client/deco
  * @returns The booking data or null if not found/expired
  */
 export function useDecoyBooking(uid: string) {
-  const router = useRouter();
+  const router = useNavigate();
   const [bookingData, setBookingData] = useState<DecoyBookingData | null>(null);
 
   useEffect(() => {
     const data = getDecoyBooking(uid);
 
     if (!data) {
-      router.push("/404");
+      router({ to: "/404" });
       return;
     }
 

@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import z from "zod";
 
 import { deleteSubscription } from "@calcom/features/webhooks/lib/scheduleTrigger";
@@ -12,7 +11,8 @@ const querySchema = z.object({
   id: z.string(),
 });
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function handler(req: any, res: any) {
   const { id } = querySchema.parse(req.query);
 
   const { account, appApiKey } = await validateAccountOrApiKey(req, ["READ_BOOKING", "READ_PROFILE"]);

@@ -2,7 +2,8 @@
  * This implementation is adapted from https://github.com/vercel/next.js/issues/51613#issuecomment-1892644565.
  * It is a wrapper around `unstable_cache` that adds serialization and deserialization
  */
-import { unstable_cache } from "next/cache";
+
+// TODO: next/cache migration (R4e): unwrap + optional `*QueryOptions` for `useQuery`/`ensureQueryData`; align with `invalidateQueries` / route loaders — https://tanstack.com/query/latest/docs/framework/react/guides/caching · https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation
 import { parse, stringify } from "superjson";
 
 export const cache = <T, P extends unknown[]>(
@@ -15,10 +16,15 @@ export const cache = <T, P extends unknown[]>(
     return stringify(result);
   };
 
-  const cachedFn = unstable_cache(wrap, keys, opts);
+  const cachedFn = wrap;
 
   return async (...params: P): Promise<T> => {
     const result = await cachedFn(params);
     return parse(result);
   };
+};
+
+export const cachedFnQueryOptions = {
+  queryKey: ['next-cache', 'cachedFn'] as const,
+  queryFn: cachedFn,
 };

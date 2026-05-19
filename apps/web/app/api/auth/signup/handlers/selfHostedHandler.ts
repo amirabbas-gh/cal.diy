@@ -1,3 +1,4 @@
+// TODO: Next.js pages/api route — convert the handler to TanStack Start server route handlers (Web Request/Response) — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import process from "node:process";
 import { sendEmailVerification } from "@calcom/features/auth/lib/verifyEmail";
 import { SIGNUP_ERROR_CODES } from "@calcom/features/auth/signup/constants";
@@ -19,7 +20,7 @@ import slugify from "@calcom/lib/slugify";
 import prisma from "@calcom/prisma";
 import { IdentityProvider } from "@calcom/prisma/enums";
 import { signupSchema } from "@calcom/prisma/zod-utils";
-import { NextResponse } from "next/server";
+
 
 export default async function handler(body: Record<string, string>) {
   const { email, password, language, token } = signupSchema.parse(body);
@@ -28,7 +29,7 @@ export default async function handler(body: Record<string, string>) {
   const userEmail = email.toLowerCase();
 
   if (!username) {
-    return NextResponse.json({ message: "Invalid username" }, { status: 422 });
+    return Response.json({ message: "Invalid username" }, { status: 422 });
   }
 
   let foundToken: { id: number; teamId: number | null; expires: Date } | null = null;
@@ -49,7 +50,7 @@ export default async function handler(body: Record<string, string>) {
         select: { invitedTo: true },
       });
       if (existingUser && existingUser.invitedTo !== foundToken.teamId) {
-        return NextResponse.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
+        return Response.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
       }
     }
   } else {
@@ -60,10 +61,10 @@ export default async function handler(body: Record<string, string>) {
     });
     if (!userValidation.isValid) {
       logger.error("User validation failed", { userValidation });
-      return NextResponse.json({ message: "Username or email is already taken" }, { status: 409 });
+      return Response.json({ message: "Username or email is already taken" }, { status: 409 });
     }
     if (!userValidation.username) {
-      return NextResponse.json({ message: "Invalid username" }, { status: 422 });
+      return Response.json({ message: "Invalid username" }, { status: 422 });
     }
     correctedUsername = userValidation.username;
   }
@@ -94,7 +95,7 @@ export default async function handler(body: Record<string, string>) {
       if (isCheckingUsernameInGlobalNamespace) {
         const isUsernameAvailable = !(await isUsernameReservedDueToMigration(correctedUsername));
         if (!isUsernameAvailable) {
-          return NextResponse.json({ message: "A user exists with that username" }, { status: 409 });
+          return Response.json({ message: "A user exists with that username" }, { status: 409 });
         }
       }
 
@@ -109,7 +110,7 @@ export default async function handler(body: Record<string, string>) {
         select: { id: true },
       });
       if (existingUserByUsername) {
-        return NextResponse.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
+        return Response.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
       }
 
       let user: { id: number };
@@ -142,7 +143,7 @@ export default async function handler(body: Record<string, string>) {
         if (isPrismaError(error) && error.code === "P2002") {
           const target = String(error.meta?.target ?? "");
           if (target.includes("email") || target.includes("username")) {
-            return NextResponse.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
+            return Response.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
           }
         }
         throw error;
@@ -171,7 +172,7 @@ export default async function handler(body: Record<string, string>) {
   } else {
     const isUsernameAvailable = !(await isUsernameReservedDueToMigration(correctedUsername));
     if (!isUsernameAvailable) {
-      return NextResponse.json({ message: "A user exists with that username" }, { status: 409 });
+      return Response.json({ message: "A user exists with that username" }, { status: 409 });
     }
     try {
       await prisma.user.create({
@@ -188,7 +189,7 @@ export default async function handler(body: Record<string, string>) {
       if (isPrismaError(error) && error.code === "P2002") {
         const target = String(error.meta?.target ?? "");
         if (target.includes("email") || target.includes("username")) {
-          return NextResponse.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
+          return Response.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
         }
       }
       throw error;
@@ -205,5 +206,5 @@ export default async function handler(body: Record<string, string>) {
     });
   }
 
-  return NextResponse.json({ message: "Created user" }, { status: 201 });
+  return Response.json({ message: "Created user" }, { status: 201 });
 }

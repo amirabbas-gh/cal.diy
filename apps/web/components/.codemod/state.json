@@ -1,0 +1,27 @@
+{
+  "fonts": [
+    {
+      "importSource": "next/font/google",
+      "family": "Inter",
+      "packageKey": "inter",
+      "variable": "--font-sans",
+      "googleSubsets": [
+        "latin"
+      ]
+    },
+    {
+      "importSource": "next/font/local",
+      "family": "calFont",
+      "packageKey": "cal-font",
+      "variable": "--font-cal",
+      "fontFaceFamily": null,
+      "fontDisplay": "swap",
+      "localFaces": [
+        {
+          "repoRelativePath": "../fonts/CalSans-SemiBold.woff2",
+          "weight": "600"
+        }
+      ]
+    }
+  ]
+}

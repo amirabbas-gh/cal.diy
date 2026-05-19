@@ -1,5 +1,8 @@
 import { trpc } from "@calcom/trpc/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate, useSearch } from "@tanstack/react-router";
+
 import { useEffect, useState, useTransition } from "react";
 import { validStatuses } from "../lib/validStatuses";
 import type { BookingListingStatus, BookingOutput } from "../types";
@@ -48,8 +51,8 @@ export function useSwitchToCorrectStatusTab({
     preSelectedBookingFull,
     isPending: isFetchingPreSelectedBooking,
   } = usePreSelectedBooking();
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = useLocation().pathname;
+  const router = useNavigate();
   const [resolvedTabStatus, setResolvedTab] = useState<BookingListingStatus>(defaultStatus);
   const [isNavigatingToCorrectTab, startNavigationToCorrectTab] = useTransition();
 
@@ -61,7 +64,7 @@ export function useSwitchToCorrectStatusTab({
     if (!shouldNavigate) return;
     startNavigationToCorrectTab(() => {
       const newPath = pathname.replace(`/bookings/${currentTab}`, `/bookings/${correctTab}`);
-      router.replace(`${newPath}${window.location.search}`);
+      router({ to: `${newPath}${window.location.search}`, replace: true });
     });
     setResolvedTab(correctTab);
   }, [preSelectedBooking, pathname, router]);
@@ -79,7 +82,7 @@ export function usePreSelectedBooking(): {
   preSelectedBookingFull: BookingOutput | null;
   isPending: boolean;
 }{
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
   const preSelectedBookingUid = searchParams?.get("uid") ?? undefined;
 
   const { data: preSelectedBookingData, isPending } = trpc.viewer.bookings.get.useQuery(

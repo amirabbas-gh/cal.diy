@@ -17,25 +17,26 @@ import { useNuqsParams } from "@lib/hooks/useNuqsParams";
 import type { WithLocaleProps } from "@lib/withLocale";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { dir } from "i18next";
-import type { AppProps as NextAppProps, AppProps as NextJsAppProps } from "next/app";
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import { appWithTranslation } from "next-i18next";
+import { appWithTranslation } from "react-i18next";
 import type { SSRConfig } from "next-i18next/dist/types/types";
 import { ThemeProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/pages";
 import type { PropsWithChildren, ReactNode } from "react";
 import { useEffect } from "react";
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 const I18nextAdapter = appWithTranslation<
-  NextJsAppProps<SSRConfig> & {
+  any<SSRConfig> & {
     children: React.ReactNode;
   }
 >(({ children }) => <>{children}</>);
 
 // Workaround for https://github.com/vercel/next.js/issues/8592
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 export type AppProps = Omit<
-  NextAppProps<
+  any<
     WithLocaleProps<{
       themeBasis?: string;
       session: Session;
@@ -44,10 +45,10 @@ export type AppProps = Omit<
   >,
   "Component"
 > & {
-  Component: NextAppProps["Component"] & {
+  Component: any["Component"] & {
     requiresLicense?: boolean;
     isThemeSupported?: boolean;
-    isBookingPage?: boolean | ((arg: { router: NextAppProps["router"] }) => boolean);
+    isBookingPage?: boolean | ((arg: { router: any["router"] }) => boolean);
     getLayout?: (page: React.ReactElement) => ReactNode;
     PageWrapper?: (props: AppProps) => JSX.Element;
   };

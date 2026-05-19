@@ -1,5 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate, useRouter } from "@tanstack/react-router";
+
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Toaster } from "sonner";
@@ -17,6 +20,7 @@ const formSchema = z.object({
 
 export default function SendgridSetup() {
   const { t } = useLocale();
+  const navigate = useNavigate();
   const router = useRouter();
   const [testPassed, setTestPassed] = useState<boolean | undefined>(undefined);
   const [testLoading, setTestLoading] = useState<boolean>(false);
@@ -71,7 +75,7 @@ export default function SendgridSetup() {
                   const json = await res.json();
 
                   if (res.ok) {
-                    router.push(json.url);
+                    navigate({ to: json.url });
                   } else {
                     showToast(json.message, "error");
                   }
@@ -97,7 +101,7 @@ export default function SendgridSetup() {
                   />
                 </fieldset>
                 <div className="mt-5 justify-end space-x-2 rtl:space-x-reverse sm:mt-4 sm:flex">
-                  <Button type="button" color="secondary" onClick={() => router.back()}>
+                  <Button type="button" color="secondary" onClick={() => router.history.back()}>
                     {t("cancel")}
                   </Button>
                   <Button

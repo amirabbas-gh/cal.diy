@@ -1,5 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-
 import { WEBAPP_URL_FOR_OAUTH } from "@calcom/lib/constants";
 import { getSafeRedirectUrl } from "@calcom/lib/getSafeRedirectUrl";
 import prisma from "@calcom/prisma";
@@ -9,7 +7,8 @@ import createOAuthAppCredential from "../../_utils/oauth/createOAuthAppCredentia
 import { decodeOAuthState } from "../../_utils/oauth/decodeOAuthState";
 import { getZoomAppKeys } from "../lib";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export default async function handler(req: any, res: any) {
   const state = decodeOAuthState(req);
   const { code } = req.query;
   const { client_id, client_secret } = await getZoomAppKeys();

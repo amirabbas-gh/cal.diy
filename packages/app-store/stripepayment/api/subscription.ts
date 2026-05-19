@@ -4,12 +4,12 @@ import { WEBAPP_URL } from "@calcom/lib/constants";
 import { usernameCheck } from "@calcom/lib/server/username";
 import prisma from "@calcom/prisma";
 import type { Prisma } from "@calcom/prisma/client";
-import type { NextApiRequest, NextApiResponse } from "next";
 import type Stripe from "stripe";
 import { getStripeCustomerIdFromUserId } from "../lib/customer";
 import stripe from "../lib/server";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export default async function handler(req: any, res: any) {
   if (req.method === "GET") {
     const session = await getServerSession({ req });
     const userId = session?.user?.id;

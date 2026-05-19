@@ -3,7 +3,10 @@
 import { useCompatSearchParams } from "@calcom/embed-core/src/useCompatSearchParams";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { Select, ToggleGroup } from "@calcom/ui/components/form";
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
 import { useCallback, useMemo } from "react";
 
 export enum OutOfOfficeTab {
@@ -14,8 +17,8 @@ export enum OutOfOfficeTab {
 export const OutOfOfficeToggleGroup = () => {
   const { t } = useLocale();
   const searchParams = useCompatSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
+  const router = useNavigate();
+  const pathname = useLocation().pathname;
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -41,7 +44,7 @@ export const OutOfOfficeToggleGroup = () => {
     (value: string | null) => {
       if (!value) return;
       const newQuery = createQueryString("type", value);
-      router.push(`${pathname}?${newQuery}`);
+      router({ to: `${pathname}?${newQuery}` });
     },
     [createQueryString, pathname, router]
   );

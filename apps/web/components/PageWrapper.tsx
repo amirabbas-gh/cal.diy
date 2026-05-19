@@ -1,3 +1,4 @@
+// TODO: next/head migration (R4c-head): move meta tags to TanStack Start head APIs / document title — https://tanstack.com/start/latest/docs/framework/react/migrate-from-next-js
 /**
  * PAGES ROUTER ONLY - Used exclusively by Next.js Pages Router
  *
@@ -10,9 +11,7 @@
 "use client";
 
 import { DefaultSeo } from "next-seo";
-import { Inter } from "next/font/google";
-import localFont from "next/font/local";
-import Head from "next/head";
+// TODO: replace `next/script` with plain <script>/<head> or TanStack router head APIs as needed — https://tanstack.com/start/latest/docs/framework/react/migrate-from-next-js
 import Script from "next/script";
 
 import "@calcom/embed-core/src/embed-iframe";
@@ -32,14 +31,6 @@ export interface CalPageWrapper {
   PageWrapper?: AppProps["Component"]["PageWrapper"];
 }
 
-const interFont = Inter({ subsets: ["latin"], variable: "--font-sans", preload: true, display: "swap" });
-const calFont = localFont({
-  src: "../fonts/CalSans-SemiBold.woff2",
-  variable: "--font-cal",
-  preload: true,
-  display: "swap",
-  weight: "600",
-});
 
 function PageWrapper(props: AppProps) {
   const { Component, pageProps, err, router } = props;
@@ -63,12 +54,12 @@ function PageWrapper(props: AppProps) {
 
   return (
     <AppProviders {...providerProps}>
-      <Head>
+      <>
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover"
         />
-      </Head>
+      </>
       <DefaultSeo
         // Set canonical to https://cal.com or self-hosted URL
         canonical={

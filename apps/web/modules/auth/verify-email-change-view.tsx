@@ -1,7 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useEffect } from "react";
 import React from "react";
 import { Toaster } from "sonner";
@@ -17,7 +20,7 @@ export type PageProps = inferSSRProps<typeof getServerSideProps>;
 function VerifyEmailChange(props: PageProps) {
   const { update } = useSession();
   const { t, isLocaleReady } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
 
   useEffect(() => {
     async function updateSessionAndDisplayToast() {
@@ -25,7 +28,7 @@ function VerifyEmailChange(props: PageProps) {
       if (isLocaleReady) {
         showToast(t("verify_email_change_success_toast", { email: props.updatedEmail }), "success");
       }
-      router.push("/event-types");
+      router({ to: "/event-types" });
     }
     if (props.updateSession) {
       updateSessionAndDisplayToast();

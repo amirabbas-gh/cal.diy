@@ -6,7 +6,8 @@ import { Button } from "@calcom/ui/components/button";
 import { Icon, type IconName } from "@calcom/ui/components/icon";
 import classNames from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import { useEffect, useRef } from "react";
 
 // Helper function to darken a hex color
@@ -36,7 +37,7 @@ export const OnboardingOrganizationBrowserView = ({
   brandColor,
 }: OnboardingOrganizationBrowserViewProps) => {
   const { t } = useLocale();
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const containerRef = useRef<HTMLDivElement>(null);
   const displayUrl = slug ? `${slug}.${""}` : "";
 

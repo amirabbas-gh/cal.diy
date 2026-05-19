@@ -1,4 +1,5 @@
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 
 import AppCard from "@calcom/app-store/_components/AppCard";
 import useIsAppEnabled from "@calcom/app-store/_utils/useIsAppEnabled";
@@ -10,7 +11,7 @@ const EventTypeAppCard: EventTypeAppCardComponent = function EventTypeAppCard({
   eventType,
   onAppInstallSuccess,
 }) {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
 
   const { enabled, updateEnabled } = useIsAppEnabled(app);
 

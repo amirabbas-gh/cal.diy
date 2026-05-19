@@ -1,7 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Toaster } from "sonner";
@@ -18,6 +20,7 @@ import { trpc } from "@calcom/trpc/react";
 import { Button } from "@calcom/ui/components/button";
 import { showToast } from "@calcom/ui/components/toast";
 import { LoaderIcon } from "@coss/ui/icons";
+import { Link } from '@tanstack/react-router';
 
 export default function BTCPaySetup(props: IBTCPaySetupProps) {
   const params = useCompatSearchParams();
@@ -71,7 +74,7 @@ function BTCPaySetupCallback() {
 }
 
 function BTCPaySetupPage(props: IBTCPaySetupProps) {
-  const router = useRouter();
+  const router = useNavigate();
   const { t } = useLocale();
   const session = useSession();
   const [loading, setLoading] = useState<boolean>(false);
@@ -100,7 +103,7 @@ function BTCPaySetupPage(props: IBTCPaySetupProps) {
   const saveKeysMutation = trpc.viewer.apps.updateAppCredentials.useMutation({
     onSuccess: () => {
       showToast(t("keys_have_been_saved"), "success");
-      router.push("/event-types");
+      router({ to: "/event-types" });
     },
     onError: (error) => {
       showToast(error.message, "error");
@@ -108,7 +111,7 @@ function BTCPaySetupPage(props: IBTCPaySetupProps) {
   });
   const deleteMutation = trpc.viewer.credentials.delete.useMutation({
     onSuccess: () => {
-      router.push("/apps/btcpayserver");
+      router({ to: "/apps/btcpayserver" });
     },
     onError: () => {
       showToast(t("error_removing_app"), "error");
@@ -334,7 +337,7 @@ function BTCPaySetupPage(props: IBTCPaySetupProps) {
                   </>
                 ) : (
                   <>
-                    <Link href="/apps/btcpayserver" className="inline-block">
+                    <Link to="/apps/btcpayserver" className="inline-block">
                       <Button color="secondary">Go to App Store</Button>
                     </Link>
                   </>

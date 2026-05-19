@@ -1,5 +1,3 @@
-import type { NextResponse } from "next/server";
-
 import { ErrorCode } from "@calcom/lib/errorCodes";
 import { ErrorWithCode } from "@calcom/lib/errors";
 import slugify from "@calcom/lib/slugify";
@@ -35,7 +33,7 @@ export type CustomNextApiHandler = (
   body: Record<string, string>,
   usernameStatus: UsernameStatus,
   query?: Record<string, string>
-) => Promise<NextResponse<any>>;
+) => Promise<Response<any>>;
 
 export async function isBlacklisted(username: string) {
   // NodeJS forEach is very, very fast (these days) so even though we only have to construct the Set

@@ -7,7 +7,10 @@ import { Button } from "@calcom/ui/components/button";
 import type { IconName } from "@calcom/ui/components/icon";
 import { RadioAreaGroup } from "@calcom/ui/components/radio";
 import { AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import posthog from "posthog-js";
 import { useEffect, useRef, useTransition } from "react";
 import { OnboardingCard } from "../components/OnboardingCard";
@@ -21,7 +24,7 @@ type OnboardingViewProps = {
 };
 
 export const OnboardingView = ({ userEmail }: OnboardingViewProps) => {
-  const router = useRouter();
+  const router = useNavigate();
   const { t } = useLocale();
   const { selectedPlan, setSelectedPlan, resetOnboardingPreservingPlan } = useOnboardingStore();
   const previousPlanRef = useRef<PlanType | null>(null);
@@ -41,7 +44,7 @@ export const OnboardingView = ({ userEmail }: OnboardingViewProps) => {
     if (!isPendingMembership && hasTeamMembership) {
       setSelectedPlan("personal");
       startTransition(() => {
-        router.push("/onboarding/personal/settings");
+        router({ to: "/onboarding/personal/settings" });
       });
     }
   }, [isPendingMembership, hasTeamMembership, router, setSelectedPlan]);
@@ -76,11 +79,11 @@ export const OnboardingView = ({ userEmail }: OnboardingViewProps) => {
     }
     startTransition(() => {
       if (selectedPlan === "organization") {
-        router.push("/onboarding/organization/details");
+        router({ to: "/onboarding/organization/details" });
       } else if (selectedPlan === "team") {
-        router.push("/onboarding/teams/details");
+        router({ to: "/onboarding/teams/details" });
       } else if (selectedPlan === "personal") {
-        router.push("/onboarding/personal/settings");
+        router({ to: "/onboarding/personal/settings" });
       }
     });
   };

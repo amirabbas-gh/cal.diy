@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import { useMemo } from "react";
 
 import dayjs from "@calcom/dayjs";
@@ -19,7 +20,7 @@ const toHours = (value: number): Hours => {
 };
 
 export const OnboardingCalendarBrowserView = () => {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const { startDate, endDate } = useMemo(() => {
     return weekdayDates(0, new Date(), 6);
   }, []);

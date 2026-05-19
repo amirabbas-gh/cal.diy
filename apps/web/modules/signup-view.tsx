@@ -40,26 +40,27 @@ import { InfoIcon, ShieldCheckIcon, StarIcon } from "@coss/ui/icons";
 import { Analytics as DubAnalytics } from "@dub/analytics/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { getServerSideProps } from "@lib/signup/getServerSideProps";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
+// TODO: replace `next/script` with plain <script>/<head> or TanStack router head APIs as needed — https://tanstack.com/start/latest/docs/framework/react/migrate-from-next-js
 import Script from "next/script";
 import { signIn } from "next-auth/react";
 import posthog from "posthog-js";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm, useFormContext } from "react-hook-form";
 import { Toaster } from "sonner";
 import { z } from "zod";
+import { Link } from '@tanstack/react-router';
 
 const signupSchema = apiSignupSchema.extend({
   apiError: z.string().optional(), // Needed to display API errors doesn't get passed to the API
   cfToken: z.string().optional(),
 });
 
-const TurnstileCaptcha = dynamic(() => import("@calcom/web/modules/auth/components/Turnstile"), {
-  ssr: false,
-});
+const TurnstileCaptcha = lazy(() => import("@calcom/web/modules/auth/components/Turnstile"));
 
 type FormValues = z.infer<typeof signupSchema>;
 
@@ -210,7 +211,7 @@ export default function Signup({
   const [turnstileKey, setTurnstileKey] = useState(0);
   const searchParams = useCompatSearchParams();
   const { t, i18n } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: prepopulateFormValues satisfies FormValues,
@@ -263,7 +264,7 @@ export default function Signup({
           showToast(t("account_already_exists_please_login"), "warning");
           const callbackUrl = token ? `/teams?token=${token}` : "/event-types";
           setTimeout(() => {
-            router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+            router({ to: `/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}` });
           }, 3000);
           return;
         }
@@ -642,7 +643,7 @@ export default function Signup({
                               ? `${GOOGLE_AUTH_URL}?${searchQueryParams.toString()}`
                               : GOOGLE_AUTH_URL;
 
-                            router.push(url);
+                            router({ to: url });
                           }}>
                           {t("continue_with_google")}
                         </Button>
@@ -693,7 +694,7 @@ export default function Signup({
                               ? `${MICROSOFT_AUTH_URL}?${searchQueryParams.toString()}`
                               : MICROSOFT_AUTH_URL;
 
-                            router.push(url);
+                            router({ to: url });
                           }}>
                           {t("continue_with_microsoft")}
                         </Button>
@@ -738,7 +739,7 @@ export default function Signup({
                   <div className="flex flex-col text-sm">
                     <div className="flex gap-1">
                       <p className="text-subtle">{t("already_have_account")}</p>
-                      <Link href="/auth/login" className="text-emphasis hover:underline">
+                      <Link to="/auth/login" className="text-emphasis hover:underline">
                         {t("sign_in")}
                       </Link>
                     </div>
@@ -751,14 +752,14 @@ export default function Signup({
                           <Link
                             className="text-emphasis hover:underline"
                             key="terms"
-                            href={`${WEBSITE_TERMS_URL}`}
+                            to={`${WEBSITE_TERMS_URL}`}
                             target="_blank">
                             Terms
                           </Link>,
                           <Link
                             className="text-emphasis hover:underline"
                             key="privacy"
-                            href={`${WEBSITE_PRIVACY_POLICY_URL}`}
+                            to={`${WEBSITE_PRIVACY_POLICY_URL}`}
                             target="_blank">
                             Privacy Policy.
                           </Link>,

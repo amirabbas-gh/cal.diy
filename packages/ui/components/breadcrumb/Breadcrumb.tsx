@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import { Children, Fragment, useEffect, useState } from "react";
+import { Link } from '@tanstack/react-router';
 
 type BreadcrumbProps = {
   children: React.ReactNode;
@@ -40,13 +41,13 @@ type BreadcrumbItemProps = {
 export const BreadcrumbItem = ({ children, href, listProps }: BreadcrumbItemProps) => {
   return (
     <li {...listProps}>
-      <Link href={href}>{children}</Link>
+      <Link to={href}>{children}</Link>
     </li>
   );
 };
 
 export const BreadcrumbContainer = () => {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const [, setBreadcrumbs] = useState<{ href: string; label: string }[]>();
 
   useEffect(() => {

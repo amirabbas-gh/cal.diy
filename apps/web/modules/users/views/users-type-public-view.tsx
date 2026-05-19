@@ -1,7 +1,8 @@
 "use client";
 
 import type { EmbedProps } from "app/WithEmbedSSR";
-import { useSearchParams } from "next/navigation";
+import { useSearch } from "@tanstack/react-router";
+
 
 import { BookerWebWrapper as Booker } from "@calcom/web/modules/bookings/components/BookerWebWrapper";
 import { getBookerWrapperClasses } from "@calcom/features/bookings/Booker/utils/getBookerWrapperClasses";
@@ -25,7 +26,7 @@ export const getMultipleDurationValue = (
 };
 
 function Type({ slug, user, isEmbed, booking, isBrandingHidden, eventData, orgBannerUrl }: PageProps) {
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
 
   return (
     <BookingPageErrorBoundary>

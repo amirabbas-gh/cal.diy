@@ -1,12 +1,13 @@
-import { useSearchParams, usePathname } from "next/navigation";
+import { useSearch, useLocation } from "@tanstack/react-router";
+
 import { useMemo } from "react";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 
 export function useBookingStatusTab() {
   const { t } = useLocale();
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
+  const searchParams = useSearch();
+  const pathname = useLocation().pathname;
 
   const tabOptions = useMemo(() => {
     const queryString = searchParams?.toString() || "";

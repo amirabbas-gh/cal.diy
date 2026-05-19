@@ -1,7 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate, useRouter } from "@tanstack/react-router";
+
 import type { Dispatch, ReactElement, ReactNode, SetStateAction } from "react";
 import type React from "react";
 import { cloneElement } from "react";
@@ -124,6 +127,7 @@ export default function Shell(props: LayoutProps) {
 }
 
 export function ShellMain(props: LayoutProps) {
+  const navigate = useNavigate();
   const router = useRouter();
   const { isLocaleReady } = useLocale();
 
@@ -142,7 +146,7 @@ export function ShellMain(props: LayoutProps) {
               size="sm"
               color="minimal"
               onClick={() =>
-                typeof props.backPath === "string" ? router.push(props.backPath as string) : router.back()
+                typeof props.backPath === "string" ? navigate({ to: props.backPath as string }) : router.history.back()
               }
               StartIcon="arrow-left"
               aria-label="Go Back"

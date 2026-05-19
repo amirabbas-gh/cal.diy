@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import z from "zod";
+import { Link } from '@tanstack/react-router';
 
 interface IPaypalPaymentComponentProps {
   payment: {
@@ -50,7 +50,7 @@ export const PaypalPaymentComponent = (props: IPaypalPaymentComponentProps) => {
   return (
     <div className="mt-4 flex h-full w-full flex-col items-center justify-center">
       <Link
-        href={`${paymentUrl}`}
+        to={`${paymentUrl}`}
         className="inline-flex items-center justify-center rounded-2xl rounded-md border border-transparent bg-[#ffc439] px-12 py-2 text-base
         font-medium text-black shadow-sm hover:brightness-95 focus:outline-none focus:ring-offset-2">
         Pay with

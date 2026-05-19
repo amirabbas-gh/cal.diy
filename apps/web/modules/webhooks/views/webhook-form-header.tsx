@@ -10,8 +10,8 @@ import {
   AppHeaderDescription,
 } from "@coss/ui/shared/app-header";
 import { ArrowLeftIcon } from "lucide-react";
-import Link from "next/link";
 import type { ReactNode } from "react";
+import { Link } from '@tanstack/react-router';
 
 type WebhookFormHeaderProps = {
   CTA?: ReactNode;
@@ -32,7 +32,7 @@ export function WebhookFormHeader({
         {showBackButton && (
           <Button
             aria-label={t("go_back")}
-            render={<Link href="/settings/developer/webhooks" />}
+            render={<Link to="/settings/developer/webhooks" />}
             size="icon-sm"
             variant="ghost">
             <ArrowLeftIcon />

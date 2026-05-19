@@ -1,6 +1,4 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
 
 import dayjs from "@calcom/dayjs";
 import { sendOrganizerRequestReminderEmail } from "@calcom/emails/email-manager";
@@ -13,11 +11,11 @@ import { BookingStatus, ReminderType } from "@calcom/prisma/enums";
 import type { EventTypeMetadata } from "@calcom/prisma/zod-utils";
 import type { CalendarEvent } from "@calcom/types/Calendar";
 
-async function postHandler(request: NextRequest) {
-  const apiKey = request.headers.get("authorization") || request.nextUrl.searchParams.get("apiKey");
+async function postHandler(request: Request) {
+  const apiKey = request.headers.get("authorization") || new URL(request.url).searchParams.get("apiKey");
 
   if (process.env.CRON_API_KEY !== apiKey) {
-    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    return Response.json({ message: "Not authenticated" }, { status: 401 });
   }
 
   const reminderIntervalMinutes = [48 * 60, 24 * 60, 3 * 60];
@@ -154,7 +152,7 @@ async function postHandler(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({ notificationsSent });
+  return Response.json({ notificationsSent });
 }
 
 export const POST = defaultResponderForAppDir(postHandler);

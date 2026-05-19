@@ -1,11 +1,11 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import process from "node:process";
-import type { NextApiRequest } from "next";
 import type { IntegrationOAuthCallbackState } from "../../types";
 
 const NONCE_EXEMPT_APPS = new Set(["stripe", "basecamp3", "dub", "webex", "tandem"]);
 
-export function decodeOAuthState(req: NextApiRequest, appSlug?: string) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export function decodeOAuthState(req: any, appSlug?: string) {
   if (typeof req.query.state !== "string") {
     return undefined;
   }

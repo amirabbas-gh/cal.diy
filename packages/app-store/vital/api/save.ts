@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { ZodError } from "zod";
 
 import prisma from "@calcom/prisma";
@@ -11,10 +10,11 @@ export type VitalSettingsResponse = {
   selectedParam: string;
 };
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 const handler = async (
-  req: NextApiRequest,
-  res: NextApiResponse
-): Promise<VitalSettingsResponse | NextApiResponse | void> => {
+  req: any,
+  res: any
+): Promise<VitalSettingsResponse | any | void> => {
   if (req.method === "PUT" && req.session && req.session.user.id) {
     const userId = req.session.user.id;
     const body = req.body;
@@ -60,13 +60,15 @@ const handler = async (
   res.end();
 };
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 function validate(
   handler: (
-    req: NextApiRequest,
-    res: NextApiResponse
-  ) => Promise<VitalSettingsResponse | NextApiResponse | void>
+    req: any,
+    res: any
+  ) => Promise<VitalSettingsResponse | any | void>
 ) {
-  return async (req: NextApiRequest, res: NextApiResponse) => {
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+  return async (req: any, res: any) => {
     if (req.method === "POST" || req.method === "PUT") {
       try {
         vitalSettingsUpdateSchema.parse(req.body);

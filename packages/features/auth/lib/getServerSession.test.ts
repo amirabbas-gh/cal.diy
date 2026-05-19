@@ -1,4 +1,3 @@
-import type { NextApiRequest } from "next";
 import type { RequestMethod } from "node-mocks-http";
 import { createMocks } from "node-mocks-http";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -29,10 +28,12 @@ vi.mock("next-auth/jwt", createGetTokenMock);
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "./getServerSession";
 
-type MockNextApiRequest = ReturnType<typeof createMocks<NextApiRequest>>["req"];
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+type MockNextApiRequest = ReturnType<typeof createMocks<any>>["req"];
 
 function createMockRequest(method: RequestMethod = "GET"): MockNextApiRequest {
-  const { req } = createMocks<NextApiRequest>({ method });
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+  const { req } = createMocks<any>({ method });
   return req;
 }
 

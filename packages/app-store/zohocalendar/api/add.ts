@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { stringify } from "node:querystring";
 
 import { WEBAPP_URL } from "@calcom/lib/constants";
@@ -12,7 +11,8 @@ import { appKeysSchema as zohoKeysSchema } from "../zod";
 
 const OAUTH_BASE_URL = "https://accounts.zoho.com/oauth/v2";
 
-async function getHandler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function getHandler(req: any, res: any) {
   const appKeys = await getAppKeysFromSlug(config.slug);
   const { client_id } = zohoKeysSchema.parse(appKeys);
 

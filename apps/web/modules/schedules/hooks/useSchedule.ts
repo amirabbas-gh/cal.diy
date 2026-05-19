@@ -7,7 +7,8 @@ import { useTimesForSchedule } from "@calcom/features/schedules/hooks/useTimesFo
 import { getRoutedTeamMemberIdsFromSearchParams } from "@calcom/lib/bookings/getRoutedTeamMemberIdsFromSearchParams";
 import { PUBLIC_QUERY_AVAILABLE_SLOTS_INTERVAL_SECONDS } from "@calcom/lib/constants";
 import { trpc } from "@calcom/trpc/react";
-import { useSearchParams } from "next/navigation";
+import { useSearch } from "@tanstack/react-router";
+
 import { useApiV2AvailableSlots } from "./useApiV2AvailableSlots";
 
 export type UseScheduleWithCacheArgs = {
@@ -73,7 +74,7 @@ export const useSchedule = ({
     selectedDate,
     bookerLayout,
   });
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
   const routedTeamMemberIds = searchParams
     ? getRoutedTeamMemberIdsFromSearchParams(new URLSearchParams(searchParams.toString()))
     : null;

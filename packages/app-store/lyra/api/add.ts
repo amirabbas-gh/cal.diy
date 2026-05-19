@@ -3,11 +3,11 @@ import { WEBAPP_URL_FOR_OAUTH } from "@calcom/lib/constants";
 import { defaultHandler } from "@calcom/lib/server/defaultHandler";
 import { defaultResponder } from "@calcom/lib/server/defaultResponder";
 import prisma from "@calcom/prisma";
-import type { NextApiRequest } from "next";
 import { encodeOAuthState } from "../../_utils/oauth/encodeOAuthState";
 import { getLyraAppKeys, LYRA_API_URL } from "../lib";
 
-async function handler(req: NextApiRequest) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function handler(req: any) {
   await prisma.user.findFirstOrThrow({
     where: {
       id: req.session?.user?.id,

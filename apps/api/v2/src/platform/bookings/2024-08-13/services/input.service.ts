@@ -20,7 +20,6 @@ import { ConfigService } from "@nestjs/config";
 import { isPhoneNumber, isURL } from "class-validator";
 import { Request } from "express";
 import { DateInput, DateTime } from "luxon";
-import { NextApiRequest } from "next/types";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import { BookingsRepository_2024_08_13 } from "@/platform/bookings/2024-08-13/repositories/bookings.repository";
@@ -45,7 +44,8 @@ import { OAuthClientUsersService } from "@/modules/oauth-clients/services/oauth-
 import { OAuthFlowService } from "@/modules/oauth-clients/services/oauth-flow.service";
 import { UsersRepository } from "@/modules/users/users.repository";
 
-type BookingRequest = NextApiRequest & {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+type BookingRequest = any & {
   userId: number | undefined;
   noEmail: boolean | undefined;
 } & OAuthRequestParams;

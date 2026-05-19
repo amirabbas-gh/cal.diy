@@ -12,7 +12,8 @@ import { TextField } from "@calcom/ui/components/form";
 import { DropdownActions, Table } from "@calcom/ui/components/table";
 import { showToast } from "@calcom/ui/components/toast";
 import { keepPreviousData } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "@tanstack/react-router";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const { Cell, ColumnTitle, Header, Row } = Table;
@@ -25,7 +26,7 @@ export function UsersTable() {
   const utils = trpc.useUtils();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
-  const router = useRouter();
+  const router = useNavigate();
 
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
 

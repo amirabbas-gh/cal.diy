@@ -1,8 +1,7 @@
-import type { NextApiRequest } from "next";
-
 import type { NewCanvas, InputComponent, SpacerComponent, TextComponent, ButtonComponent } from "../../lib";
 
-export async function handleButtonAndInvitationStep(req: NextApiRequest): Promise<NewCanvas | undefined> {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export async function handleButtonAndInvitationStep(req: any): Promise<NewCanvas | undefined> {
   const { input_values, current_canvas, component_id } = req.body;
 
   const errors = [];

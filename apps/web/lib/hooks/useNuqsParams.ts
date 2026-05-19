@@ -1,10 +1,11 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import { useMemo } from "react";
 
 export function useNuqsParams() {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const isBookingsPage = pathname?.startsWith("/bookings/");
 
   return useMemo(() => {

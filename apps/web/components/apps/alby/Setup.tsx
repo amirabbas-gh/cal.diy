@@ -1,6 +1,8 @@
 import { auth, Client, webln } from "@getalby/sdk";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useState, useCallback, useEffect } from "react";
 import { Toaster } from "sonner";
 
@@ -14,6 +16,7 @@ import { Badge } from "@calcom/ui/components/badge";
 import { Button } from "@calcom/ui/components/button";
 import { showToast } from "@calcom/ui/components/toast";
 import { InfoIcon } from "@coss/ui/icons";
+import { Link } from '@tanstack/react-router';
 
 export default function AlbySetup(props: IAlbySetupProps) {
   const params = useCompatSearchParams();
@@ -66,7 +69,7 @@ function AlbySetupCallback() {
 }
 
 function AlbySetupPage(props: IAlbySetupProps) {
-  const router = useRouter();
+  const router = useNavigate();
   const { t } = useLocale();
   const integrations = trpc.viewer.apps.integrations.useQuery({ variant: "payment", appId: "alby" });
   const [albyPaymentAppCredentials] = integrations.data?.items || [];
@@ -75,7 +78,7 @@ function AlbySetupPage(props: IAlbySetupProps) {
   const saveKeysMutation = trpc.viewer.apps.updateAppCredentials.useMutation({
     onSuccess: () => {
       showToast(t("keys_have_been_saved"), "success");
-      router.push("/event-types");
+      router({ to: "/event-types" });
     },
     onError: (error) => {
       showToast(error.message, "error");
@@ -169,7 +172,7 @@ function AlbySetupPage(props: IAlbySetupProps) {
               used to generate invoices. If you update your lightning address, please disconnect and setup the
               Alby app again.
             </div>
-            <Link href="/apps/alby">
+            <Link to="/apps/alby">
               <Button color="secondary">Go to App Store Listing</Button>
             </Link>
           </div>

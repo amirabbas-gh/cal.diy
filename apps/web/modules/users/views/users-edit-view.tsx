@@ -3,7 +3,10 @@
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
 import { showToast } from "@calcom/ui/components/toast";
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
 import type { FormValues } from "../components/UserForm";
 import { UserForm } from "../components/UserForm";
 
@@ -28,15 +31,15 @@ interface User {
 
 export function UsersEditView({ user }: { user: User }) {
   const { t } = useLocale();
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = useLocation().pathname;
+  const router = useNavigate();
   const utils = trpc.useUtils();
 
   const mutation = trpc.viewer.users.update.useMutation({
     onSuccess: async () => {
       await Promise.all([utils.viewer.users.list.invalidate(), utils.viewer.users.get.invalidate()]);
       showToast(t("user_updated_successfully"), "success");
-      router.replace(`${pathname?.split("/users/")[0]}/users`);
+      router({ to: `${pathname?.split("/users/")[0]}/users`, replace: true });
     },
     onError: (err) => {
       console.error(err.message);

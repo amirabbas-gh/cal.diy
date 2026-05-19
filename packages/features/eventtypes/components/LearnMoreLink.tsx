@@ -1,8 +1,8 @@
 import type { TFunction } from "i18next";
-import Link from "next/link";
 
 import ServerTrans from "@calcom/lib/components/ServerTrans";
 import { IS_CALCOM } from "@calcom/lib/constants";
+import { Link } from '@tanstack/react-router';
 
 type LearnMoreLinkProps = {
   t: TFunction;
@@ -29,7 +29,7 @@ export const LearnMoreLink = ({ t, i18nKey, href }: LearnMoreLinkProps) => {
             className="underline underline-offset-2"
             target="_blank"
             rel="noopener noreferrer"
-            href={href}>
+            to={href}>
             Learn more
           </Link>,
         ]}

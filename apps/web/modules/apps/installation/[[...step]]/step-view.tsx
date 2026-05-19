@@ -1,6 +1,9 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Toaster } from "sonner";
@@ -113,8 +116,8 @@ const OnboardingPage = ({
   installableOnTeams,
 }: OnboardingPageProps) => {
   const { t } = useLocale();
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = useLocation().pathname;
+  const router = useNavigate();
 
   const [configureStep, setConfigureStep] = useState(false);
 
@@ -228,7 +231,7 @@ const OnboardingPage = ({
   };
 
   const handleSetUpLater = () => {
-    router.push(`/apps/installed/${appMetadata.categories[0]}?hl=${appMetadata.slug}`);
+    router({ to: `/apps/installed/${appMetadata.categories[0]}?hl=${appMetadata.slug}` });
   };
 
   return (
@@ -279,7 +282,7 @@ const OnboardingPage = ({
                 }
                 try {
                   await Promise.all(mutationPromises);
-                  router.push("/event-types");
+                  router({ to: "/event-types" });
                 } catch (err) {
                   console.error(err);
                 }

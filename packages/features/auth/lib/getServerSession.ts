@@ -4,7 +4,6 @@ import logger from "@calcom/lib/logger";
 import { safeStringify } from "@calcom/lib/safeStringify";
 import prisma from "@calcom/prisma";
 import { LRUCache } from "lru-cache";
-import type { GetServerSidePropsContext, NextApiRequest } from "next";
 import type { AuthOptions, Session } from "next-auth";
 import { getToken } from "next-auth/jwt";
 
@@ -36,8 +35,9 @@ const CACHE = new LRUCache<string, Session>({ max: 1000 });
  * token has expired (30 days). This should be fine as we call `/auth/session`
  * frequently enough on the client-side to keep the session alive.
  */
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 export async function getServerSession(options: {
-  req: NextApiRequest | GetServerSidePropsContext["req"];
+  req: any | any["req"];
   authOptions?: AuthOptions;
 }) {
   const { req, authOptions: { secret } = {} } = options;

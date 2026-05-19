@@ -7,7 +7,8 @@ import type { BookingCreateBody } from "@calcom/features/bookings/lib/bookingCre
 import type { BookerEvent } from "@calcom/features/bookings/types";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { showToast } from "@calcom/ui/components/toast";
-import { useSearchParams } from "next/navigation";
+import { useSearch } from "@tanstack/react-router";
+
 import { getUtmTrackingParameters } from "../../lib/getUtmTrackingParameters";
 import type { UseCreateBookingInput } from "./useCreateBooking";
 
@@ -62,7 +63,7 @@ export const useHandleBookEvent = ({
     const errorMessage = err instanceof Error ? t(err.message) : t("can_you_try_again");
     showToast(errorMessage, "error");
   };
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
 
   const handleBookEvent = (inputTimeSlot?: string) => {
     const values = bookingForm.getValues();

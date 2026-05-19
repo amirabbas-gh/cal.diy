@@ -1,4 +1,3 @@
-import type { GetServerSidePropsContext } from "next";
 import type { ParsedUrlQuery } from "node:querystring";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
@@ -18,10 +17,11 @@ vi.mock("@calcom/prisma", () => ({
   default: prismaMock,
 }));
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 const createTestContext = (overrides?: {
   host?: string;
   query?: ParsedUrlQuery;
-}): GetServerSidePropsContext =>
+}): any =>
   ({
     req: {
       headers: {
@@ -29,13 +29,14 @@ const createTestContext = (overrides?: {
       },
     },
     query: overrides?.query || {},
-  }) as unknown as GetServerSidePropsContext;
+  }) as unknown as any;
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 const createTestRedirectParams = (overrides?: {
   slugs?: string[];
   redirectType?: RedirectType;
   eventTypeSlug?: string | null;
-  context?: GetServerSidePropsContext;
+  context?: any;
   currentOrgDomain?: string | null;
 }) => ({
   slugs: overrides?.slugs || ["pro"],

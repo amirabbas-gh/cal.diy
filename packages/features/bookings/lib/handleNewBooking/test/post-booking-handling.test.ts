@@ -21,7 +21,6 @@ import { getMockRequestDataForBooking } from "@calcom/testing/lib/bookingScenari
 import { setupAndTeardown } from "@calcom/testing/lib/bookingScenario/setupAndTeardown";
 
 import type { Request, Response } from "express";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { describe, expect, beforeEach, vi, test } from "vitest";
 
 import { resetTestEmails } from "@calcom/lib/testEmails";
@@ -29,8 +28,10 @@ import { BookingStatus } from "@calcom/prisma/enums";
 
 import { getNewBookingHandler } from "./getNewBookingHandler";
 
-export type CustomNextApiRequest = NextApiRequest & Request;
-export type CustomNextApiResponse = NextApiResponse & Response;
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export type CustomNextApiRequest = any & Request;
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export type CustomNextApiResponse = any & Response;
 
 // Local test runs sometimes get too slow
 const timeout = process.env.CI ? 5000 : 20000;

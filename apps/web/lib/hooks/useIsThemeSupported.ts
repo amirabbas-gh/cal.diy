@@ -1,11 +1,12 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 
 const THEME_UNSUPPORTED_ROUTES = ["/auth/setup"];
 
 export default function useIsThemeSupported(): boolean {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
 
   // Check if current pathname matches any unsupported route
   const isUnsupportedRoute = THEME_UNSUPPORTED_ROUTES.some((route) => pathname?.startsWith(route));

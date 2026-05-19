@@ -1,4 +1,5 @@
-import { NextRequest } from "next/server";
+// TODO: Next.js pages/api route — convert the handler to TanStack Start server route handlers (Web Request/Response) — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+
 import { describe, expect, test, vi, beforeEach } from "vitest";
 
 import { getOGImageVersion } from "@calcom/lib/OgImages";
@@ -35,9 +36,9 @@ vi.mock("@calcom/web/public/app-store/svg-hashes.json", () => ({
 
 global.fetch = vi.fn();
 
-function createNextRequest(url: string): NextRequest {
+function createNextRequest(url: string): Request {
   const request = new Request(url, { method: "GET" });
-  return new NextRequest(request);
+  return new Request(request);
 }
 
 describe("GET /api/social/og/image", () => {

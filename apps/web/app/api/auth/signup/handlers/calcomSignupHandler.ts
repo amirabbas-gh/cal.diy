@@ -1,3 +1,4 @@
+// TODO: Next.js pages/api route — convert the handler to TanStack Start server route handlers (Web Request/Response) — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import process from "node:process";
 import { getPremiumMonthlyPlanPriceId } from "@calcom/app-store/stripepayment/lib/utils";
 import { getLocaleFromRequest } from "@calcom/features/auth/lib/getLocaleFromRequest";
@@ -36,8 +37,11 @@ import {
 } from "@calcom/prisma/enums";
 import { signupSchema } from "@calcom/prisma/zod-utils";
 import { buildLegacyRequest } from "@calcom/web/lib/buildLegacyCtx";
-import { cookies, headers } from "next/headers";
-import { NextResponse } from "next/server";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getCookies, getHeaders } from "@tanstack/start/server";
+
+
 
 const log = logger.getSubLogger({ prefix: ["signupCalcomHandler"] });
 
@@ -78,7 +82,7 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
 
   // Check for premium username
   if (usernameStatus.statusCode === 418) {
-    return NextResponse.json(usernameStatus.json, { status: 418 });
+    return Response.json(usernameStatus.json, { status: 418 });
   }
 
   // Validate the user
@@ -108,7 +112,7 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
         select: { invitedTo: true },
       });
       if (existingUser && existingUser.invitedTo !== foundToken.teamId) {
-        return NextResponse.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
+        return Response.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
       }
     }
   } else {
@@ -135,8 +139,8 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
   }
 
   // Create the customer in Stripe with ad tracking metadata
-  const cookieStore = await cookies();
-  const cookiesObj = Object.fromEntries(cookieStore.getAll().map((c) => [c.name, c.value]));
+  
+  const cookiesObj = Object.fromEntries(Object.entries(getCookies()).map(([name, value]) => ({ name, value })).map((c) => [c.name, c.value]));
   const tracking = getTrackingFromCookies(cookiesObj, query);
 
   const customer = await billingService.createCustomer({
@@ -206,7 +210,7 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
           select: { id: true },
         });
         if (existingUserByUsername) {
-          return NextResponse.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
+          return Response.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
         }
       }
 
@@ -240,7 +244,7 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
         if (isPrismaError(error) && error.code === "P2002") {
           const target = String(error.meta?.target ?? "");
           if (target.includes("email") || target.includes("username")) {
-            return NextResponse.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
+            return Response.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
           }
         }
         throw error;
@@ -287,7 +291,7 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
       if (isPrismaError(error) && error.code === "P2002") {
         const target = String(error.meta?.target ?? "");
         if (target.includes("email") || target.includes("username")) {
-          return NextResponse.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
+          return Response.json({ message: SIGNUP_ERROR_CODES.USER_ALREADY_EXISTS }, { status: 409 });
         }
       }
       throw error;
@@ -319,7 +323,7 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
     const userRepository = new UserRepository(prisma);
     await userRepository.lockByEmail({ email });
 
-    return NextResponse.json(
+    return Response.json(
       { message: "Created user", stripeCustomerId: customer.stripeCustomerId, accountUnderReview: true },
       { status: 201 }
     );
@@ -328,20 +332,20 @@ const handler: CustomNextApiHandler = async (body, usernameStatus, query) => {
   if (!checkoutSessionId && !token) {
     sendEmailVerification({
       email,
-      language: await getLocaleFromRequest(buildLegacyRequest(await headers(), await cookies())),
+      language: await getLocaleFromRequest(buildLegacyRequest(new Headers(Object.entries(getHeaders()).map(([k, v]) => [k, Array.isArray(v) ? v.join(", ") : String(v ?? "")] as [string, string])), { getAll: () => Object.entries(getCookies()).map(([name, value]) => ({ name, value: String(value ?? "") })) })),
       username: username || "",
     });
   }
 
   if (checkoutSessionId) {
     console.log("Created user but missing payment", checkoutSessionId);
-    return NextResponse.json(
+    return Response.json(
       { message: "Created user but missing payment", checkoutSessionId },
       { status: 402 }
     );
   }
 
-  return NextResponse.json(
+  return Response.json(
     { message: "Created user", stripeCustomerId: customer.stripeCustomerId },
     { status: 201 }
   );

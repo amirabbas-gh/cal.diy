@@ -1,5 +1,4 @@
 import * as RadioGroup from "@radix-ui/react-radio-group";
-import Link from "next/link";
 import { useCallback, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
@@ -14,6 +13,7 @@ import { Label } from "@calcom/ui/components/form";
 import { CheckboxField } from "@calcom/ui/components/form";
 
 import SectionBottomActions from "@calcom/features/settings/SectionBottomActions";
+import { Link } from '@tanstack/react-router';
 
 type BookerLayoutSelectorProps = {
   title?: string;
@@ -236,7 +236,7 @@ const BookerLayoutFields = ({
               <Link
                 key="appearance-link"
                 target="_blank"
-                href="/settings/my-account/appearance"
+                to="/settings/my-account/appearance"
                 className="underline">
                 Appearance
               </Link>,

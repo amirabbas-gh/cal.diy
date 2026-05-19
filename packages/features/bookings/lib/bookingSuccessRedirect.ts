@@ -5,7 +5,10 @@ import { getSafe } from "@calcom/lib/getSafe";
 import { useCompatSearchParams } from "@calcom/lib/hooks/useCompatSearchParams";
 import { navigateInTopWindow } from "@calcom/lib/navigateInTopWindow";
 import type { EventType } from "@calcom/prisma/client";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 
 export function getNewSearchParams(args: {
   query: Record<string, string | null | undefined | boolean>;
@@ -179,7 +182,7 @@ export const getBookingRedirectExtraParams = (booking: SuccessRedirectBookingTyp
 };
 
 export const useBookingSuccessRedirect = () => {
-  const router = useRouter();
+  const router = useNavigate();
   const searchParams = useCompatSearchParams();
   const isEmbed = useIsEmbed();
   const bookingSuccessRedirect = ({
@@ -243,7 +246,7 @@ export const useBookingSuccessRedirect = () => {
       query,
       searchParams: new URLSearchParams(headersRelatedSearchParams),
     });
-    return router.push(`/booking/${booking.uid}${isEmbed ? "/embed" : ""}?${newSearchParams.toString()}`);
+    return router({ to: `/booking/${booking.uid}${isEmbed ? "/embed" : ""}?${newSearchParams.toString()}` });
   };
 
   return bookingSuccessRedirect;

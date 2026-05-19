@@ -1,4 +1,3 @@
-import type { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import { z } from "zod";
 
 import { createDefaultInstallation } from "@calcom/app-store/_utils/installation";
@@ -476,8 +475,9 @@ const getParsedStep = (paramsStep: string | string[] | undefined): string | unde
   return paramsStep;
 };
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 const getInstallationParams = async (
-  context: GetServerSidePropsContext
+  context: any
 ): Promise<{
   parsedAppSlug: string;
   parsedStepParam: string | undefined;
@@ -493,9 +493,10 @@ const getInstallationParams = async (
   return { parsedAppSlug, parsedStepParam, parsedTeamIdParam, sessionId };
 };
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-): Promise<GetServerSidePropsResult<OnboardingPageProps>> => {
+  context: any
+): Promise<any<OnboardingPageProps>> => {
   const { parsedAppSlug, parsedStepParam, parsedTeamIdParam, sessionId } =
     await getInstallationParams(context);
   if (!sessionId) return { redirect: { permanent: false, destination: "/auth/login" } };

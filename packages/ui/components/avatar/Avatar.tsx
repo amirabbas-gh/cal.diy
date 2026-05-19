@@ -1,12 +1,12 @@
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import { Provider as TooltipPrimitiveProvider } from "@radix-ui/react-tooltip";
 import { cva } from "class-variance-authority";
-import Link from "next/link";
 
 import { AVATAR_FALLBACK } from "@calcom/lib/constants";
 import classNames from "@calcom/ui/classNames";
 
 import { Tooltip } from "../tooltip";
+import { Link } from '@tanstack/react-router';
 
 type Maybe<T> = T | null | undefined;
 
@@ -100,7 +100,7 @@ export function Avatar(props: AvatarProps) {
 
   if (href) {
     avatar = (
-      <Link data-testid="avatar-href" href={href}>
+      <Link data-testid="avatar-href" to={href}>
         {avatar}
       </Link>
     );

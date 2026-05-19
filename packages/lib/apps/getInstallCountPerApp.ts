@@ -1,4 +1,5 @@
-import { unstable_cache } from "next/cache";
+
+// TODO: next/cache migration (R4e): unwrap + optional `*QueryOptions` for `useQuery`/`ensureQueryData`; align with `invalidateQueries` / route loaders — https://tanstack.com/query/latest/docs/framework/react/guides/caching · https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation
 import { z } from "zod";
 
 import prisma from "@calcom/prisma";
@@ -29,10 +30,7 @@ const computeInstallCountsFromDB = async (): Promise<Record<string, number>> => 
 };
 
 const getInstallCountPerApp = async (): Promise<Record<string, number>> => {
-  return unstable_cache(async () => computeInstallCountsFromDB(), ["app-install-counts"], {
-    revalidate: 300,
-    tags: ["app-install-counts"],
-  })();
+  return async () => computeInstallCountsFromDB() // TODO: next/cache migration (R4e): unstable_cache keys ["app-install-counts"]; revalidate 300s → staleTime: 300000; tags ["app-install-counts"]();
 };
 
 export default getInstallCountPerApp;

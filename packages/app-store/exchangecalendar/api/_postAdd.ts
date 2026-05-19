@@ -1,5 +1,4 @@
 import { SoapFaultDetails } from "ews-javascript-api";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 
 import { symmetricEncrypt } from "@calcom/lib/crypto";
@@ -23,7 +22,8 @@ const formSchema = z
   })
   .strict();
 
-export async function getHandler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export async function getHandler(req: any, res: any) {
   const session = checkSession(req);
   const body = formSchema.parse(req.body);
   const encrypted = symmetricEncrypt(JSON.stringify(body), process.env.CALENDSO_ENCRYPTION_KEY || "");

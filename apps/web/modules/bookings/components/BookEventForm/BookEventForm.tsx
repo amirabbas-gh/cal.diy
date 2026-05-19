@@ -15,12 +15,12 @@ import { Button } from "@calcom/ui/components/button";
 import { EmptyScreen } from "@calcom/ui/components/empty-screen";
 import { Form } from "@calcom/ui/components/form";
 import type { TFunction } from "i18next";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { FieldError } from "react-hook-form";
 import type { IUseBookingErrors, IUseBookingLoadingStates } from "../../hooks/useBookings";
 import { BookingFields } from "./BookingFields";
 import { FormSkeleton } from "./Skeleton";
+import { Link } from '@tanstack/react-router';
 
 type BookEventFormProps = {
   onCancel?: () => void;
@@ -184,14 +184,14 @@ export const BookEventForm = ({
                 <Link
                   className="text-emphasis hover:underline"
                   key="terms"
-                  href={`${WEBSITE_TERMS_URL}`}
+                  to={`${WEBSITE_TERMS_URL}`}
                   target="_blank">
                   Terms
                 </Link>,
                 <Link
                   className="text-emphasis hover:underline"
                   key="privacy"
-                  href={`${WEBSITE_PRIVACY_POLICY_URL}`}
+                  to={`${WEBSITE_PRIVACY_POLICY_URL}`}
                   target="_blank">
                   Privacy Policy.
                 </Link>,
@@ -206,7 +206,7 @@ export const BookEventForm = ({
             <Link
               className="text-emphasis hover:underline"
               key="terms"
-              href={`${WEBSITE_TERMS_URL}`}
+              to={`${WEBSITE_TERMS_URL}`}
               target="_blank">
               {t("terms")}
             </Link>{" "}
@@ -214,7 +214,7 @@ export const BookEventForm = ({
             <Link
               className="text-emphasis hover:underline"
               key="privacy"
-              href={`${WEBSITE_PRIVACY_POLICY_URL}`}
+              to={`${WEBSITE_PRIVACY_POLICY_URL}`}
               target="_blank">
               {t("privacy_policy")}
             </Link>

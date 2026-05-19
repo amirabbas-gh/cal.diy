@@ -1,5 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate, useRouter } from "@tanstack/react-router";
+
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Toaster } from "sonner";
@@ -38,6 +41,7 @@ const schema = z
 
 export default function ExchangeSetup() {
   const { t } = useLocale();
+  const navigate = useNavigate();
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
   const form = useForm<IFormData>({
@@ -95,7 +99,7 @@ export default function ExchangeSetup() {
                     if (!res.ok) {
                       setErrorMessage(json?.message || t("something_went_wrong"));
                     } else {
-                      router.push(json.url);
+                      navigate({ to: json.url });
                     }
                   }}>
                   <fieldset className="stack-y-4" disabled={form.formState.isSubmitting}>
@@ -168,7 +172,7 @@ export default function ExchangeSetup() {
                   </fieldset>
                   {errorMessage && <Alert severity="error" title={errorMessage} className="my-4" />}
                   <div className="mt-4 flex justify-end space-x-2 rtl:space-x-reverse">
-                    <Button type="button" color="secondary" onClick={() => router.back()}>
+                    <Button type="button" color="secondary" onClick={() => router.history.back()}>
                       {t("cancel")}
                     </Button>
                     <Button type="submit" loading={form.formState.isSubmitting}>

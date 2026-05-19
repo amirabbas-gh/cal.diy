@@ -11,7 +11,6 @@ import { prisma } from "@calcom/prisma";
 import { BookingStatus, RedirectType } from "@calcom/prisma/enums";
 import { handleOrgRedirect } from "@lib/handleOrgRedirect";
 import { getUsersInOrgContext } from "@server/lib/[user]/getServerSideProps";
-import type { GetServerSidePropsContext } from "next";
 import type { Session } from "next-auth";
 import { z } from "zod";
 
@@ -111,7 +110,8 @@ async function processSeatedEvent({
   }
 }
 
-async function getDynamicGroupPageProps(context: GetServerSidePropsContext) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function getDynamicGroupPageProps(context: any) {
   const session = await getServerSession({ req: context.req });
   const { user: usernames, type: slug } = paramsSchema.parse(context.params);
   const { rescheduleUid, bookingUid } = context.query;
@@ -209,7 +209,8 @@ async function getDynamicGroupPageProps(context: GetServerSidePropsContext) {
   };
 }
 
-async function getUserPageProps(context: GetServerSidePropsContext) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function getUserPageProps(context: any) {
   const session = await getServerSession({ req: context.req });
   const { user: usernames, type: slug } = paramsSchema.parse(context.params);
   const username = usernames[0];
@@ -311,7 +312,8 @@ const paramsSchema = z.object({
 
 // Booker page fetches a tiny bit of data server side, to determine early
 // whether the page should show an away state or dynamic booking not allowed.
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export const getServerSideProps = async (context: any) => {
   const { user } = paramsSchema.parse(context.params);
   const isDynamicGroup = user.length > 1;
 

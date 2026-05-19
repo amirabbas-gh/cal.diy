@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@import "@fontsource-variable/poppins";
+@import "@fontsource-variable/inter";
+@theme inline {
+  --font-poppins: 'Poppins Variable', sans-serif;
+  --font-inter: 'Inter Variable', sans-serif;
+}

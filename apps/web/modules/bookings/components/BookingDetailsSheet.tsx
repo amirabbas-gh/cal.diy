@@ -33,7 +33,6 @@ import {
 import { Tooltip } from "@calcom/ui/components/tooltip";
 import { ExternalLinkIcon, RepeatIcon } from "@coss/ui/icons";
 import assignmentReasonBadgeTitleMap from "@lib/booking/assignmentReasonBadgeTitleMap";
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { z } from "zod";
 import { AcceptBookingButton } from "../../../components/booking/AcceptBookingButton";
@@ -49,6 +48,7 @@ import {
   createBookingSheetKeydownHandler,
 } from "../lib/bookingSheetKeyboardHandler";
 import { JoinMeetingButton } from "./JoinMeetingButton";
+import { Link } from '@tanstack/react-router';
 
 type BookingMetaData = z.infer<typeof bookingMetadataSchema>;
 
@@ -877,7 +877,7 @@ function OldRescheduledBookingInfo({
     <>
       {rescheduledToBooking?.uid && (
         <Section title={t("rescheduled")}>
-          <Link href={`/booking/${rescheduledToBooking.uid}`}>
+          <Link to={`/booking/${rescheduledToBooking.uid}`}>
             <div className="flex items-center gap-1 text-default text-sm underline">
               {t("view_booking")}
               <ExternalLinkIcon className="h-4 w-4" />
@@ -925,7 +925,7 @@ function NewRescheduledBookingInfo({ booking }: { booking: BookingOutput }) {
         {rescheduledBy && (
           <p className="font-medium text-emphasis text-sm">{rescheduledBy}</p>
         )}
-        <Link href={`/booking/${booking.fromReschedule}`}>
+        <Link to={`/booking/${booking.fromReschedule}`}>
           <div className="flex items-center gap-1 text-default text-sm underline">
             {t("original_booking")}
             <ExternalLinkIcon className="h-4 w-4" />

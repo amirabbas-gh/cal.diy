@@ -1,6 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 // Importing types so we're not directly importing next/server
-import type { NextRequest, NextResponse } from "next/server";
 
 export const telemetryEventTypes = {
   pageView: "page_view",
@@ -65,9 +63,10 @@ export const nextCollectBasicSettings: CollectOpts = {
   ],
 };
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 export const extendEventData = (
-  req: NextRequest | NextApiRequest,
-  res: NextResponse | NextApiResponse,
+  req: Request | any,
+  res: Response | any,
   original: { page_url: string; isTeamBooking: boolean }
 ) => {
   const onVercel =

@@ -1,4 +1,7 @@
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 
 import type { IOutOfOfficeData } from "@calcom/features/availability/lib/getUserAvailability";
 import ServerTrans from "@calcom/lib/components/ServerTrans";
@@ -34,7 +37,7 @@ export const OutOfOfficeInSlots = (props: IOutOfOfficeInSlotsProps) => {
   } = props;
   const searchParams = useCompatSearchParams();
 
-  const router = useRouter();
+  const router = useNavigate();
 
   // Check if this is a holiday (no fromUser but has reason)
   const isHoliday = !fromUser && reason;
@@ -96,11 +99,9 @@ export const OutOfOfficeInSlots = (props: IOutOfOfficeInSlotsProps) => {
               const targetDate = searchParams.get("date") || date;
               // go to the booking page with the selected user and correct search param
               // While being an org push will maintain the org context and just change the user in params
-              router.push(
-                `/${toUser.username}?${month ? `month=${month}&` : ""}date=${targetDate}${
+              router({ to: `/${toUser.username}?${month ? `month=${month}&` : ""}date=${targetDate}${
                   layout ? `&layout=${layout}` : ""
-                }`
-              );
+                }` });
             }}>
             <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
               {t("ooo_slots_book_with", { displayName: toUser.displayName })}

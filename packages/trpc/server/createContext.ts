@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from "next";
 import type { Session } from "next-auth";
 import type { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
@@ -12,11 +11,12 @@ import type { SelectedCalendar, User as PrismaUser } from "@calcom/prisma/client
 
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 type CreateContextOptions =
   | (Omit<CreateNextContextOptions, "info"> & {
       info?: CreateNextContextOptions["info"];
     })
-  | GetServerSidePropsContext;
+  | any;
 
 export type CreateInnerContextOptions = {
   sourceIp?: string;
@@ -41,10 +41,11 @@ export type CreateInnerContextOptions = {
   i18n?: Awaited<ReturnType<typeof serverSideTranslations>>;
 } & Partial<CreateContextOptions>;
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 export type GetSessionFn =
   | ((_options: {
-      req: GetServerSidePropsContext["req"] | NextApiRequest;
-      res: GetServerSidePropsContext["res"] | NextApiResponse;
+      req: any["req"] | any;
+      res: any["res"] | any;
     }) => Promise<Session | null>)
   | (() => Promise<Session | null>);
 
@@ -95,7 +96,8 @@ export const createContext = async (
 
   // This type may not be accurate if this request is coming from SSG init but they both should satisfy the requirements of getIP.
   // TODO: @sean - figure out a way to make getIP be happy with trpc req. params
-  const sourceIp = getIP(req as NextApiRequest);
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+  const sourceIp = getIP(req as any);
   const session = sessionGetter ? await sessionGetter({ req, res }) : null;
   const contextInner = await createContextInner({ locale, session, sourceIp });
   return {

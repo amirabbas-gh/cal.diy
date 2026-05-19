@@ -36,9 +36,9 @@ import {
   ListItemTitleLink,
 } from "@coss/ui/shared/list-item";
 import { EllipsisIcon, ExternalLinkIcon, PencilIcon, TrashIcon, WebhookIcon } from "@coss/ui/icons";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DeleteWebhookDialog } from "./dialogs/DeleteWebhookDialog";
+import { Link } from '@tanstack/react-router';
 
 const MAX_BADGES_TWO_ROWS = 7;
 
@@ -214,7 +214,7 @@ export default function WebhookListItem(props: {
                         <Button
                           aria-label={t("edit")}
                           data-testid="webhook-edit-button"
-                          render={<Link href={props.editHref} />}
+                          render={<Link to={props.editHref} />}
                           size="icon"
                           variant="outline"
                         >
@@ -307,7 +307,7 @@ export default function WebhookListItem(props: {
               <MenuGroup>
                 {props.permissions.canEditWebhook ? (
                   props.editHref ? (
-                    <MenuItem render={<Link href={props.editHref} />}>
+                    <MenuItem render={<Link to={props.editHref} />}>
                       <PencilIcon />
                       {t("edit")}
                     </MenuItem>

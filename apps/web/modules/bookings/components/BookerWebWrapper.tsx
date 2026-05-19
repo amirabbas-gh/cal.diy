@@ -17,7 +17,10 @@ import { DEFAULT_DARK_BRAND_COLOR, DEFAULT_LIGHT_BRAND_COLOR, WEBAPP_URL } from 
 import { useRouterQuery } from "@calcom/lib/hooks/useRouterQuery";
 import { localStorage } from "@calcom/lib/webstorage";
 import { useEvent, useScheduleForEvent } from "@calcom/web/modules/schedules/hooks/useEvent";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate, useSearch } from "@tanstack/react-router";
+
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo } from "react";
 import { shallow } from "zustand/shallow";
@@ -33,9 +36,9 @@ export type BookerWebWrapperAtomProps = BookerProps & {
 };
 
 const BookerWebWrapperComponent = (props: BookerWebWrapperAtomProps): JSX.Element => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const router = useNavigate();
+  const pathname = useLocation().pathname;
+  const searchParams = useSearch();
   const clientFetchedEvent = useEvent({
     disabled: !!props.eventData,
     fromRedirectOfNonOrgLink: props.entity.fromRedirectOfNonOrgLink,
@@ -186,7 +189,7 @@ const BookerWebWrapperComponent = (props: BookerWebWrapperAtomProps): JSX.Elemen
         url.searchParams.delete("overlayCalendar");
         localStorage.removeItem("overlayCalendarSwitchDefault");
       }
-      router.push(`${url.pathname}${url.search}`);
+      router({ to: `${url.pathname}${url.search}` });
     },
     [router]
   );
@@ -204,13 +207,13 @@ const BookerWebWrapperComponent = (props: BookerWebWrapperAtomProps): JSX.Elemen
     <BookerComponent
       {...props}
       onOverlayClickNoCalendar={() => {
-        router.push("/apps/categories/calendar");
+        router({ to: "/apps/categories/calendar" });
       }}
       onClickOverlayContinue={() => {
         const newUrl = new URL(`${WEBAPP_URL}/login`);
         newUrl.searchParams.set("callbackUrl", window.location.pathname);
         newUrl.searchParams.set("overlayCalendar", "true");
-        router.push(newUrl.toString());
+        router({ to: newUrl.toString() });
       }}
       onOverlaySwitchStateChange={onOverlaySwitchStateChange}
       sessionUsername={session?.user.username}

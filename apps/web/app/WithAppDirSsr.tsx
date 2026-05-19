@@ -1,5 +1,7 @@
-import type { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { notFound, redirect } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { notFound, redirect } from "@tanstack/react-router";
+
 
 export const withAppDirSsr =
   <T extends Record<string, any>>(getServerSideProps: GetServerSideProps<T>) =>
@@ -10,7 +12,7 @@ export const withAppDirSsr =
       redirect(ssrResponse.redirect.destination);
     }
     if ("notFound" in ssrResponse) {
-      notFound();
+      throw notFound();
     }
 
     const props = await Promise.resolve(ssrResponse.props);

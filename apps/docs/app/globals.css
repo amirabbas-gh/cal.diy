@@ -1,0 +1,53 @@
+@import "tailwindcss";
+/* @codemod:next-font-local:cal-sans:fonts/CalSans-Regular.woff2 */
+@font-face {
+  font-family: 'Cal Sans';
+  src: url('../fonts/CalSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* @codemod:next-font-local:cal-sans-ui:fonts/CalSansUI-UILight.woff2 */
+@font-face {
+  font-family: 'Cal Sans Ui';
+  src: url('../fonts/CalSansUI-UILight.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+
+/* @codemod:next-font-local:cal-sans-ui:fonts/CalSansUI-UIRegular.woff2 */
+@font-face {
+  font-family: 'Cal Sans Ui';
+  src: url('../fonts/CalSansUI-UIRegular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* @codemod:next-font-local:cal-sans-ui:fonts/CalSansUI-UIMedium.woff2 */
+@font-face {
+  font-family: 'Cal Sans Ui';
+  src: url('../fonts/CalSansUI-UIMedium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+/* @codemod:next-font-local:cal-sans-ui:fonts/CalSansUI-UISemiBold.woff2 */
+@font-face {
+  font-family: 'Cal Sans Ui';
+  src: url('../fonts/CalSansUI-UISemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+/* @codemod:next-font-local:cal-sans-ui:fonts/CalSansUI-UIBold.woff2 */
+@font-face {
+  font-family: 'Cal Sans Ui';
+  src: url('../fonts/CalSansUI-UIBold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@theme inline {
+  --font-cal: 'Cal Sans', ui-sans-serif, sans-serif;
+  --font-cal-ui: 'Cal Sans Ui', ui-sans-serif, sans-serif;
+}

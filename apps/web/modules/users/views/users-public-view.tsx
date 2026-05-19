@@ -16,11 +16,11 @@ import { EventTypeDescriptionLazy as EventTypeDescription } from "@calcom/web/mo
 import EmptyPage from "@calcom/web/modules/event-types/components/EmptyPage";
 import type { getServerSideProps } from "@server/lib/[user]/getServerSideProps";
 import classNames from "classnames";
-import type { InferGetServerSidePropsType } from "next";
-import Link from "next/link";
 import { Toaster } from "sonner";
+import { Link } from '@tanstack/react-router';
 
-export type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export type PageProps = any<typeof getServerSideProps>;
 export function UserPage(props: PageProps) {
   const { users, profile, eventTypes, entity } = props;
 
@@ -119,12 +119,12 @@ export function UserPage(props: PageProps) {
               <Link
                 key={type.id}
                 style={{ display: "flex", ...eventTypeListItemEmbedStyles }}
-                prefetch={false}
-                href={{
+                preload={false}
+                to={{
                   pathname: `/${user.profile.username}/${type.slug}`,
                   query,
                 }}
-                passHref
+
                 onClick={async () => {
                   sdkActionManager?.fire("eventTypeSelected", {
                     eventType: type,

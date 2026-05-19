@@ -1,5 +1,4 @@
 import process from "node:process";
-import type { NextApiRequest } from "next";
 import z from "zod";
 import logger from "./logger";
 
@@ -19,7 +18,8 @@ export function parseIpFromHeaders(value: string | string[]) {
  *
  * @see https://github.com/vercel/examples/blob/main/edge-functions/ip-blocking/lib/get-ip.ts
  **/
-export default function getIP(request: Request | NextApiRequest) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export default function getIP(request: Request | any) {
   const headers: readonly string[] = ["cf-connecting-ip", "true-client-ip", "x-forwarded-for", "x-real-ip"];
 
   for (const header of headers) {
@@ -34,7 +34,8 @@ export default function getIP(request: Request | NextApiRequest) {
 
 const banlistSchema = z.array(z.string());
 
-export function isIpInBanlist(request: Request | NextApiRequest) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export function isIpInBanlist(request: Request | any) {
   const IP = getIP(request);
   const rawBanListJson = process.env.IP_BANLIST || "[]";
   const banList = banlistSchema.parse(JSON.parse(rawBanListJson));

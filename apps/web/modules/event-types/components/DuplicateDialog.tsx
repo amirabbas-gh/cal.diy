@@ -1,5 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -39,7 +42,7 @@ const DuplicateDialog = () => {
 
   const searchParams = useCompatSearchParams();
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
   const [firstRender, setFirstRender] = useState(true);
   const {
     data: { pageSlug, slug, ...defaultValues },
@@ -72,7 +75,7 @@ const DuplicateDialog = () => {
 
   const duplicateMutation = trpc.viewer.eventTypesHeavy.duplicate.useMutation({
     onSuccess: async ({ eventType }) => {
-      await router.replace(`/event-types/${eventType.id}`);
+      await router({ to: `/event-types/${eventType.id}`, replace: true });
 
       await utils.viewer.eventTypes.getUserEventGroups.invalidate();
       revalidateEventTypesList();
