@@ -1,10 +1,9 @@
-import type { GetServerSidePropsContext } from "next";
-
 import { getServerSession } from "@calcom/feature-auth/lib/getServerSession";
 import { getOptions } from "@calcom/feature-auth/lib/next-auth-options";
 import { getTrackingFromCookies } from "@calcom/lib/tracking";
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export const getServerSideProps = async (context: any) => {
   const session = await getServerSession({
     req: context.req,
     authOptions: getOptions({

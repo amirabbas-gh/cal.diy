@@ -1,6 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import posthog from "posthog-js";
@@ -36,7 +39,7 @@ const UserProfile = ({ user }: UserProfileProps) => {
   const { data: eventTypes } = trpc.viewer.eventTypes.list.useQuery();
   const [imageSrc, setImageSrc] = useState<string>(user?.avatar || "");
   const utils = trpc.useUtils();
-  const router = useRouter();
+  const router = useNavigate();
   const createEventType = trpc.viewer.eventTypesHeavy.create.useMutation();
   const [firstRender, setFirstRender] = useState(true);
 
@@ -71,7 +74,7 @@ const UserProfile = ({ user }: UserProfileProps) => {
       await utils.viewer.me.get.refetch();
       const redirectUrl = localStorage.getItem("onBoardingRedirect");
       localStorage.removeItem("onBoardingRedirect");
-      redirectUrl ? router.push(redirectUrl) : router.push("/");
+      redirectUrl ? router({ to: redirectUrl }) : router({ to: "/" });
     },
     onError: () => {
       showToast(t("problem_saving_user_profile"), "error");

@@ -1,3 +1,4 @@
+// TODO: next/dist migration (R4dist): `import("next/headers")` in types → `getHeaders` / `getCookies` from @tanstack/start/server — verify `ReturnType`
 import { parse } from "accept-language-parser";
 import { lookup } from "bcp-47-match";
 import type { GetTokenParams } from "next-auth/jwt";
@@ -5,8 +6,8 @@ import { getToken } from "next-auth/jwt";
 
 import { i18n } from "@calcom/i18n/next-i18next.config";
 
-type ReadonlyHeaders = Awaited<ReturnType<typeof import("next/headers").headers>>;
-type ReadonlyRequestCookies = Awaited<ReturnType<typeof import("next/headers").cookies>>;
+type ReadonlyHeaders = Awaited<ReturnType<typeof import("@tanstack/start/server").getHeaders>>;
+type ReadonlyRequestCookies = Awaited<ReturnType<typeof import("@tanstack/start/server").getCookies>>;
 
 /**
  * This is a slimmed down version of the `getServerSession` function from

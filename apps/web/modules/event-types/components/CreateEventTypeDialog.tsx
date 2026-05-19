@@ -10,7 +10,10 @@ import { Button } from "@calcom/ui/components/button";
 import { DialogClose, DialogContent, DialogFooter } from "@calcom/ui/components/dialog";
 import { showToast } from "@calcom/ui/components/toast";
 import { isValidPhoneNumber } from "libphonenumber-js/max";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { z } from "zod";
 import { useCreateEventType } from "~/event-types/hooks/useCreateEventType";
 
@@ -65,7 +68,7 @@ const querySchema = z.object({
 
 export function CreateEventTypeDialog({ profileOptions }: { profileOptions: ProfileOption[] }) {
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
   const orgBranding = null;
 
   const {
@@ -77,7 +80,7 @@ export function CreateEventTypeDialog({ profileOptions }: { profileOptions: Prof
   const permissions = teamProfile?.permissions ?? { canCreateEventType: false };
 
   const onSuccessMutation = (eventType: EventType) => {
-    router.replace(`/event-types/${eventType.id}${teamId ? "?tabName=team" : ""}`);
+    router({ to: `/event-types/${eventType.id}${teamId ? "?tabName=team" : ""}`, replace: true });
     showToast(
       t("event_type_created_successfully", {
         eventTypeTitle: eventType.title,

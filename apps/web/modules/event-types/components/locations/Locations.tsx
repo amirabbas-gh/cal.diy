@@ -1,6 +1,5 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { ErrorMessage } from "@hookform/error-message";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useFieldArray } from "react-hook-form";
 import type { UseFormGetValues, UseFormSetValue, Control, FormState } from "react-hook-form";
@@ -24,6 +23,7 @@ import { showToast } from "@calcom/ui/components/toast";
 import CalVideoSettings from "./CalVideoSettings";
 import DefaultLocationSettings from "./DefaultLocationSettings";
 import LocationInput from "./LocationInput";
+import { Link } from '@tanstack/react-router';
 
 export type TEventTypeLocation = Pick<EventTypeSetupProps["eventType"], "locations" | "calVideoSettings">;
 export type TLocationOptions = Pick<EventTypeSetupProps, "locationOptions">["locationOptions"];
@@ -383,7 +383,7 @@ const Locations: React.FC<LocationsProps> = ({
                   <Link
                     key="event_type_requires_google_calendar"
                     className="cursor-pointer text-blue-500 underline"
-                    href="/apps/google-calendar">
+                    to="/apps/google-calendar">
                     here
                   </Link>,
                 ]}
@@ -424,7 +424,7 @@ const Locations: React.FC<LocationsProps> = ({
               <Link
                 key="cant_find_the_right_conferencing_app_visit_our_app_store"
                 className="cursor-pointer text-blue-500 underline"
-                href="/apps/categories/conferencing">
+                to="/apps/categories/conferencing">
                 App Store
               </Link>,
             ]}

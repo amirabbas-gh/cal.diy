@@ -10,9 +10,9 @@ import { Button } from "@coss/ui/components/button";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "@coss/ui/components/select";
 import { Tooltip, TooltipPopup, TooltipProvider, TooltipTrigger } from "@coss/ui/components/tooltip";
 import { ExternalLinkIcon } from "lucide-react";
-import Link from "next/link";
 import type { UseFormReturn } from "react-hook-form";
 import type { WebhookFormValues } from "./WebhookForm";
+import { Link } from '@tanstack/react-router';
 
 const webhookVersionItems = WEBHOOK_VERSION_OPTIONS.map((option) => ({
   value: option.value,
@@ -66,7 +66,7 @@ export function WebhookVersionCTA({ formMethods }: { formMethods: UseFormReturn<
                 render={
                   <Link
                     className="flex text-muted-foreground hover:text-foreground"
-                    href={getWebhookVersionDocsUrl(version)}
+                    to={getWebhookVersionDocsUrl(version)}
                     target="_blank"
                     rel="noopener noreferrer"
                   />

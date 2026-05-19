@@ -2,12 +2,83 @@
 
 import { WEBAPP_URL } from "@calcom/lib/constants";
 import { get as edgeConfigGet } from "@vercel/edge-config";
-import { NextRequest, NextResponse } from "next/server";
 import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // We'll test the wrapped proxy as it would be used in production
 import proxy from "./proxy";
 import { config } from "./proxy";
+
+type NextResponseInit = ResponseInit & { request?: { headers?: Headers } };
+
+function __nextResponseJson(body: unknown, init?: ResponseInit): Response {
+  const headers = new Headers(init?.headers);
+  if (!headers.has("content-type")) {
+    headers.set("content-type", "application/json");
+  }
+  return new Response(JSON.stringify(body), { ...init, headers });
+}
+
+const NextResponse = Object.assign(
+  function NextResponse(body?: BodyInit | null, init?: ResponseInit): Response {
+    return new Response(body, init);
+  },
+  {
+    json: __nextResponseJson,
+    next: (init?: NextResponseInit) =>
+      new Response(null, {
+        status: 200,
+        ...init,
+        headers: {
+          "x-middleware-next": "1",
+          ...Object.fromEntries(new Headers(init?.headers)),
+        },
+      }),
+    rewrite: (url: URL | string, init?: ResponseInit) => {
+      const rewriteUrl = typeof url === "string" ? new URL(url, "http://localhost") : url;
+      return new Response(null, {
+        status: 200,
+        ...init,
+        headers: {
+          "x-middleware-rewrite": rewriteUrl.toString(),
+          ...Object.fromEntries(new Headers(init?.headers)),
+        },
+      });
+    },
+    redirect: (url: URL | string, statusOrInit?: number | ResponseInit) => {
+      const redirectUrl = typeof url === "string" ? new URL(url, "http://localhost") : url;
+      const status =
+        typeof statusOrInit === "number"
+          ? statusOrInit
+          : (typeof statusOrInit === "object" && statusOrInit && "status" in statusOrInit
+              ? (statusOrInit as ResponseInit).status
+              : undefined) ?? 307;
+      const baseInit =
+        typeof statusOrInit === "object" && statusOrInit !== null && typeof statusOrInit !== "number"
+          ? statusOrInit
+          : {};
+      const headers = new Headers((baseInit as ResponseInit).headers);
+      headers.set("location", redirectUrl.toString());
+      return new Response(null, { ...baseInit, status, headers });
+    },
+  },
+);
+
+class NextRequest extends Request {
+  private readonly __cookieMap = new Map<string, string>();
+  get nextUrl(): URL {
+    return new URL(this.url);
+  }
+  cookies = {
+    get: (name: string) => {
+      const value = this.__cookieMap.get(name);
+      return value !== undefined ? { name, value } : undefined;
+    },
+    set: (name: string, value: string) => {
+      this.__cookieMap.set(name, value);
+    },
+  };
+}
+
 
 // Mock dependencies at module level
 vi.mock("@vercel/edge-config", () => ({
@@ -15,90 +86,7 @@ vi.mock("@vercel/edge-config", () => ({
 }));
 
 // Mock NextResponse.json since it's not available in test environment
-vi.mock("next/server", async () => {
-  const actual = await vi.importActual<typeof import("next/server")>("next/server");
 
-  // Create a NextResponse constructor that returns Response objects
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const NextResponse = function (body: any, init?: ResponseInit) {
-    return new Response(body, init);
-  };
-
-  // Add static methods
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  NextResponse.json = (body: any, init?: ResponseInit) => {
-    return new Response(JSON.stringify(body), {
-      ...init,
-      headers: {
-        ...init?.headers,
-        "content-type": "application/json",
-      },
-    });
-  };
-
-  NextResponse.next = (init?: ResponseInit) => {
-    const response = new Response(null, {
-      status: 200,
-      ...init,
-      headers: {
-        ...init?.headers,
-        "x-middleware-next": "1",
-      },
-    });
-
-    // Add cookies property
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (response as any).cookies = {
-      delete: vi.fn(),
-      set: vi.fn(),
-      get: vi.fn(),
-    };
-
-    return response;
-  };
-
-  NextResponse.rewrite = (url: URL | string, init?: ResponseInit) => {
-    const rewriteUrl = typeof url === "string" ? new URL(url) : url;
-    return new Response(null, {
-      status: 200,
-      ...init,
-      headers: {
-        ...init?.headers,
-        "x-middleware-rewrite": rewriteUrl.toString(),
-      },
-    });
-  };
-
-  NextResponse.redirect = (url: URL | string, statusOrInit?: number | ResponseInit) => {
-    const redirectUrl = typeof url === "string" ? new URL(url) : url;
-    const status = typeof statusOrInit === "number" ? statusOrInit : statusOrInit?.status || 307;
-    const init = typeof statusOrInit === "object" ? statusOrInit : {};
-
-    const response = new Response(null, {
-      ...init,
-      status,
-      headers: {
-        ...init.headers,
-        location: redirectUrl.toString(),
-      },
-    });
-
-    // Add cookies property
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (response as any).cookies = {
-      delete: vi.fn(),
-      set: vi.fn(),
-      get: vi.fn(),
-    };
-
-    return response;
-  };
-
-  return {
-    ...actual,
-    NextResponse,
-  };
-});
 
 const createTestRequest = (overrides?: {
   url?: string;

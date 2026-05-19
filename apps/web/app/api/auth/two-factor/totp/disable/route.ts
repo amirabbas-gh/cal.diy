@@ -1,8 +1,11 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { parseRequestData } from "app/api/parseRequestData";
-import { cookies, headers } from "next/headers";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getCookies, getHeaders } from "@tanstack/start/server";
+
+
+
 
 import { ErrorCode } from "@calcom/features/auth/lib/ErrorCode";
 import { getServerSession } from "@calcom/features/auth/lib/getServerSession";
@@ -15,17 +18,17 @@ import { IdentityProvider } from "@calcom/prisma/enums";
 
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 
-async function handler(req: NextRequest) {
+async function handler(req: Request) {
   const body = await parseRequestData(req);
-  const session = await getServerSession({ req: buildLegacyRequest(await headers(), await cookies()) });
+  const session = await getServerSession({ req: buildLegacyRequest(new Headers(Object.entries(getHeaders()).map(([k, v]) => [k, Array.isArray(v) ? v.join(", ") : String(v ?? "")] as [string, string])), { getAll: () => Object.entries(getCookies()).map(([name, value]) => ({ name, value: String(value ?? "") })) }) });
 
   if (!session) {
-    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    return Response.json({ message: "Not authenticated" }, { status: 401 });
   }
 
   if (!session.user?.id) {
     console.error("Session is missing a user id.");
-    return NextResponse.json({ error: ErrorCode.InternalServerError }, { status: 500 });
+    return Response.json({ error: ErrorCode.InternalServerError }, { status: 500 });
   }
 
   await checkRateLimitAndThrowError({
@@ -37,21 +40,21 @@ async function handler(req: NextRequest) {
 
   if (!user) {
     console.error(`Session references user that no longer exists.`);
-    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    return Response.json({ message: "Not authenticated" }, { status: 401 });
   }
 
   if (!user.password?.hash && user.identityProvider === IdentityProvider.CAL) {
-    return NextResponse.json({ error: ErrorCode.UserMissingPassword }, { status: 400 });
+    return Response.json({ error: ErrorCode.UserMissingPassword }, { status: 400 });
   }
 
   if (!user.twoFactorEnabled) {
-    return NextResponse.json({ message: "Two factor disabled" });
+    return Response.json({ message: "Two factor disabled" });
   }
 
   if (user.password?.hash && user.identityProvider === IdentityProvider.CAL) {
     const isCorrectPassword = await verifyPassword(body.password, user.password.hash);
     if (!isCorrectPassword) {
-      return NextResponse.json({ error: ErrorCode.IncorrectPassword }, { status: 400 });
+      return Response.json({ error: ErrorCode.IncorrectPassword }, { status: 400 });
     }
   }
 
@@ -63,7 +66,7 @@ async function handler(req: NextRequest) {
     }
 
     if (!user.backupCodes) {
-      return NextResponse.json({ error: ErrorCode.MissingBackupCodes }, { status: 400 });
+      return Response.json({ error: ErrorCode.MissingBackupCodes }, { status: 400 });
     }
 
     const backupCodes = JSON.parse(symmetricDecrypt(user.backupCodes, process.env.CALENDSO_ENCRYPTION_KEY));
@@ -71,7 +74,7 @@ async function handler(req: NextRequest) {
     // check if user-supplied code matches one
     const index = backupCodes.indexOf(body.backupCode.replaceAll("-", ""));
     if (index === -1) {
-      return NextResponse.json({ error: ErrorCode.IncorrectBackupCode }, { status: 400 });
+      return Response.json({ error: ErrorCode.IncorrectBackupCode }, { status: 400 });
     }
 
     // we delete all stored backup codes at the end, no need to do this here
@@ -79,7 +82,7 @@ async function handler(req: NextRequest) {
     // if user has 2fa and NOT using backup code, try totp
   } else if (user.twoFactorEnabled) {
     if (!body.code) {
-      return NextResponse.json({ error: ErrorCode.SecondFactorRequired }, { status: 400 });
+      return Response.json({ error: ErrorCode.SecondFactorRequired }, { status: 400 });
     }
 
     if (!user.twoFactorSecret) {
@@ -103,7 +106,7 @@ async function handler(req: NextRequest) {
     // If user has 2fa enabled, check if body.code is correct
     const isValidToken = totpAuthenticatorCheck(body.code, secret);
     if (!isValidToken) {
-      return NextResponse.json({ error: ErrorCode.IncorrectTwoFactorCode }, { status: 400 });
+      return Response.json({ error: ErrorCode.IncorrectTwoFactorCode }, { status: 400 });
     }
   }
 
@@ -119,7 +122,7 @@ async function handler(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({ message: "Two factor disabled" });
+  return Response.json({ message: "Two factor disabled" });
 }
 
 export const POST = defaultResponderForAppDir(handler);

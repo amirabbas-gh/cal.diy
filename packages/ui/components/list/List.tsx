@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { createElement } from "react";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import classNames from "@calcom/ui/classNames";
 
 import { Badge } from "../badge";
+import { Link } from '@tanstack/react-router';
 
 export type ListProps = {
   roundContainer?: boolean;
@@ -57,7 +57,7 @@ export function ListItem(props: ListItemProps) {
   );
 
   return href ? (
-    <Link href={href}>
+    <Link to={href}>
       {element}
     </Link>
   ) : (
@@ -98,8 +98,8 @@ export function ListLinkItem(props: ListLinkItemProps) {
         disabled ? "hover:bg-cal-muted" : ""
       )}>
       <Link
-        passHref
-        href={href}
+
+        to={href}
         className={classNames(
           "text-default grow truncate text-sm",
           disabled ? "pointer-events-none cursor-not-allowed opacity-30" : ""

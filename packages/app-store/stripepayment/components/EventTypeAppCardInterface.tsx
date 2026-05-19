@@ -1,4 +1,5 @@
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import { useState } from "react";
 
 import { useAppContextWithSchema } from "@calcom/app-store/EventTypeAppContext";
@@ -19,7 +20,7 @@ const EventTypeAppCard: EventTypeAppCardComponent = function EventTypeAppCard({
   onAppInstallSuccess,
 }) {
   const { t } = useLocale();
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const { getAppData, setAppData, disabled } = useAppContextWithSchema<typeof appDataSchema>();
   const { enabled, updateEnabled } = useIsAppEnabled(app);
   const otherPaymentAppEnabled = checkForMultiplePaymentApps(eventTypeFormMetadata);

@@ -1,4 +1,7 @@
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import type { Dispatch, SetStateAction } from "react";
 import type { MutableRefObject } from "react";
 
@@ -24,7 +27,7 @@ const AssignmentWarningDialog = (props: AssignmentWarningDialogProps) => {
     leaveWithoutAssigningHosts,
     id,
   } = props;
-  const router = useRouter();
+  const router = useNavigate();
   return (
     <Dialog open={isOpenAssignmentWarnDialog} onOpenChange={setIsOpenAssignmentWarnDialog}>
       <DialogContent
@@ -38,7 +41,7 @@ const AssignmentWarningDialog = (props: AssignmentWarningDialogProps) => {
             onClick={(e) => {
               e.preventDefault();
               setIsOpenAssignmentWarnDialog(false);
-              router.replace(`/event-types/${id}?tabName=team`);
+              router({ to: "/event-types/$id", params: { id }, search: { tabName: "team" }, replace: true });
             }}
             color="minimal">
             {t("go_back_and_assign")}
@@ -48,7 +51,7 @@ const AssignmentWarningDialog = (props: AssignmentWarningDialogProps) => {
               e.preventDefault();
               setIsOpenAssignmentWarnDialog(false);
               leaveWithoutAssigningHosts.current = true;
-              router.replace(pendingRoute);
+              router({ to: pendingRoute, replace: true });
             }}>
             {t("leave_without_assigning")}
           </Button>

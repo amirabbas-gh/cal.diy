@@ -1,5 +1,4 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
-import { NextResponse } from "next/server";
 
 import renderEmail from "@calcom/emails/src/renderEmail";
 import { IS_PRODUCTION } from "@calcom/lib/constants";
@@ -11,7 +10,7 @@ import { getTranslation } from "@calcom/i18n/server";
 async function getHandler() {
   // Only allow in development mode
   if (IS_PRODUCTION) {
-    return new NextResponse("Only for development purposes", {
+    return new Response("Only for development purposes", {
       status: 403,
     });
   }
@@ -66,7 +65,7 @@ async function getHandler() {
   });
 
   // Create a response with the HTML content
-  const response = new NextResponse(emailHtml);
+  const response = new Response(emailHtml);
 
   // Set appropriate headers
   response.headers.set("Content-Type", "text/html");

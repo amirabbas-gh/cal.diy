@@ -18,7 +18,10 @@ import { ErrorCode } from "@calcom/lib/errorCodes";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { BookingStatus } from "@calcom/prisma/enums";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useRef } from "react";
 import { shallow } from "zustand/shallow";
 
@@ -109,7 +112,7 @@ export interface IUseBookingErrors {
 export type UseBookingsReturnType = ReturnType<typeof useBookings>;
 
 export const useBookings = ({ event, hashedLink, bookingForm, metadata, isBookingDryRun }: IUseBookings) => {
-  const router = useRouter();
+  const router = useNavigate();
   const eventSlug = useBookerStoreContext((state) => state.eventSlug);
   const eventTypeId = useBookerStoreContext((state) => state.eventId);
 
@@ -155,7 +158,7 @@ export const useBookings = ({ event, hashedLink, bookingForm, metadata, isBookin
           );
         }
 
-        router.push("/booking/dry-run-successful");
+        router({ to: "/booking/dry-run-successful" });
         return;
       }
 
@@ -176,7 +179,7 @@ export const useBookings = ({ event, hashedLink, bookingForm, metadata, isBookin
         };
 
         storeDecoyBooking(bookingData);
-        router.push(`/booking-successful/${booking.uid}`);
+        router({ to: `/booking-successful/${booking.uid}` });
         return;
       }
 
@@ -237,15 +240,13 @@ export const useBookings = ({ event, hashedLink, bookingForm, metadata, isBookin
       }
 
       if (paymentUid) {
-        router.push(
-          createPaymentLink({
+        router({ to: createPaymentLink({
             paymentUid,
             date: timeslot,
             name: fullName,
             email: bookingForm.getValues("responses.email"),
             absolute: false,
-          })
-        );
+          }) });
         return;
       }
 
@@ -336,7 +337,7 @@ export const useBookings = ({ event, hashedLink, bookingForm, metadata, isBookin
           });
         }
 
-        router.push("/booking/dry-run-successful");
+        router({ to: "/booking/dry-run-successful" });
         return;
       }
 

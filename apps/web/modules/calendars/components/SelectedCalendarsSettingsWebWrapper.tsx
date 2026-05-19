@@ -9,8 +9,8 @@ import AppListCardWebWrapper from "@calcom/web/modules/apps/components/AppListCa
 import CredentialActionsDropdown from "@calcom/web/modules/apps/components/CredentialActionsDropdown";
 import AdditionalCalendarSelector from "@calcom/web/modules/calendars/components/AdditionalCalendarSelector";
 import { CalendarSwitch } from "@calcom/web/modules/calendars/components/CalendarSwitch";
-import Link from "next/link";
 import React from "react";
+import { Link } from '@tanstack/react-router';
 
 export enum SelectedCalendarSettingsScope {
   User = "user",
@@ -114,7 +114,7 @@ const ConnectedCalendarList = ({
             title={t("something_went_wrong")}
             message={
               <span>
-                <Link href={`/apps/${connectedCalendar.integration.slug}`}>
+                <Link to={`/apps/${connectedCalendar.integration.slug}`}>
                   {connectedCalendar.integration.name}
                 </Link>
                 : {t("calendar_error")}

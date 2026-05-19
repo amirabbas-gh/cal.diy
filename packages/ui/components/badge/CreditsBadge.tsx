@@ -1,9 +1,9 @@
-import Link from "next/link";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 
 import { Tooltip } from "../tooltip";
 import { Badge } from "./Badge";
+import { Link } from '@tanstack/react-router';
 
 export const CreditsBadge = function CreditsBadge({
   teamId,
@@ -21,7 +21,7 @@ export const CreditsBadge = function CreditsBadge({
 
   return (
     <Tooltip content={t("requires_credits_tooltip")}>
-      <Link href={getBillingPath()}>
+      <Link to={getBillingPath()}>
         <Badge variant="gray" className="whitespace-nowrap">
           {t("requires_credits")}
         </Badge>

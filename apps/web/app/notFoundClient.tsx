@@ -3,9 +3,10 @@
 import { DOCS_URL, IS_CALCOM, WEBSITE_URL } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { Icon } from "@calcom/ui/components/icon";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import { useLayoutEffect } from "react";
+import { Link } from '@tanstack/react-router';
 
 enum PageType {
   USER = "USER",
@@ -23,7 +24,7 @@ function getPageInfo(pathname: string) {
 
 export function NotFound({ host }: { host: string }) {
   const { t } = useLocale();
-  const pathname = usePathname() ?? "";
+  const pathname = useLocation().pathname ?? "";
   const { username, pageType, url } = getPageInfo(pathname);
   const isBookingSuccessPage = pathname?.startsWith("/booking");
   const isSubpage = pathname?.includes("/", 2) || isBookingSuccessPage;
@@ -141,7 +142,7 @@ export function NotFound({ host }: { host: string }) {
             ))}
           </ul>
           <div className="mt-8">
-            <Link href={WEBSITE_URL} className="font-medium text-base text-emphasis hover:text-subtle">
+            <Link to={WEBSITE_URL} className="font-medium text-base text-emphasis hover:text-subtle">
               {t("or_go_back_home")}
               <span aria-hidden="true"> &rarr;</span>
             </Link>

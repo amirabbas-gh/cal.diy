@@ -1,5 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-
 import { type TraceContext } from "@calcom/lib/tracing";
 import { TracedError } from "@calcom/lib/tracing/error";
 import { distributedTracing } from "@calcom/lib/tracing/factory";
@@ -10,11 +8,13 @@ import { getServerErrorFromUnknown } from "./getServerErrorFromUnknown";
 import { performance } from "./perfObserver";
 import { getHTTPStatusCodeFromTRPCErrorLike, isTRPCErrorLike } from "./trpcErrorUtils";
 
-export interface TracedRequest extends NextApiRequest {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export interface TracedRequest extends any {
   traceContext: TraceContext;
 }
 
-type Handle<T> = (req: TracedRequest, res: NextApiResponse) => Promise<T>;
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+type Handle<T> = (req: TracedRequest, res: any) => Promise<T>;
 
 /** Allows us to get type inference from API handler responses */
 export function defaultResponder<T>(
@@ -22,7 +22,8 @@ export function defaultResponder<T>(
   /** If set we will wrap the handle with sentry tracing */
   endpointRoute?: string
 ) {
-  return async (req: NextApiRequest, res: NextApiResponse) => {
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+  return async (req: any, res: any) => {
     let ok = false;
     const operation = endpointRoute ? endpointRoute.replace(/^\//, "").replace(/\//g, "_") : "api_request";
     const traceContext = distributedTracing.createTrace(operation, {

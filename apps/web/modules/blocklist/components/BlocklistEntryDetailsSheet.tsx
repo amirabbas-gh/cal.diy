@@ -1,7 +1,6 @@
 "use client";
 
 import { format } from "date-fns";
-import Link from "next/link";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { Badge } from "@calcom/ui/components/badge";
@@ -18,6 +17,7 @@ import {
 import { SkeletonText } from "@calcom/ui/components/skeleton";
 
 import type { BlocklistEntry, BlocklistEntryDetails, BlocklistScope } from "@calcom/features/blocklist/types";
+import { Link } from '@tanstack/react-router';
 
 export interface BlocklistEntryDetailsSheetProps<T extends BlocklistEntry> {
   scope: BlocklistScope;
@@ -129,7 +129,7 @@ export function BlocklistEntryDetailsSheet<T extends BlocklistEntry>({
 
                       {detailsData.entry.bookingReports.map((report) => {
                         return (
-                          <Link key={report.booking.uid} href={`/booking/${report.booking.uid}`}>
+                          <Link key={report.booking.uid} to={`/booking/${report.booking.uid}`}>
                             <div className="text-subtle flex items-center gap-1 text-sm">
                               {report.booking.title}
                               <ExternalLinkIcon className="h-4 w-4" />

@@ -21,12 +21,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { inferSSRProps } from "@lib/types/inferSSRProps";
 import type { getServerSideProps } from "@server/lib/auth/login/getServerSideProps";
 import { Eye, EyeOff } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
+import { Link } from '@tanstack/react-router';
 
 interface LoginValues {
   email: string;
@@ -109,7 +112,7 @@ export default function Login({
 }: PageProps) {
   const searchParams = useCompatSearchParams();
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
   const formSchema = z
     .object({
       email: z
@@ -162,7 +165,7 @@ export default function Login({
     // we're logged in! let's do a hard refresh to the desired url
     else if (!res.error) {
       setLastUsed("credentials");
-      router.push(callbackUrl);
+      router({ to: callbackUrl });
     } else if (res.error === ErrorCode.SecondFactorRequired) setTwoFactorRequired(true);
     else if (res.error === ErrorCode.IncorrectBackupCode) setErrorMessage(t("incorrect_backup_code"));
     else if (res.error === ErrorCode.MissingBackupCodes) setErrorMessage(t("missing_backup_codes"));
@@ -267,7 +270,7 @@ export default function Login({
                   <Field>
                     <div className="flex w-full items-center justify-between">
                       <FieldLabel>{t("password")}</FieldLabel>
-                      <Link href="/auth/forgot-password" className="text-sm text-subtle hover:text-emphasis">
+                      <Link to="/auth/forgot-password" className="text-sm text-subtle hover:text-emphasis">
                         {t("forgot")}
                       </Link>
                     </div>
@@ -370,7 +373,7 @@ export default function Login({
           <div className="mt-6 flex items-center justify-center gap-4 text-center">
             {showSignupLink && (
               <Link
-                href={
+                to={
                   callbackUrl
                     ? `${WEBSITE_URL}/signup?redirect=${encodeURIComponent(callbackUrl)}`
                     : `${WEBSITE_URL}/signup`

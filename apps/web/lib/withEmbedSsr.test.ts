@@ -1,14 +1,14 @@
 import type { Request, Response } from "express";
-import type { Redirect } from "next";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { createMocks } from "node-mocks-http";
 import { describe, expect, it } from "vitest";
 
 import withEmbedSsr from "./withEmbedSsr";
 
-export type CustomNextApiRequest = NextApiRequest & Request;
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export type CustomNextApiRequest = any & Request;
 
-export type CustomNextApiResponse = NextApiResponse & Response;
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export type CustomNextApiResponse = any & Response;
 export function createMockNextJsRequest(...args: Parameters<typeof createMocks>) {
   return createMocks<CustomNextApiRequest, CustomNextApiResponse>(...args);
 }
@@ -23,11 +23,12 @@ function getServerSidePropsFnGenerator(
 ) {
   if ("redirectUrl" in config)
     return async () => {
+      // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
       return {
         redirect: {
           permanent: false,
           destination: config.redirectUrl,
-        } satisfies Redirect,
+        } satisfies any,
       };
     };
 

@@ -1,14 +1,14 @@
 import { stringify } from "node:querystring";
 import { getSafeRedirectUrl } from "@calcom/lib/getSafeRedirectUrl";
 import type { Prisma } from "@calcom/prisma/client";
-import type { NextApiRequest, NextApiResponse } from "next";
 import getInstalledAppPath from "../../_utils/getInstalledAppPath";
 import createOAuthAppCredential from "../../_utils/oauth/createOAuthAppCredential";
 import { decodeOAuthState } from "../../_utils/oauth/decodeOAuthState";
 import type { StripeData } from "../lib/server";
 import stripe from "../lib/server";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export default async function handler(req: any, res: any) {
   const { code, error, error_description } = req.query;
   const state = decodeOAuthState(req, "stripe");
 

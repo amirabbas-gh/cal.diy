@@ -1,9 +1,13 @@
 "use client";
 
-import { ReadonlyURLSearchParams, useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearch } from "@tanstack/react-router";
+
+// TODO: ReadonlyURLSearchParams — narrow to TanStack Route search types (best-effort alias): https://tanstack.com/router/latest/docs/framework/react/guide/search-params
+type ReadonlyURLSearchParams = URLSearchParams;
+
 
 export const useCompatSearchParams = () => {
-  const _searchParams = useSearchParams() ?? new URLSearchParams();
+  const _searchParams = useSearch() ?? new URLSearchParams();
   const params = useParams() ?? {};
 
   const searchParams = new URLSearchParams(_searchParams.toString());

@@ -16,8 +16,10 @@ import useMeQuery from "@calcom/trpc/react/hooks/useMeQuery";
 import { showToast } from "@calcom/ui/components/toast";
 import { revalidateEventTypeEditPage } from "@calcom/web/app/(use-page-wrapper)/event-types/[type]/actions";
 import { TRPCClientError } from "@trpc/react-query";
-import dynamic from "next/dynamic";
-import { useRouter as useAppRouter, usePathname } from "next/navigation";
+// TODO: next/dist migration (R4dist): codegen — verify emitted bundle uses React.lazy (not next/dynamic)
+import { lazy as dynamic } from "react";
+import { useNavigate as useAppRouter, useLocation } from "@tanstack/react-router";
+
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { EventType as EventTypeComponent } from "./EventType";
@@ -110,7 +112,7 @@ const EventTypeWeb = ({
 }) => {
   const { t } = useLocale();
   const utils = trpc.useUtils();
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const appRouter = useAppRouter();
   const { data: user, isPending: isLoggedInUserPending } = useMeQuery();
   const isTeamEventTypeDeleted = useRef(false);

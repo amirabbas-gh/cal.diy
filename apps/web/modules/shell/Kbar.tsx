@@ -26,7 +26,10 @@ import {
   useMatches,
   useRegisterActions,
 } from "kbar";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import type { ReactNode } from "react";
 import { useEffect, useMemo } from "react";
 
@@ -230,7 +233,7 @@ function buildKbarActions(push: (href: string) => void): Action[] {
 }
 
 function useEventTypesAction(): void {
-  const router = useRouter();
+  const router = useNavigate();
   const { data } = trpc.viewer.eventTypes.getEventTypesFromGroup.useInfiniteQuery(
     {
       limit: 100,
@@ -251,7 +254,7 @@ function useEventTypesAction(): void {
           name: item.title,
           section: "event_types_page_title",
           keywords: "event types",
-          perform: () => router.push(`/event-types/${item.id}`),
+          perform: () => router({ to: `/event-types/${item.id}` }),
         })) ?? []
       );
     }) ?? [];
@@ -265,7 +268,7 @@ function useEventTypesAction(): void {
 }
 
 function useUpcomingBookingsAction(): void {
-  const router = useRouter();
+  const router = useNavigate();
   const session = useSession();
   const userId = session.data?.user.id;
 
@@ -299,7 +302,7 @@ function useUpcomingBookingsAction(): void {
         name: `${booking.title} - ${formattedDate} ${formattedTime}`,
         section: { name: "upcoming", priority: 1 },
         keywords: `booking ${booking.title} ${attendeeNames}`,
-        perform: () => router.push(`/booking/${booking.uid}`),
+        perform: () => router({ to: `/booking/${booking.uid}` }),
       };
     });
   }, [data?.bookings, router]);
@@ -308,7 +311,7 @@ function useUpcomingBookingsAction(): void {
 }
 
 const KBarRoot = ({ children }: { children: ReactNode }): JSX.Element => {
-  const router = useRouter();
+  const router = useNavigate();
   const actions = useMemo(() => buildKbarActions(router.push), [router.push]);
 
   return <KBarProvider actions={actions}>{children}</KBarProvider>;

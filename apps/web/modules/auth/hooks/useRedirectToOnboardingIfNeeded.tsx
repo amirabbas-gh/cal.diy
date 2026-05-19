@@ -1,6 +1,9 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
 import { useEffect } from "react";
 
 import dayjs from "@calcom/dayjs";
@@ -30,8 +33,8 @@ export const ONBOARDING_NEXT_REDIRECT = {
 } as const;
 
 export function useRedirectToOnboardingIfNeeded() {
-  const router = useRouter();
-  const pathname = usePathname();
+  const router = useNavigate();
+  const pathname = useLocation().pathname;
   const { data: user, isLoading } = useMeQuery();
   const flags = useFlagMap();
 
@@ -47,7 +50,7 @@ export function useRedirectToOnboardingIfNeeded() {
   useEffect(() => {
     if (canRedirect) {
       const gettingStartedPath = flags["onboarding-v3"] ? "/onboarding/getting-started" : "/getting-started";
-      router.replace(gettingStartedPath);
+      router({ to: gettingStartedPath, replace: true });
     }
   }, [canRedirect, router, flags, pathname]);
 

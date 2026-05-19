@@ -1,6 +1,5 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { parseRequestData } from "app/api/parseRequestData";
-import { NextResponse, type NextRequest } from "next/server";
 
 import calcomSignupHandler from "./handlers/calcomSignupHandler";
 import selfHostedSignupHandler from "./handlers/selfHostedHandler";
@@ -36,7 +35,7 @@ async function ensureSignupIsEnabled(body: Record<string, string>) {
   }
 }
 
-async function handler(req: NextRequest) {
+async function handler(req: Request) {
   const remoteIp = getIP(req);
   // Use a try catch instead of returning res every time
   try {
@@ -47,7 +46,7 @@ async function handler(req: NextRequest) {
     });
 
     const body = await parseRequestData(req);
-    const query = Object.fromEntries(req.nextUrl.searchParams.entries());
+    const query = Object.fromEntries(new URL(req.url).searchParams.entries());
     await checkCfTurnstileToken({
       token: req.headers.get("cf-access-token") as string,
       remoteIp,
@@ -69,10 +68,10 @@ async function handler(req: NextRequest) {
     return await selfHostedSignupHandler(body);
   } catch (e) {
     if (e instanceof HttpError) {
-      return NextResponse.json({ message: e.message }, { status: e.statusCode });
+      return Response.json({ message: e.message }, { status: e.statusCode });
     }
     logger.error(e);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return Response.json({ message: "Internal server error" }, { status: 500 });
   }
 }
 

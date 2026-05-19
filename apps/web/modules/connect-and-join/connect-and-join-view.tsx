@@ -1,8 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useState } from "react";
 
 import { getQueryParam } from "@calcom/features/bookings/Booker/utils/query-param";
@@ -15,10 +17,11 @@ import { Button } from "@calcom/ui/components/button";
 import { EmptyScreen } from "@calcom/ui/components/empty-screen";
 
 import { TRPCClientError } from "@trpc/client";
+import { Link } from '@tanstack/react-router';
 
 function ConnectAndJoin() {
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
   const token = getQueryParam("token");
   const [meetingUrl, setMeetingUrl] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
@@ -29,7 +32,7 @@ function ConnectAndJoin() {
   const mutation = trpc.viewer.loggedInViewerRouter.connectAndJoin.useMutation({
     onSuccess: (res) => {
       if (res.meetingUrl && !res.isBookingAlreadyAcceptedBySomeoneElse) {
-        router.push(res.meetingUrl);
+        router({ to: res.meetingUrl });
       } else if (res.isBookingAlreadyAcceptedBySomeoneElse && res.meetingUrl) {
         setMeetingUrl(res.meetingUrl);
       }
@@ -66,7 +69,7 @@ function ConnectAndJoin() {
                       <Link
                         key="continue-to-meeting-link"
                         className="inline-block cursor-pointer underline"
-                        href={meetingUrl}>
+                        to={meetingUrl}>
                         Continue to Meeting
                       </Link>,
                     ]}

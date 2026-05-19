@@ -43,7 +43,8 @@ type App = Partial<AppMetaType> & {
   path: string;
 };
 function generateFiles() {
-  const browserOutput = [`import dynamic from "next/dynamic"`];
+  const browserOutput = [`// TODO: next/dist migration (R4dist): codegen — verify emitted bundle uses React.lazy (not next/dynamic)
+import { lazy as dynamic } from "react"`];
   const metadataOutput = [];
   const bookerMetadataOutput = [];
   const schemasOutput = [];

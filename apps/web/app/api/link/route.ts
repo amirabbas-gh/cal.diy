@@ -6,8 +6,6 @@ import prisma from "@calcom/prisma";
 import { confirmHandler } from "@calcom/trpc/server/routers/viewer/bookings/confirm.handler";
 import { TRPCError } from "@trpc/server";
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 enum DirectAction {
@@ -30,8 +28,8 @@ const decryptedSchema = z.object({
   platformBookingUrl: z.string().optional(),
 });
 
-async function handler(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
+async function handler(request: Request) {
+  const searchParams = new URL(request.url).searchParams;
 
   const { action, token, reason } = querySchema.parse(Object.fromEntries(searchParams.entries()));
 
@@ -96,12 +94,12 @@ async function handler(request: NextRequest) {
   } catch (e) {
     let message = "Error confirming booking";
     if (e instanceof TRPCError) message = (e as TRPCError).message;
-    return NextResponse.redirect(
+    return Response.redirect(
       new URL(`/booking/${bookingUid}?error=${encodeURIComponent(message)}`, WEBAPP_URL)
     );
   }
 
-  return NextResponse.redirect(new URL(`/booking/${bookingUid}`, WEBAPP_URL));
+  return Response.redirect(new URL(`/booking/${bookingUid}`, WEBAPP_URL));
 }
 
 export const GET = defaultResponderForAppDir(handler);

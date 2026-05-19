@@ -1,5 +1,6 @@
+// TODO: Next.js pages/api route — convert the handler to TanStack Start server route handlers (Web Request/Response) — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import { confirmHandler } from "@calcom/trpc/server/routers/viewer/bookings/confirm.handler";
-import type { NextRequest } from "next/server";
+
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -7,8 +8,8 @@ const mockConfirmHandler = confirmHandler as unknown as Mock<typeof confirmHandl
 
 vi.mock("app/api/defaultResponderForAppDir", () => ({
   defaultResponderForAppDir:
-    (handler: (req: NextRequest) => Promise<Response>) =>
-    (req: NextRequest, _context: { params: Promise<Record<string, string>> }) =>
+    (handler: (req: Request) => Promise<Response>) =>
+    (req: Request, _context: { params: Promise<Record<string, string>> }) =>
       handler(req),
 }));
 
@@ -17,19 +18,7 @@ vi.mock("next/headers", () => ({
   cookies: vi.fn().mockResolvedValue({ getAll: () => [] }),
 }));
 
-vi.mock("next/server", () => ({
-  NextResponse: {
-    redirect: vi.fn((url: string | URL, init?: { status?: number }) => {
-      const location = typeof url === "string" ? url : url.toString();
-      return {
-        status: init?.status ?? 302,
-        headers: {
-          get: (name: string) => (name.toLowerCase() === "location" ? location : null),
-        },
-      } as unknown as Response;
-    }),
-  },
-}));
+
 
 vi.mock("@calcom/prisma", () => ({
   default: {
@@ -96,6 +85,78 @@ import process from "node:process";
 // Import after mocks are set up
 import { GET, POST } from "../route";
 
+type NextResponseInit = ResponseInit & { request?: { headers?: Headers } };
+
+function __nextResponseJson(body: unknown, init?: ResponseInit): Response {
+  const headers = new Headers(init?.headers);
+  if (!headers.has("content-type")) {
+    headers.set("content-type", "application/json");
+  }
+  return new Response(JSON.stringify(body), { ...init, headers });
+}
+
+const NextResponse = Object.assign(
+  function NextResponse(body?: BodyInit | null, init?: ResponseInit): Response {
+    return new Response(body, init);
+  },
+  {
+    json: __nextResponseJson,
+    next: (init?: NextResponseInit) =>
+      new Response(null, {
+        status: 200,
+        ...init,
+        headers: {
+          "x-middleware-next": "1",
+          ...Object.fromEntries(new Headers(init?.headers)),
+        },
+      }),
+    rewrite: (url: URL | string, init?: ResponseInit) => {
+      const rewriteUrl = typeof url === "string" ? new URL(url, "http://localhost") : url;
+      return new Response(null, {
+        status: 200,
+        ...init,
+        headers: {
+          "x-middleware-rewrite": rewriteUrl.toString(),
+          ...Object.fromEntries(new Headers(init?.headers)),
+        },
+      });
+    },
+    redirect: (url: URL | string, statusOrInit?: number | ResponseInit) => {
+      const redirectUrl = typeof url === "string" ? new URL(url, "http://localhost") : url;
+      const status =
+        typeof statusOrInit === "number"
+          ? statusOrInit
+          : (typeof statusOrInit === "object" && statusOrInit && "status" in statusOrInit
+              ? (statusOrInit as ResponseInit).status
+              : undefined) ?? 307;
+      const baseInit =
+        typeof statusOrInit === "object" && statusOrInit !== null && typeof statusOrInit !== "number"
+          ? statusOrInit
+          : {};
+      const headers = new Headers((baseInit as ResponseInit).headers);
+      headers.set("location", redirectUrl.toString());
+      return new Response(null, { ...baseInit, status, headers });
+    },
+  },
+);
+
+class NextRequest extends Request {
+  private readonly __cookieMap = new Map<string, string>();
+  get nextUrl(): URL {
+    return new URL(this.url);
+  }
+  cookies = {
+    get: (name: string) => {
+      const value = this.__cookieMap.get(name);
+      return value !== undefined ? { name, value } : undefined;
+    },
+    set: (name: string, value: string) => {
+      this.__cookieMap.set(name, value);
+    },
+  };
+}
+
+
 const DB = {
   bookings: {} as Record<
     string,
@@ -154,7 +215,7 @@ const createMockRequest = (
   url: string,
   method: "GET" | "POST" = "GET",
   body?: Record<string, unknown>
-): NextRequest => {
+): Request => {
   const urlObj = new URL(url);
   const headers = new Headers();
   headers.set("content-type", "application/json");
@@ -172,7 +233,7 @@ const createMockRequest = (
             return Promise.resolve(body ?? {});
           }
         : undefined,
-  } as unknown as NextRequest;
+  } as unknown as Request;
 };
 
 describe("verify-booking-token route", () => {

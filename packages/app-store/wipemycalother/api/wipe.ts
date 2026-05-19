@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import queue from "queue";
 import { z, ZodError } from "zod";
 
@@ -18,7 +17,8 @@ const wipeMyCalendarBodySchema = z.object({
  * @param req
  * @param res
  */
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+const handler = async (req: any, res: any) => {
   if (!req.session?.user?.id) {
     return res.status(401).json({ message: "You must be logged in to do this" });
   }
@@ -62,8 +62,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({ success: true });
 };
 
-function validate(handler: (req: NextApiRequest, res: NextApiResponse) => Promise<NextApiResponse | void>) {
-  return async (req: NextApiRequest, res: NextApiResponse) => {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+function validate(handler: (req: any, res: any) => Promise<any | void>) {
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+  return async (req: any, res: any) => {
     if (req.method === "POST") {
       try {
         wipeMyCalendarBodySchema.parse(req.body);

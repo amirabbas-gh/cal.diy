@@ -9,7 +9,10 @@ import { Button } from "@calcom/ui/components/button";
 import { showToast } from "@calcom/ui/components/toast";
 import { MailOpenIcon, TriangleAlertIcon } from "@coss/ui/icons";
 import { motion } from "framer-motion";
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
 import { signIn } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import z from "zod";
@@ -113,8 +116,8 @@ const MailOpenIconWrapper = () => (
 
 export default function Verify({ EMAIL_FROM }: { EMAIL_FROM?: string }) {
   const searchParams = useCompatSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = useLocation().pathname;
+  const router = useNavigate();
   const routerQuery = useRouterQuery();
   const { email, username, paymentStatus } = querySchema.parse(routerQuery);
   const { t } = useLocale();
@@ -214,7 +217,7 @@ export default function Verify({ EMAIL_FROM }: { EMAIL_FROM?: string }) {
               // Update query params with t:timestamp, shallow: true doesn't re-render the page
               const _searchParams = new URLSearchParams(searchParams?.toString());
               _searchParams.set("t", `${Date.now()}`);
-              router.replace(`${pathname}?${_searchParams.toString()}`);
+              router({ to: `${pathname}?${_searchParams.toString()}`, replace: true });
               return await sendVerificationLogin(email, username, t);
             }}>
             {secondsLeft > 0 ? t("resend_in_seconds", { seconds: secondsLeft }) : t("resend")}

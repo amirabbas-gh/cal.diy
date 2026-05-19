@@ -13,9 +13,12 @@ import { showToast } from "@calcom/ui/components/toast";
 import { NewScheduleButton } from "@calcom/web/modules/schedules/components/NewScheduleButton";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { revalidateAvailabilityList } from "app/(use-page-wrapper)/(main-nav)/availability/actions";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useState } from "react";
+import { Link } from '@tanstack/react-router';
 
 type AvailabilityListProps = {
   availabilities: RouterOutputs["viewer"]["availability"]["list"];
@@ -24,7 +27,7 @@ export function AvailabilityList({ availabilities }: AvailabilityListProps) {
   const { t } = useLocale();
   const [bulkUpdateModal, setBulkUpdateModal] = useState(false);
   const utils = trpc.useUtils();
-  const router = useRouter();
+  const router = useNavigate();
   const { data: user } = useMeQuery();
 
   const deleteMutation = trpc.viewer.availability.schedule.delete.useMutation({
@@ -105,7 +108,7 @@ export function AvailabilityList({ availabilities }: AvailabilityListProps) {
 
   const duplicateMutation = trpc.viewer.availability.schedule.duplicate.useMutation({
     onSuccess: async ({ schedule }) => {
-      await router.push(`/availability/${schedule.id}`);
+      await router({ to: `/availability/${schedule.id}` });
       showToast(t("schedule_created_successfully", { scheduleName: schedule.name }), "success");
     },
     onError: (err) => {
@@ -156,7 +159,7 @@ export function AvailabilityList({ availabilities }: AvailabilityListProps) {
           </div>
           <div className="text-default mb-16 mt-4 block text-center text-sm">
             {t("temporarily_out_of_office")}{" "}
-            <Link href="settings/my-account/out-of-office" className="underline">
+            <Link to="settings/my-account/out-of-office" className="underline">
               {t("add_a_redirect")}
             </Link>
           </div>

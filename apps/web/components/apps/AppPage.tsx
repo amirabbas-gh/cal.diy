@@ -1,5 +1,7 @@
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import type { IframeHTMLAttributes } from "react";
 import React, { useEffect, useState } from "react";
 
@@ -33,6 +35,7 @@ import { showToast } from "@calcom/ui/components/toast";
 
 import { InstallAppButtonChild } from "./InstallAppButtonChild";
 import { MultiDisconnectIntegration } from "./MultiDisconnectIntegration";
+import { Link } from '@tanstack/react-router';
 
 export type AppPageProps = {
   name: string;
@@ -88,7 +91,7 @@ export const AppPage = ({
   paid,
 }: AppPageProps) => {
   const { t, i18n } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
   const searchParams = useCompatSearchParams();
 
   const hasDescriptionItems = descriptionItems && descriptionItems.length > 0;
@@ -141,7 +144,7 @@ export const AppPage = ({
     } else if (!availableForTeams) {
       mutation.mutate({ type });
     } else {
-      router.push(getAppOnboardingUrl({ slug, step: AppOnboardingSteps.ACCOUNTS_STEP }));
+      router({ to: getAppOnboardingUrl({ slug, step: AppOnboardingSteps.ACCOUNTS_STEP }) });
     }
   };
 
@@ -353,7 +356,7 @@ export const AppPage = ({
             </div>
             <h2 className="text-default text-sm font-medium">
               <Link
-                href={`categories/${categories[0]}`}
+                to={`categories/${categories[0]}`}
                 className="bg-subtle text-emphasis rounded-md p-1 text-xs capitalize">
                 {categories[0]}
               </Link>{" "}

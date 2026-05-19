@@ -1,6 +1,7 @@
 import detect from "detect-port";
 import type { Server } from "node:http";
 import { createServer } from "node:http";
+// TODO: remaining `next` root import — value imports (e.g. `createServer`, `Instrumentation`) have no TanStack twin; port boots/server wiring manually; type-only imports should have been erased by R4j — https://tanstack.com/start/latest/docs/framework/react/migrate-from-next-js
 import next from "next";
 import { parse } from "node:url";
 

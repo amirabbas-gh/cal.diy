@@ -4,7 +4,6 @@ import logger from "@calcom/lib/logger";
 import prisma from "@calcom/prisma";
 import type { Prisma } from "@calcom/prisma/client";
 import { teamMetadataSchema } from "@calcom/prisma/zod-utils";
-import type { NextApiResponse } from "next";
 import stripe from "../../server";
 
 export interface TeamEntity {
@@ -19,6 +18,7 @@ export interface BillingPortalResult {
   portalUrl?: string;
 }
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 export abstract class BillingPortalService {
   protected contextName = "Team";
 
@@ -87,7 +87,7 @@ export abstract class BillingPortalService {
     userId: number,
     teamId: number,
     returnUrl: string,
-    res: NextApiResponse
+    res: any
   ): Promise<void> {
     // Check permissions
     const hasPermission = await this.checkPermissions(userId, teamId);

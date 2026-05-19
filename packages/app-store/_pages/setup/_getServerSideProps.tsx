@@ -1,5 +1,3 @@
-import type { GetServerSidePropsContext } from "next";
-
 export const AppSetupPageMap = {
   alby: import("../../alby/pages/setup/_getServerSideProps"),
   make: import("../../make/pages/setup/_getServerSideProps"),
@@ -8,7 +6,8 @@ export const AppSetupPageMap = {
   btcpayserver: import("../../btcpayserver/pages/setup/_getServerSideProps"),
 };
 
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export const getServerSideProps = async (ctx: any) => {
   const { slug } = ctx.params || {};
   if (typeof slug !== "string") return { notFound: true } as const;
 

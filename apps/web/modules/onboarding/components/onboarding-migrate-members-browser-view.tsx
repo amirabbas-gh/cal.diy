@@ -13,7 +13,8 @@ import {
   UserPlusIcon,
 } from "@coss/ui/icons";
 import { AnimatePresence, motion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 
 type MigratedMember = {
   email: string;
@@ -38,7 +39,7 @@ export const OnboardingMigrateMembersBrowserView = ({
   organizationBanner,
   slug,
 }: OnboardingMigrateMembersBrowserViewProps) => {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const { t } = useLocale();
   const displayUrl = slug ? `${slug}.${""}` : "";
 

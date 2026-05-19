@@ -1,3 +1,4 @@
+// TODO: next/dynamic loading UI stripped (R4c): restore loading UX with `<Suspense fallback={…}>` — https://react.dev/reference/react/Suspense
 import { Timezone as PlatformTimezoneSelect } from "@calcom/atoms/timezone";
 import dayjs from "@calcom/dayjs";
 import { useBookerStoreContext } from "@calcom/features/bookings/Booker/BookerStoreProvider";
@@ -10,8 +11,7 @@ import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { CURRENT_TIMEZONE } from "@calcom/lib/timezoneConstants";
 import { Button } from "@calcom/ui/components/button";
 import { GlobeIcon } from "@coss/ui/icons";
-import dynamic from "next/dynamic";
-import type { ComponentType } from "react";
+import type { ComponentType, lazy } from "react";
 import { useMemo } from "react";
 import { shallow } from "zustand/shallow";
 import { EventDetails } from "./event-meta/Details";
@@ -28,13 +28,7 @@ type TimezoneSelectProps = Omit<
   timeZones?: Timezone[];
 };
 
-const WebTimezoneSelect: ComponentType<TimezoneSelectProps> = dynamic(
-  () => import("@calcom/web/modules/timezone/components/TimezoneSelect").then((mod) => mod.TimezoneSelect),
-  {
-    ssr: false,
-    loading: () => <LoadingState />,
-  }
-);
+const WebTimezoneSelect: ComponentType<TimezoneSelectProps> = lazy(() => import("@calcom/web/modules/timezone/components/TimezoneSelect").then((mod) => mod.TimezoneSelect));
 
 type SlotSelectionModalHeaderProps = {
   onClick: () => void;

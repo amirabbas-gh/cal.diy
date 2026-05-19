@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 
 import logger from "@calcom/lib/logger";
@@ -49,7 +48,8 @@ const p2pChatCreateEventsReqSchema = z.object({
   }),
 });
 
-async function postHandler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function postHandler(req: any, res: any) {
   log.debug("receive events", req.body);
   const appKeys = await getAppKeys();
   const { open_verification_token } = larkKeysSchema.parse(appKeys);

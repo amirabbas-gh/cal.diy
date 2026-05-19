@@ -1,6 +1,3 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
-
 import { CalendarCacheEventRepository } from "@calcom/features/calendar-subscription/lib/cache/CalendarCacheEventRepository";
 import { CalendarCacheEventService } from "@calcom/features/calendar-subscription/lib/cache/CalendarCacheEventService";
 import { prisma } from "@calcom/prisma";
@@ -13,11 +10,11 @@ import { defaultResponderForAppDir } from "@calcom/web/app/api/defaultResponderF
  * @param request
  * @returns
  */
-async function getHandler(request: NextRequest) {
-  const apiKey = request.headers.get("authorization") || request.nextUrl.searchParams.get("apiKey");
+async function getHandler(request: Request) {
+  const apiKey = request.headers.get("authorization") || new URL(request.url).searchParams.get("apiKey");
 
   if (![process.env.CRON_API_KEY, `Bearer ${process.env.CRON_SECRET}`].includes(`${apiKey}`)) {
-    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    return Response.json({ message: "Forbidden" }, { status: 403 });
   }
 
   // instantiate dependencies
@@ -28,11 +25,11 @@ async function getHandler(request: NextRequest) {
 
   try {
     await calendarCacheEventService.cleanupStaleCache();
-    return NextResponse.json({ ok: true });
+    return Response.json({ ok: true });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Unknown error";
     console.error(`[calendar-subscriptions-cleanup] ${message}:`, e);
-    return NextResponse.json({ message }, { status: 500 });
+    return Response.json({ message }, { status: 500 });
   }
 }
 

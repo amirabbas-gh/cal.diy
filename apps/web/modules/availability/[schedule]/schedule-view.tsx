@@ -2,7 +2,10 @@
 
 import { revalidateAvailabilityList } from "app/(use-page-wrapper)/(main-nav)/availability/actions";
 import { revalidateSchedulePage } from "app/(use-page-wrapper)/availability/[schedule]/actions";
-import { useRouter, useSearchParams } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate, useSearch } from "@tanstack/react-router";
+
 import { useState } from "react";
 
 import { AvailabilitySettings } from "@calcom/atoms/availability/AvailabilitySettings";
@@ -24,9 +27,9 @@ export const AvailabilitySettingsWebWrapper = ({
   scheduleData: schedule,
   travelSchedulesData: travelSchedules,
 }: PageProps) => {
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
   const utils = trpc.useUtils();
   const me = useMeQuery();
   const fromEventType = searchParams?.get("fromEventType");
@@ -101,7 +104,7 @@ export const AvailabilitySettingsWebWrapper = ({
     onSuccess: () => {
       showToast(t("schedule_deleted_successfully"), "success");
       revalidateAvailabilityList();
-      router.push("/availability");
+      router({ to: "/availability" });
     },
   });
 

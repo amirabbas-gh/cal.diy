@@ -1,4 +1,3 @@
-import type { NextApiRequest } from "next";
 import { describe, expect, it } from "vitest";
 import getIP, { parseIpFromHeaders } from "./getIP";
 
@@ -6,8 +5,10 @@ function buildRequest(headers: Record<string, string>): Request {
   return new Request("https://example.com", { headers });
 }
 
-function buildNextApiRequest(headers: Record<string, string | string[]>): NextApiRequest {
-  return { headers } as unknown as NextApiRequest;
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+function buildNextApiRequest(headers: Record<string, string | string[]>): any {
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+  return { headers } as unknown as any;
 }
 
 describe("parseIpFromHeaders", () => {

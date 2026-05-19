@@ -12,8 +12,6 @@ import { CAL_VIDEO_MEETING_LINK_FOR_TESTING } from "@calcom/lib/constants";
 import { isENVDev } from "@calcom/lib/env";
 import prisma from "@calcom/prisma";
 import MarkdownIt from "markdown-it";
-import type { GetServerSidePropsContext } from "next";
-
 const md = new MarkdownIt("default", { html: true, breaks: true, linkify: true });
 
 type CalVideoSettings = {
@@ -118,7 +116,8 @@ const checkIfUserIsHost = async ({
   return !!eventType;
 };
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export async function getServerSideProps(context: any) {
   const { req } = context;
 
   const bookingRepo = new BookingRepository(prisma);

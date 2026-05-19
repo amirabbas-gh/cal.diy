@@ -11,8 +11,8 @@ import { Icon, type IconName } from "@calcom/ui/components/icon";
 import { SkeletonText } from "@calcom/ui/components/skeleton";
 import { Tooltip } from "@calcom/ui/components/tooltip";
 import { format, formatDistanceToNow } from "date-fns";
-import Link from "next/link";
 import { useState } from "react";
+import { Link } from '@tanstack/react-router';
 
 interface BookingHistoryProps {
   bookingUid: string;
@@ -153,7 +153,7 @@ function ActionTitle({ actionDisplayTitle }: { actionDisplayTitle: TranslationWi
           comp.type === "link" ? (
             <Link
               key={comp.href}
-              href={comp.href}
+              to={comp.href}
               target="_blank"
               rel="noopener noreferrer"
               className="text-emphasis underline hover:no-underline"

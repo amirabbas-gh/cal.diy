@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+
 import type { ReactNode } from "react";
 
 import { SkeletonText } from "@calcom/ui/components/skeleton";
@@ -23,7 +24,7 @@ export const OnboardingCard = ({
   isLoading,
   floatingFooter = false,
 }: OnboardingCardProps) => {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
 
   // Animation variants for entry and exit
   const containerVariants = {

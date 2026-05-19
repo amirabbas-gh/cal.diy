@@ -1,5 +1,8 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
 import { useState } from "react";
 
 import { useIsPlatform } from "@calcom/atoms/hooks/useIsPlatform";
@@ -26,8 +29,8 @@ export function Dialog(props: DialogProps) {
 }
 
 function ControlledDialog(props: DialogProps) {
-  const router = useRouter();
-  const pathname = usePathname();
+  const router = useNavigate();
+  const pathname = useLocation().pathname;
   const searchParams = useCompatSearchParams();
   const newSearchParams = new URLSearchParams(searchParams.toString());
   const { children, name, ...dialogProps } = props;
@@ -49,7 +52,7 @@ function ControlledDialog(props: DialogProps) {
         clearQueryParamsOnClose.forEach((queryParam) => {
           newSearchParams.delete(queryParam);
         });
-        router.push(`${pathname}?${newSearchParams.toString()}`);
+        router({ to: `${pathname}?${newSearchParams.toString()}` });
       }
       setDialogState(open ? DIALOG_STATE.OPEN : DIALOG_STATE.CLOSING);
     };

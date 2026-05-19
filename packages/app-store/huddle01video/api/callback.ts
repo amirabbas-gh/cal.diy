@@ -1,5 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-
 import { getServerSession } from "@calcom/features/auth/lib/getServerSession";
 import { getSafeRedirectUrl } from "@calcom/lib/getSafeRedirectUrl";
 
@@ -7,7 +5,8 @@ import getInstalledAppPath from "../../_utils/getInstalledAppPath";
 import { decodeOAuthState } from "../../_utils/oauth/decodeOAuthState";
 import { storeHuddle01Credential } from "../utils/storage";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export default async function handler(req: any, res: any) {
   const session = await getServerSession({ req });
 
   const state = decodeOAuthState(req);

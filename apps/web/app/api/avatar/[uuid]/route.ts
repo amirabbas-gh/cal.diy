@@ -1,7 +1,5 @@
 import type { Params } from "app/_types";
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { AVATAR_FALLBACK, WEBAPP_URL } from "@calcom/lib/constants";
@@ -12,13 +10,13 @@ const querySchema = z.object({
   uuid: z.string().transform((objectKey) => objectKey.split(".")[0]),
 });
 
-const handleValidationError = (error: z.ZodError): NextResponse => {
+const handleValidationError = (error: z.ZodError): Response => {
   const errors = error.errors.map((err) => ({
     path: err.path.join("."),
     errorCode: `error.validation.${err.code}`,
   }));
 
-  return NextResponse.json(
+  return Response.json(
     {
       message: "VALIDATION_ERROR",
       errors,
@@ -27,7 +25,7 @@ const handleValidationError = (error: z.ZodError): NextResponse => {
   );
 };
 
-async function handler(req: NextRequest, { params }: { params: Promise<Params> }) {
+async function handler(req: Request, { params }: { params: Promise<Params> }) {
   const result = querySchema.safeParse(await params);
   if (!result.success) {
     return handleValidationError(result.error);
@@ -61,13 +59,13 @@ async function handler(req: NextRequest, { params }: { params: Promise<Params> }
   } catch (e) {
     // If anything goes wrong or avatar is not found, use default avatar
     const url = new URL(AVATAR_FALLBACK, WEBAPP_URL).toString();
-    return NextResponse.redirect(url, 302);
+    return Response.redirect(url, 302);
   }
 
   const decoded = img.toString().replace("data:image/png;base64,", "").replace("data:image/jpeg;base64,", "");
   const imageResp = Buffer.from(decoded, "base64");
 
-  return new NextResponse(imageResp, {
+  return new Response(imageResp, {
     headers: {
       "Content-Type": "image/png",
       "Content-Length": imageResp.length.toString(),

@@ -1,5 +1,3 @@
-import type { NextApiRequest } from "next";
-
 import { HttpError } from "@calcom/lib/http-error";
 import prisma from "@calcom/prisma";
 
@@ -15,10 +13,11 @@ import { throwIfNotHaveAdminAccessToTeam } from "../throwIfNotHaveAdminAccessToT
  * @param key the keys for the app's credentials
  * @param req the request object from the API call. Used to determine if the credential belongs to a user or a team
  */
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 const createOAuthAppCredential = async (
   appData: { type: string; appId: string },
   key: unknown,
-  req: NextApiRequest
+  req: any
 ) => {
   const userId = req.session?.user.id;
   if (!userId) {

@@ -10,8 +10,8 @@ import { Button } from "@calcom/ui/components/button";
 import { EmptyScreen } from "@calcom/ui/components/empty-screen";
 import { Section } from "@calcom/ui/components/section";
 import useAppsData from "@calcom/features/apps/hooks/useAppsData";
-import Link from "next/link";
 import { useFormContext } from "react-hook-form";
+import { Link } from '@tanstack/react-router';
 
 export type EventType = Pick<EventTypeSetupProps, "eventType">["eventType"] &
   EventTypeAppCardComponentProps["eventType"];
@@ -181,7 +181,7 @@ export const EventAppsTab = ({
                   t={t}
                   i18nKey="available_apps_desc"
                   components={[
-                    <Link key="available_apps_desc" className="cursor-pointer underline" href="/apps">
+                    <Link key="available_apps_desc" className="cursor-pointer underline" to="/apps">
                       App Store
                     </Link>,
                   ]}

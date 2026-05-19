@@ -14,9 +14,12 @@ import logger from "@calcom/lib/logger";
 import { isTrustedInternalUrl, logBlockedSSRFAttempt, validateUrlForSSRF } from "@calcom/lib/ssrfProtection";
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
-import { cookies, headers } from "next/headers";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getCookies, getHeaders } from "@tanstack/start/server";
+
+
+
 import { z } from "zod";
 
 const log = logger.getSubLogger({ prefix: ["[api/logo]"] });
@@ -161,23 +164,23 @@ async function getTeamLogos(subdomain: string, isValidOrgDomain: boolean) {
 /**
  * This API endpoint is used to serve the logo associated with a team if no logo is found we serve our default logo
  */
-async function getHandler(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
+async function getHandler(request: Request) {
+  const searchParams = new URL(request.url).searchParams;
   const parsedQuery = logoApiSchema.parse(Object.fromEntries(searchParams.entries()));
 
   // Create a legacy request object for compatibility
-  const legacyReq = buildLegacyRequest(await headers(), await cookies());
+  const legacyReq = buildLegacyRequest(new Headers(Object.entries(getHeaders()).map(([k, v]) => [k, Array.isArray(v) ? v.join(", ") : String(v ?? "")] as [string, string])), { getAll: () => Object.entries(getCookies()).map(([name, value]) => ({ name, value: String(value ?? "") })) });
   const currentOrgDomain = null;
   const isValidOrgDomain = false;
 
   const hostname = request.headers.get("host");
   if (!hostname) {
-    return NextResponse.json({ error: "No hostname" }, { status: 400 });
+    return Response.json({ error: "No hostname" }, { status: 400 });
   }
 
   const domains = extractSubdomainAndDomain(hostname);
   if (!domains) {
-    return NextResponse.json({ error: "No domains" }, { status: 400 });
+    return Response.json({ error: "No domains" }, { status: 400 });
   }
 
   const [subdomain] = domains;
@@ -228,7 +231,7 @@ async function getHandler(request: NextRequest) {
     }
 
     // Create a new response with the image buffer
-    const imageResponse = new NextResponse(buffer as BodyInit);
+    const imageResponse = new Response(buffer as BodyInit);
 
     // Set the appropriate headers
     imageResponse.headers.set("Content-Type", contentType);
@@ -236,7 +239,7 @@ async function getHandler(request: NextRequest) {
 
     return imageResponse;
   } catch (_error) {
-    return NextResponse.json({ error: "Failed fetching logo" }, { status: 404 });
+    return Response.json({ error: "Failed fetching logo" }, { status: 404 });
   }
 }
 

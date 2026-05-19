@@ -1,16 +1,15 @@
 import { captureException } from "@sentry/nextjs";
-import type { NextApiRequest, NextApiResponse } from "next";
-
 import { HttpError } from "@calcom/lib/http-error";
 import { getServerErrorFromUnknown } from "@calcom/lib/server/getServerErrorFromUnknown";
 
 import { TRPCError } from "@trpc/server";
 import { getHTTPStatusCodeFromError } from "@trpc/server/http";
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 type OnErrorOptions = {
   error: TRPCError;
-  req?: NextApiRequest;
-  res?: NextApiResponse;
+  req?: any;
+  res?: any;
 };
 
 export function onErrorHandler({ error }: OnErrorOptions) {

@@ -15,9 +15,80 @@ import prisma from "@calcom/prisma";
 import { BookingStatus, WebhookTriggerEvents } from "@calcom/prisma/enums";
 import { expectWebhookToHaveBeenCalledWith } from "@calcom/testing/lib/bookingScenario/expects";
 import * as recordedDailyVideoRoute from "@calcom/web/app/api/recorded-daily-video/route";
-import { NextRequest } from "next/server";
 import { createMocks } from "node-mocks-http";
 import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+
+type NextResponseInit = ResponseInit & { request?: { headers?: Headers } };
+
+function __nextResponseJson(body: unknown, init?: ResponseInit): Response {
+  const headers = new Headers(init?.headers);
+  if (!headers.has("content-type")) {
+    headers.set("content-type", "application/json");
+  }
+  return new Response(JSON.stringify(body), { ...init, headers });
+}
+
+const NextResponse = Object.assign(
+  function NextResponse(body?: BodyInit | null, init?: ResponseInit): Response {
+    return new Response(body, init);
+  },
+  {
+    json: __nextResponseJson,
+    next: (init?: NextResponseInit) =>
+      new Response(null, {
+        status: 200,
+        ...init,
+        headers: {
+          "x-middleware-next": "1",
+          ...Object.fromEntries(new Headers(init?.headers)),
+        },
+      }),
+    rewrite: (url: URL | string, init?: ResponseInit) => {
+      const rewriteUrl = typeof url === "string" ? new URL(url, "http://localhost") : url;
+      return new Response(null, {
+        status: 200,
+        ...init,
+        headers: {
+          "x-middleware-rewrite": rewriteUrl.toString(),
+          ...Object.fromEntries(new Headers(init?.headers)),
+        },
+      });
+    },
+    redirect: (url: URL | string, statusOrInit?: number | ResponseInit) => {
+      const redirectUrl = typeof url === "string" ? new URL(url, "http://localhost") : url;
+      const status =
+        typeof statusOrInit === "number"
+          ? statusOrInit
+          : (typeof statusOrInit === "object" && statusOrInit && "status" in statusOrInit
+              ? (statusOrInit as ResponseInit).status
+              : undefined) ?? 307;
+      const baseInit =
+        typeof statusOrInit === "object" && statusOrInit !== null && typeof statusOrInit !== "number"
+          ? statusOrInit
+          : {};
+      const headers = new Headers((baseInit as ResponseInit).headers);
+      headers.set("location", redirectUrl.toString());
+      return new Response(null, { ...baseInit, status, headers });
+    },
+  },
+);
+
+class NextRequest extends Request {
+  private readonly __cookieMap = new Map<string, string>();
+  get nextUrl(): URL {
+    return new URL(this.url);
+  }
+  cookies = {
+    get: (name: string) => {
+      const value = this.__cookieMap.get(name);
+      return value !== undefined ? { name, value } : undefined;
+    },
+    set: (name: string, value: string) => {
+      this.__cookieMap.set(name, value);
+    },
+  };
+}
+
 
 // Mock the next/headers module before importing the handler
 vi.mock("next/headers", () => ({
@@ -30,27 +101,7 @@ vi.mock("next/headers", () => ({
 }));
 
 // Mock NextResponse to handle the response properly
-vi.mock("next/server", async () => {
-  const actual = (await vi.importActual("next/server")) as any;
-  return {
-    ...actual,
-    NextResponse: {
-      json: (data: any, init?: ResponseInit) => {
-        return new Response(JSON.stringify(data), {
-          ...init,
-          headers: {
-            ...init?.headers,
-            "content-type": "application/json",
-          },
-        });
-      },
-      // Add other methods you might need
-      redirect: actual.NextResponse.redirect,
-      next: actual.NextResponse.next,
-      rewrite: actual.NextResponse.rewrite,
-    },
-  };
-});
+
 
 // Now import the handler after mocking
 const { postHandler } = recordedDailyVideoRoute;

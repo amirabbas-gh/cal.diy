@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useLocation, Link } from "@tanstack/react-router";
+
 
 export default function PlaygroundLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
 
   const isPlaygroundRoot = pathname === "/settings/admin/playground";
 
@@ -12,7 +12,7 @@ export default function PlaygroundLayout({ children }: { children: React.ReactNo
     children
   ) : (
     <div>
-      <Link href="/settings/admin/playground" className="text-sm underline">
+      <Link to="/settings/admin/playground" className="text-sm underline">
         ← Playground
       </Link>
       <div className="h-8" />

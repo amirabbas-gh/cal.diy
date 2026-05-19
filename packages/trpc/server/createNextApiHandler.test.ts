@@ -1,5 +1,4 @@
 import { captureException } from "@sentry/nextjs";
-import type { NextApiRequest } from "next";
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import type { ZodIssue } from "zod";
 import { ZodError } from "zod";
@@ -31,10 +30,11 @@ describe("createNextApiHandler", () => {
     },
   } as unknown as AnyRouter;
 
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
   const mockReq = {
     method: "POST",
     url: "/api/trpc/test",
-  } as NextApiRequest;
+  } as any;
 
   let consoleSpy: ReturnType<typeof vi.spyOn>;
 

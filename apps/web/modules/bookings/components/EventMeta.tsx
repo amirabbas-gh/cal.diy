@@ -14,19 +14,13 @@ import { EventTypeAutoTranslatedField } from "@calcom/prisma/enums";
 import { EventMetaBlock } from "@calcom/web/modules/bookings/components/event-meta/Details";
 import { SeatsAvailabilityText } from "@calcom/web/modules/bookings/components/SeatsAvailabilityText";
 import { m } from "framer-motion";
-import dynamic from "next/dynamic";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, lazy } from "react";
 import { shallow } from "zustand/shallow";
 import i18nConfigration from "../../../../../i18n.json";
 import { EventDetails, EventMembers, EventMetaSkeleton, EventTitle } from "./event-meta";
 import { ScrollableWithGradients } from "./ScrollableWithGradients";
 
-const WebTimezoneSelect = dynamic(
-  () => import("@calcom/web/modules/timezone/components/TimezoneSelect").then((mod) => mod.TimezoneSelect),
-  {
-    ssr: false,
-  }
-);
+const WebTimezoneSelect = lazy(() => import("@calcom/web/modules/timezone/components/TimezoneSelect").then((mod) => mod.TimezoneSelect));
 
 const getTranslatedField = (
   translations: Array<Pick<EventTypeTranslation, "field" | "targetLocale" | "translatedText">>,

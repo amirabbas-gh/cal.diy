@@ -1,5 +1,6 @@
-import { ImageResponse } from "next/og";
-import type { NextRequest } from "next/server";
+import satori from "satori";
+import { Resvg } from "@resvg/resvg-js";
+
 import type { SatoriOptions } from "satori";
 import { z, ZodError } from "zod";
 
@@ -31,8 +32,8 @@ const genericSchema = z.object({
   description: z.string(),
 });
 
-async function handler(req: NextRequest) {
-  const { searchParams } = req.nextUrl;
+async function handler(req: Request) {
+  const { searchParams } = new URL(req.url);
   const imageType = searchParams.get("type");
 
   try {
@@ -76,14 +77,15 @@ async function handler(req: NextRequest) {
           });
 
           const etag = await getOGImageVersion("meeting");
-          const img = new ImageResponse(
-            <Meeting
+          const img = (await (async (): Promise<Response> => {
+    const __ogSvg0 = await satori(<Meeting
               title={title}
               profile={{ name: meetingProfileName, image: meetingImage }}
               users={names.map((name, index) => ({ name, username: usernames[index] }))}
-            />,
-            ogConfig
-          );
+            />, { ...{ width: 1200, height: 630, fonts: [] }, ...(ogConfig) });
+    const __ogPng0 = new Resvg(__ogSvg0).render().asPng();
+    return new Response(__ogPng0, { headers: { "Content-Type": "image/png" } });
+  })());
 
           return new Response(img.body, {
             status: 200,
@@ -127,10 +129,11 @@ async function handler(req: NextRequest) {
           const svgHash = SVG_HASHES[slug] ?? undefined;
 
           const etag = await getOGImageVersion("app", { svgHash });
-          const img = new ImageResponse(
-            <App name={name} description={description} slug={slug} logoUrl={logoUrl} />,
-            ogConfig
-          );
+          const img = (await (async (): Promise<Response> => {
+    const __ogSvg1 = await satori(<App name={name} description={description} slug={slug} logoUrl={logoUrl} />, { ...{ width: 1200, height: 630, fonts: [] }, ...(ogConfig) });
+    const __ogPng1 = new Resvg(__ogSvg1).render().asPng();
+    return new Response(__ogPng1, { headers: { "Content-Type": "image/png" } });
+  })());
 
           return new Response(img.body, {
             status: 200,
@@ -167,7 +170,11 @@ async function handler(req: NextRequest) {
           });
 
           const etag = await getOGImageVersion("generic");
-          const img = new ImageResponse(<Generic title={title} description={description} />, ogConfig);
+          const img = (await (async (): Promise<Response> => {
+    const __ogSvg2 = await satori(<Generic title={title} description={description} />, { ...{ width: 1200, height: 630, fonts: [] }, ...(ogConfig) });
+    const __ogPng2 = new Resvg(__ogSvg2).render().asPng();
+    return new Response(__ogPng2, { headers: { "Content-Type": "image/png" } });
+  })());
 
           return new Response(img.body, {
             status: 200,

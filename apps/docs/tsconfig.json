@@ -17,10 +17,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "plugins": [
-      {
-        "name": "next"
-      }
+    "types": [
+      "vite/client"
     ]
   },
   "include": [
@@ -31,6 +29,9 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "migrated-from-pages",
+    "**/migrated-from-pages/**",
+    "**/migrated-from-pages-*/**"
   ]
 }

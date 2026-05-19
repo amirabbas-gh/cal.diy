@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+/* @codemod:next-font-local:cal-font:fonts/CalSans-SemiBold.woff2 */
+@font-face {
+  font-family: 'Cal Font';
+  src: url('../fonts/CalSans-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', sans-serif;
+  --font-cal: 'Cal Font', ui-sans-serif, sans-serif;
+}

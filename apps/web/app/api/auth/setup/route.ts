@@ -1,7 +1,5 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { parseRequestData } from "app/api/parseRequestData";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
 import z from "zod";
 
 import { hashPassword } from "@calcom/lib/auth/hashPassword";
@@ -25,7 +23,7 @@ const querySchema = z.object({
   }),
 });
 
-async function handler(req: NextRequest) {
+async function handler(req: Request) {
   const userCount = await prisma.user.count();
   if (userCount !== 0) {
     throw new HttpError({ statusCode: 400, message: "No setup needed." });
@@ -56,7 +54,7 @@ async function handler(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({ message: "First admin user created successfully." });
+  return Response.json({ message: "First admin user created successfully." });
 }
 
 export const POST = defaultResponderForAppDir(handler);

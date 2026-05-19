@@ -31,7 +31,6 @@ import { Icon } from "@calcom/ui/components/icon";
 import { Tooltip } from "@calcom/ui/components/tooltip";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import * as RadioGroup from "@radix-ui/react-radio-group";
-import Link from "next/link";
 import type React from "react";
 import type { Key } from "react";
 import { useEffect, useState } from "react";
@@ -39,6 +38,7 @@ import type { UseFormRegisterReturn, UseFormReturn } from "react-hook-form";
 import { Controller, useFormContext } from "react-hook-form";
 import type { SingleValue } from "react-select";
 import MaxActiveBookingsPerBookerController from "./MaxActiveBookingsPerBookerController";
+import { Link } from '@tanstack/react-router';
 
 type IPeriodType = (typeof PeriodType)[keyof typeof PeriodType];
 
@@ -447,7 +447,7 @@ export const EventLimitsTab = ({ eventType, customClassNames }: EventLimitsTabPr
 
     if (teamId) {
       return (
-        <Link href={`/settings/teams/${teamId}/settings`} target="_blank" rel="noopener noreferrer">
+        <Link to={`/settings/teams/${teamId}/settings`} target="_blank" rel="noopener noreferrer">
           {badge}
         </Link>
       );

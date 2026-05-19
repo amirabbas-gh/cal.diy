@@ -1,7 +1,7 @@
 import process from "node:process";
 import { getCspHeader, getCspNonce } from "@lib/csp";
 import { get } from "@vercel/edge-config";
-import type { NextRequest } from "next/server";
+// TODO: remaining `next/server` imports (middleware-only `NextResponse.next`, namespace imports, or exports without an automated rewrite) — complete the port to Web APIs and TanStack Start server routes — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import { NextResponse } from "next/server";
 
 const safeGet = async <T = any>(key: string): Promise<T | undefined> => {

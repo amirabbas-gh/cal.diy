@@ -1,5 +1,3 @@
-import type { NextApiRequest } from "next";
-
 import { EventTypeRepository } from "@calcom/features/eventtypes/repositories/eventTypeRepository";
 import { PrismaSelectedSlotRepository } from "@calcom/features/selectedSlots/repositories/PrismaSelectedSlotRepository";
 import { HttpError } from "@calcom/lib/http-error";
@@ -8,10 +6,11 @@ import type { PrismaClient } from "@calcom/prisma";
 
 import type { TIsAvailableInputSchema, TIsAvailableOutputSchema } from "./isAvailable.schema";
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 interface IsAvailableOptions {
   ctx: {
     prisma: PrismaClient;
-    req?: NextApiRequest | undefined;
+    req?: any | undefined;
   };
   input: TIsAvailableInputSchema;
 }

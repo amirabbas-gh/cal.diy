@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -160,13 +159,13 @@ export default function ApiKeyDialogForm({
                 <div className="border-emphasis relative flex w-full items-start rounded-[10px] border p-4 text-sm">
                   {t("api_key_modal_subtitle")}
                 </div>
-                <Link
+                <a
                   target="_blank"
                   rel="noopener noreferrer"
                   href="https://cal.com/integrate"
                   className="border-subtle relative flex w-full items-start rounded-[10px] border p-4 text-sm">
                   {t("api_key_modal_subtitle_platform")}
-                </Link>
+                </a>
               </div>
             ) : (
               <p className="text-subtle mb-5 mt-1 text-sm">{t("api_key_modal_subtitle")}</p>

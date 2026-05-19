@@ -1,5 +1,3 @@
-import type { NextApiRequest } from "next";
-
 import getAppKeysFromSlug from "@calcom/app-store/_utils/getAppKeysFromSlug";
 import { refreshAccessToken } from "@calcom/app-store/basecamp3/lib/helpers";
 import type { BasecampToken } from "@calcom/app-store/basecamp3/lib/types";
@@ -9,7 +7,8 @@ import prisma from "@calcom/prisma";
 import { credentialForCalendarServiceSelect } from "@calcom/prisma/selects/credential";
 import { HttpError } from "@calcom/lib/http-error";
 
-async function handler(req: NextApiRequest) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function handler(req: any) {
   const userId = req.session?.user?.id;
   if (!userId) {
     throw new HttpError({ statusCode: 401, message: "Unauthorized" });

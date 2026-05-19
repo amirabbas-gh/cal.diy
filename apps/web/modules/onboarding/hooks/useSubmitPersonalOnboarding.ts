@@ -1,4 +1,7 @@
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { sessionStorage } from "@calcom/lib/webstorage";
@@ -29,7 +32,7 @@ const DEFAULT_EVENT_TYPES = [
 ];
 
 export const useSubmitPersonalOnboarding = () => {
-  const router = useRouter();
+  const router = useNavigate();
   const { t } = useLocale();
   const utils = trpc.useUtils();
 
@@ -61,7 +64,7 @@ export const useSubmitPersonalOnboarding = () => {
       const redirectUrl = localStorage.getItem(ONBOARDING_REDIRECT_KEY);
       if (redirectUrl) {
         localStorage.removeItem(ONBOARDING_REDIRECT_KEY);
-        router.push(redirectUrl);
+        router({ to: redirectUrl });
         return;
       }
 
@@ -72,11 +75,11 @@ export const useSubmitPersonalOnboarding = () => {
       if (!hasOrgModalFlag) {
         // Only set personal modal flag if org modal flag is not set
         setShowWelcomeToCalcomModalFlag();
-        router.push("/event-types?welcomeToCalcomModal=true");
+        router({ to: "/event-types", search: { welcomeToCalcomModal: "true" } });
       } else {
         // Org modal flag exists - redirect to event-types without personal modal query param
         // The org modal will show via sessionStorage check
-        router.push("/event-types?newOrganizationModal=true");
+        router({ to: "/event-types", search: { newOrganizationModal: "true" } });
       }
     },
     onError: (error) => {

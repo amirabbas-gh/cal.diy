@@ -8,7 +8,10 @@ import type { RouterOutputs } from "@calcom/trpc/react";
 import { trpc } from "@calcom/trpc/react";
 import { revalidateWebhooksList } from "@calcom/web/app/(use-page-wrapper)/settings/(settings-layout)/developer/webhooks/(with-loader)/actions";
 import { toastManager } from "@coss/ui/components/toast";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useSession } from "next-auth/react";
 import type { WebhookFormSubmitData } from "../components/WebhookForm";
 import WebhookForm from "../components/WebhookForm";
@@ -24,7 +27,7 @@ export const NewWebhookView = ({ webhooks, installedApps }: Props) => {
   const searchParams = useCompatSearchParams();
   const { t } = useLocale();
   const utils = trpc.useUtils();
-  const router = useRouter();
+  const router = useNavigate();
   const session = useSession();
 
   const teamId = searchParams?.get("teamId") ? Number(searchParams.get("teamId")) : undefined;
@@ -35,7 +38,7 @@ export const NewWebhookView = ({ webhooks, installedApps }: Props) => {
       toastManager.add({ title: t("webhook_created_successfully"), type: "success" });
       await utils.viewer.webhook.list.invalidate();
       revalidateWebhooksList();
-      router.push("/settings/developer/webhooks");
+      router({ to: "/settings/developer/webhooks" });
     },
     onError(error) {
       toastManager.add({ title: error.message, type: "error" });

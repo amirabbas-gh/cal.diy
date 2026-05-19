@@ -1,10 +1,9 @@
-import type { NextApiRequest } from "next";
-
 import { HttpError } from "@calcom/lib/http-error";
 
 import { getSession } from "./getSession";
 
-type CtxOrReq = { req: NextApiRequest; ctx?: never } | { ctx: { req: NextApiRequest }; req?: never };
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+type CtxOrReq = { req: any; ctx?: never } | { ctx: { req: any }; req?: never };
 
 export const ensureSession = async (ctxOrReq: CtxOrReq) => {
   const session = await getSession(ctxOrReq);

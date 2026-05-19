@@ -13,8 +13,7 @@ import { getIs24hClockFromLocalStorage, isBrowserLocale24h } from "@calcom/lib/t
 import { CURRENT_TIMEZONE } from "@calcom/lib/timezoneConstants";
 import { localStorage } from "@calcom/lib/webstorage";
 import classNames from "classnames";
-import dynamic from "next/dynamic";
-import type { FC } from "react";
+import type { FC, lazy } from "react";
 import { useEffect, useState } from "react";
 
 
@@ -27,38 +26,18 @@ type PaymentPageProps = {
   user?: { name?: string | null; username?: string | null } | null;
 };
 
-const PaypalPaymentComponent = dynamic(
-  () =>
-    import("@calcom/web/components/apps/paypal/PaypalPaymentComponent").then((m) => m.PaypalPaymentComponent),
-  {
-    ssr: false,
-  }
-);
+const PaypalPaymentComponent = lazy(() =>
+    import("@calcom/web/components/apps/paypal/PaypalPaymentComponent").then((m) => m.PaypalPaymentComponent));
 
-const AlbyPaymentComponent = dynamic(
-  () => import("@calcom/web/components/apps/alby/AlbyPaymentComponent").then((m) => m.AlbyPaymentComponent),
-  {
-    ssr: false,
-  }
-);
+const AlbyPaymentComponent = lazy(() => import("@calcom/web/components/apps/alby/AlbyPaymentComponent").then((m) => m.AlbyPaymentComponent));
 
-const HitpayPaymentComponent = dynamic(
-  () =>
-    import("@calcom/web/components/apps/hitpay/HitpayPaymentComponent").then((m) => m.HitpayPaymentComponent),
-  {
-    ssr: false,
-  }
-);
+const HitpayPaymentComponent = lazy(() =>
+    import("@calcom/web/components/apps/hitpay/HitpayPaymentComponent").then((m) => m.HitpayPaymentComponent));
 
-const BtcpayPaymentComponent = dynamic(
-  () =>
+const BtcpayPaymentComponent = lazy(() =>
     import("@calcom/web/components/apps/btcpayserver/BtcpayPaymentComponent").then(
       (m) => m.BtcpayPaymentComponent
-    ),
-  {
-    ssr: false,
-  }
-);
+    ));
 
 const PaymentPage: FC<PaymentPageProps> = (props) => {
   const { t, i18n } = useLocale();

@@ -8,7 +8,10 @@ import type { WebhookTriggerEvents } from "@calcom/prisma/enums";
 import { trpc } from "@calcom/trpc/react";
 import { revalidateWebhooksList } from "@calcom/web/app/(use-page-wrapper)/settings/(settings-layout)/developer/webhooks/(with-loader)/actions";
 import { toastManager } from "@coss/ui/components/toast";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import type { WebhookFormSubmitData } from "../components/WebhookForm";
 import WebhookForm from "../components/WebhookForm";
 import { WebhookVersionCTA } from "../components/WebhookVersionCTA";
@@ -30,7 +33,7 @@ type WebhookProps = {
 
 export function EditWebhookView({ webhook }: { webhook?: WebhookProps }) {
   const { t } = useLocale();
-  const router = useRouter();
+  const router = useNavigate();
   const { data: installedApps, isPending } = trpc.viewer.apps.integrations.useQuery(
     { variant: "other", onlyInstalled: true },
     {
@@ -46,7 +49,7 @@ export function EditWebhookView({ webhook }: { webhook?: WebhookProps }) {
   const editWebhookMutation = trpc.viewer.webhook.edit.useMutation({
     onSuccess() {
       toastManager.add({ title: t("webhook_updated_successfully"), type: "success" });
-      router.push("/settings/developer/webhooks");
+      router({ to: "/settings/developer/webhooks" });
       revalidateWebhooksList();
     },
     onError(error) {

@@ -1,13 +1,14 @@
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { deleteCookie, getCookie } from "@tanstack/start/server";
 
-export async function validateCsrfToken(csrfToken: string): Promise<NextResponse | null> {
-  const cookieStore = await cookies();
-  const cookieToken = cookieStore.get("calcom.csrf_token")?.value;
+
+
+export async function validateCsrfToken(csrfToken: string): Promise<Response | null> {
+  const cookieToken = getCookie("calcom.csrf_token");
 
   if (!cookieToken || cookieToken !== csrfToken) {
-    return NextResponse.json({ success: false, message: "Invalid CSRF token" }, { status: 403 });
+    return Response.json({ success: false, message: "Invalid CSRF token" }, { status: 403 });
   }
-  cookieStore.delete("calcom.csrf_token");
+  deleteCookie("calcom.csrf_token");
   return null;
 }

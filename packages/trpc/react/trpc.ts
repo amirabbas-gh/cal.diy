@@ -1,4 +1,3 @@
-import type { NextPageContext } from "next/types";
 import superjson from "superjson";
 
 import { httpBatchLink, httpLink, loggerLink, splitLink } from "@trpc/client";
@@ -47,9 +46,10 @@ const resolveEndpoint = (links: any) => {
  * A set of strongly-typed React hooks from your `AppRouter` type signature with `createTRPCReact`.
  * @link https://trpc.io/docs/v10/react#2-create-trpc-hooks
  */
-export const trpc: CreateTRPCNext<AppRouter, NextPageContext, null> = createTRPCNext<
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export const trpc: CreateTRPCNext<AppRouter, any, null> = createTRPCNext<
   AppRouter,
-  NextPageContext
+  any
 >({
   config() {
     const url =

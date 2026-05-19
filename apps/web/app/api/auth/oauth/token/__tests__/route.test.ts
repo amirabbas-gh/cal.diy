@@ -1,14 +1,87 @@
+// TODO: Next.js pages/api route — convert the handler to TanStack Start server route handlers (Web Request/Response) — https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
 import prismaMock from "@calcom/testing/lib/__mocks__/prismaMock";
 
 import jwt from "jsonwebtoken";
 // Import mocked dependencies after mocks are set up
-import { NextRequest } from "next/server";
+
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 
 import { generateSecret } from "@calcom/features/oauth/utils/generateSecret";
 import { verifyCodeChallenge } from "@calcom/lib/pkce";
 
 import { POST } from "../route";
+
+type NextResponseInit = ResponseInit & { request?: { headers?: Headers } };
+
+function __nextResponseJson(body: unknown, init?: ResponseInit): Response {
+  const headers = new Headers(init?.headers);
+  if (!headers.has("content-type")) {
+    headers.set("content-type", "application/json");
+  }
+  return new Response(JSON.stringify(body), { ...init, headers });
+}
+
+const NextResponse = Object.assign(
+  function NextResponse(body?: BodyInit | null, init?: ResponseInit): Response {
+    return new Response(body, init);
+  },
+  {
+    json: __nextResponseJson,
+    next: (init?: NextResponseInit) =>
+      new Response(null, {
+        status: 200,
+        ...init,
+        headers: {
+          "x-middleware-next": "1",
+          ...Object.fromEntries(new Headers(init?.headers)),
+        },
+      }),
+    rewrite: (url: URL | string, init?: ResponseInit) => {
+      const rewriteUrl = typeof url === "string" ? new URL(url, "http://localhost") : url;
+      return new Response(null, {
+        status: 200,
+        ...init,
+        headers: {
+          "x-middleware-rewrite": rewriteUrl.toString(),
+          ...Object.fromEntries(new Headers(init?.headers)),
+        },
+      });
+    },
+    redirect: (url: URL | string, statusOrInit?: number | ResponseInit) => {
+      const redirectUrl = typeof url === "string" ? new URL(url, "http://localhost") : url;
+      const status =
+        typeof statusOrInit === "number"
+          ? statusOrInit
+          : (typeof statusOrInit === "object" && statusOrInit && "status" in statusOrInit
+              ? (statusOrInit as ResponseInit).status
+              : undefined) ?? 307;
+      const baseInit =
+        typeof statusOrInit === "object" && statusOrInit !== null && typeof statusOrInit !== "number"
+          ? statusOrInit
+          : {};
+      const headers = new Headers((baseInit as ResponseInit).headers);
+      headers.set("location", redirectUrl.toString());
+      return new Response(null, { ...baseInit, status, headers });
+    },
+  },
+);
+
+class NextRequest extends Request {
+  private readonly __cookieMap = new Map<string, string>();
+  get nextUrl(): URL {
+    return new URL(this.url);
+  }
+  cookies = {
+    get: (name: string) => {
+      const value = this.__cookieMap.get(name);
+      return value !== undefined ? { name, value } : undefined;
+    },
+    set: (name: string, value: string) => {
+      this.__cookieMap.set(name, value);
+    },
+  };
+}
+
 
 // Create mock NextResponse.json function using hoisted
 const mockNextResponseJson = vi.hoisted(() => {
@@ -20,35 +93,7 @@ const mockNextResponseJson = vi.hoisted(() => {
 });
 
 // Mock next/server before importing anything that uses it
-vi.mock("next/server", () => ({
-  NextRequest: class MockNextRequest {
-    url: string;
-    method: string;
-    nextUrl: { pathname: string; searchParams: URLSearchParams };
-    private _body: string;
 
-    constructor(
-      url: string,
-      options: { method?: string; body?: string; headers?: Record<string, string> } = {}
-    ) {
-      this.url = url;
-      this.method = options.method || "POST";
-      this._body = options.body || "";
-      const urlObj = new URL(url);
-      this.nextUrl = {
-        pathname: urlObj.pathname,
-        searchParams: urlObj.searchParams,
-      };
-    }
-
-    async text(): Promise<string> {
-      return this._body;
-    }
-  },
-  NextResponse: {
-    json: mockNextResponseJson,
-  },
-}));
 
 // Mock dependencies
 vi.mock("@calcom/lib/pkce", () => ({
@@ -74,18 +119,18 @@ vi.mock("app/api/defaultResponderForAppDir", async () => {
   return {
     defaultResponderForAppDir:
       (
-        handler: (req: NextRequest, context: { params: Promise<Record<string, string>> }) => Promise<Response>
+        handler: (req: Request, context: { params: Promise<Record<string, string>> }) => Promise<Response>
       ) =>
-      async (req: NextRequest, context?: { params: Promise<Record<string, string>> }) => {
+      async (req: Request, context?: { params: Promise<Record<string, string>> }) => {
         try {
           const result = await handler(req, context || { params: Promise.resolve({}) });
           if (result) {
             return result;
           }
-          return NextResponse.json({});
+          return Response.json({});
         } catch (error: unknown) {
           const errorMessage = error instanceof Error ? error.message : "Internal server error";
-          return NextResponse.json(
+          return Response.json(
             {
               message: errorMessage,
             },
@@ -97,7 +142,7 @@ vi.mock("app/api/defaultResponderForAppDir", async () => {
 });
 
 vi.mock("app/api/parseRequestData", () => ({
-  parseUrlFormData: async (req: NextRequest): Promise<Record<string, string>> => {
+  parseUrlFormData: async (req: Request): Promise<Record<string, string>> => {
     const text = await req.text();
     const params = new URLSearchParams(text);
     return Object.fromEntries(params);
@@ -114,7 +159,7 @@ vi.stubEnv("CALENDSO_ENCRYPTION_KEY", "test_encryption_key");
 // Helper to create token exchange request
 function createTokenRequest(data: Record<string, string>) {
   const formData = new URLSearchParams(data);
-  const request = new NextRequest("http://localhost:3000/api/auth/oauth/token", {
+  const request = new Request("http://localhost:3000/api/auth/oauth/token", {
     method: "POST",
     body: formData.toString(),
     headers: {

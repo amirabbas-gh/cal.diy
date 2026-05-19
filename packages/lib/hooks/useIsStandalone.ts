@@ -1,8 +1,9 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearch } from "@tanstack/react-router";
+
 
 export const useIsStandalone = () => {
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
   return searchParams?.get("standalone") === "true";
 };

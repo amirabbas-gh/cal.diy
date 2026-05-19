@@ -1,6 +1,4 @@
 import { OAuth2Client } from "googleapis-common";
-import type { NextApiRequest, NextApiResponse } from "next";
-
 import { GOOGLE_CALENDAR_SCOPES, SCOPE_USERINFO_PROFILE, WEBAPP_URL_FOR_OAUTH } from "@calcom/lib/constants";
 import { HttpError } from "@calcom/lib/http-error";
 import { defaultHandler } from "@calcom/lib/server/defaultHandler";
@@ -9,7 +7,8 @@ import { defaultResponder } from "@calcom/lib/server/defaultResponder";
 import { encodeOAuthState } from "../../_utils/oauth/encodeOAuthState";
 import { getGoogleAppKeys } from "../lib/getGoogleAppKeys";
 
-async function getHandler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function getHandler(req: any, res: any) {
   const loggedInUser = req.session?.user;
 
   if (!loggedInUser) {

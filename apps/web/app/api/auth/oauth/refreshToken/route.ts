@@ -1,33 +1,31 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { parseUrlFormData } from "app/api/parseRequestData";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 
 import { getOAuthService } from "@calcom/features/oauth/di/OAuthService.container";
 import { OAUTH_ERROR_REASONS } from "@calcom/features/oauth/services/OAuthService";
 import { ErrorWithCode } from "@calcom/lib/errors";
 import { getHttpStatusCode } from "@calcom/lib/server/getServerErrorFromUnknown";
 
-async function handler(req: NextRequest) {
+async function handler(req: Request) {
   const { client_id, client_secret, grant_type, refresh_token } = await parseUrlFormData(req);
 
   if (!process.env.CALENDSO_ENCRYPTION_KEY) {
-    return NextResponse.json({ message: OAUTH_ERROR_REASONS["encryption_key_missing"] }, { status: 500 });
+    return Response.json({ message: OAUTH_ERROR_REASONS["encryption_key_missing"] }, { status: 500 });
   }
 
   if (!client_id) {
-    return NextResponse.json({ error: "invalid_request" }, { status: 400 });
+    return Response.json({ error: "invalid_request" }, { status: 400 });
   }
 
   if (grant_type !== "refresh_token") {
-    return NextResponse.json({ error: "invalid_request" }, { status: 400 });
+    return Response.json({ error: "invalid_request" }, { status: 400 });
   }
   try {
     const oAuthService = getOAuthService();
     const refreshTokenValue = refresh_token || req.headers.get("authorization")?.split(" ")[1] || "";
     const tokens = await oAuthService.refreshAccessToken(client_id, refreshTokenValue, client_secret);
 
-    return NextResponse.json(
+    return Response.json(
       {
         access_token: tokens.accessToken,
         token_type: "bearer",
@@ -45,9 +43,9 @@ async function handler(req: NextRequest) {
     );
   } catch (err) {
     if (err instanceof ErrorWithCode) {
-      return NextResponse.json({ error: err.message }, { status: getHttpStatusCode(err) });
+      return Response.json({ error: err.message }, { status: getHttpStatusCode(err) });
     }
-    return NextResponse.json({ error: "server_error" }, { status: 500 });
+    return Response.json({ error: "server_error" }, { status: 500 });
   }
 }
 

@@ -1,9 +1,13 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { createHmac } from "node:crypto";
-import { headers } from "next/headers";
-import { cookies } from "next/headers";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getCookies, getHeaders } from "@tanstack/start/server";
+
+import { getCookies, getHeaders } from "@tanstack/start/server";
+
+
+
 import getRawBody from "raw-body";
 import z from "zod";
 
@@ -22,21 +26,21 @@ const helpscoutRequestBodySchema = z.object({
  * API for Helpscout to retrieve key information about a user from a ticket
  * Note: HelpScout expects a JSON with a `html` prop to show its content as HTML
  */
-async function postHandler(request: NextRequest) {
+async function postHandler(request: Request) {
   const hsSignature = request.headers.get("x-helpscout-signature");
-  if (!hsSignature) return NextResponse.json({ message: "Missing signature" }, { status: 400 });
+  if (!hsSignature) return Response.json({ message: "Missing signature" }, { status: 400 });
 
   if (!process.env.CALENDSO_ENCRYPTION_KEY)
-    return NextResponse.json({ message: "Missing encryption key" }, { status: 500 });
+    return Response.json({ message: "Missing encryption key" }, { status: 500 });
 
-  const legacyRequest = buildLegacyRequest(await headers(), await cookies());
+  const legacyRequest = buildLegacyRequest(new Headers(Object.entries(getHeaders()).map(([k, v]) => [k, Array.isArray(v) ? v.join(", ") : String(v ?? "")] as [string, string])), { getAll: () => Object.entries(getCookies()).map(([name, value]) => ({ name, value: String(value ?? "") })) });
 
   // Get the raw request body
   const rawBody = await getRawBody(legacyRequest);
 
   try {
     const parsedBody = helpscoutRequestBodySchema.safeParse(JSON.parse(rawBody.toString()));
-    if (!parsedBody.success) return NextResponse.json({ message: "Invalid request body" }, { status: 400 });
+    if (!parsedBody.success) return Response.json({ message: "Invalid request body" }, { status: 400 });
 
     // Verify the signature
     const calculatedSig = createHmac("sha1", process.env.CALENDSO_ENCRYPTION_KEY)
@@ -44,7 +48,7 @@ async function postHandler(request: NextRequest) {
       .digest("base64");
 
     if (hsSignature !== calculatedSig)
-      return NextResponse.json({ message: "Invalid signature" }, { status: 400 });
+      return Response.json({ message: "Invalid signature" }, { status: 400 });
 
     const user = await webPrisma.user.findFirst({
       where: {
@@ -57,7 +61,7 @@ async function postHandler(request: NextRequest) {
       },
     });
 
-    if (!user) return NextResponse.json({ html: "User not found" });
+    if (!user) return Response.json({ html: "User not found" });
 
     const lastBooking = await webPrisma.attendee.findFirst({
       where: {
@@ -77,7 +81,7 @@ async function postHandler(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({
+    return Response.json({
       html: `
         <ul>
           <li><b>Username:</b>&nbsp;${user.username}</li>
@@ -92,7 +96,7 @@ async function postHandler(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error processing HelpScout request:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return Response.json({ message: "Internal server error" }, { status: 500 });
   }
 }
 

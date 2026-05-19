@@ -1,4 +1,5 @@
-import { usePathname, useSearchParams } from "next/navigation";
+import { useLocation, useSearch } from "@tanstack/react-router";
+
 import { useState, useMemo } from "react";
 
 import { useAppContextWithSchema } from "@calcom/app-store/EventTypeAppContext";
@@ -21,9 +22,9 @@ import { paymentOptions } from "../zod";
 type Option = { value: string; label: string };
 
 const EventTypeAppCard: EventTypeAppCardComponent = function EventTypeAppCard({ app, eventType, onAppInstallSuccess }) {
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
   /** TODO "pathname" no longer contains square-bracket expressions. Rewrite the code relying on them if required. **/
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const asPath = useMemo(
     () => `${pathname}${searchParams ? `?${searchParams.toString()}` : ""}`,
     [pathname, searchParams]

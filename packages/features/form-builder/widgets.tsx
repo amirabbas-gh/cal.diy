@@ -1,6 +1,6 @@
 "use client";
 
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, lazy } from "react";
 
 import { TextArea } from "@calcom/ui/components/form";
 import { TextField } from "@calcom/ui/components/form";
@@ -8,11 +8,8 @@ import { TextField } from "@calcom/ui/components/form";
 import type { TextLikeComponentPropsRAQB, SelectLikeComponentPropsRAQB } from "./widget-types";
 
 // Dynamic import for Select to avoid SSR issues
-import dynamic from "next/dynamic";
 
-const Select = dynamic(
-  async () => (await import("@calcom/ui/components/form")).SelectWithValidation
-) as unknown as typeof import("@calcom/ui/components/form").SelectWithValidation;
+const Select = lazy(async () => (await import("@calcom/ui/components/form")).SelectWithValidation) as unknown as typeof import("@calcom/ui/components/form").SelectWithValidation;
 
 const TextAreaWidget = (props: TextLikeComponentPropsRAQB) => {
   const { value, setValue, readOnly, placeholder, maxLength, customProps, ...remainingProps } = props;

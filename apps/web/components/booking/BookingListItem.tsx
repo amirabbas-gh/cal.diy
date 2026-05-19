@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 
@@ -60,6 +59,7 @@ import {
   isActionDisabled,
 } from "./actions/bookingActions";
 import type { BookingItemProps } from "./types";
+import { Link } from '@tanstack/react-router';
 
 type ParsedBooking = ReturnType<typeof buildParsedBooking>;
 type TeamEvent = Ensure<NonNullable<ParsedBooking["eventType"]>, "team">;
@@ -121,7 +121,7 @@ const ConditionalLink = ({
     );
   }
   return (
-    <Link href={bookingLink} className={className}>
+    <Link to={bookingLink} className={className}>
       {children}
     </Link>
   );
@@ -1022,7 +1022,7 @@ const GroupedGuests = ({ guests }: { guests: BookingAttendee[] }) => {
         })}
         <DropdownMenuSeparator />
         <div className="flex justify-end gap-2 p-2">
-          <Link href={`mailto:${selectedEmail}`}>
+          <Link to={`mailto:${selectedEmail}`}>
             <Button
               color="secondary"
               disabled={selectedEmail.length === 0}

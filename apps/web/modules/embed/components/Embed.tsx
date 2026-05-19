@@ -1,7 +1,10 @@
 import { Collapsible, CollapsibleContent } from "@radix-ui/react-collapsible";
 import classNames from "classnames";
 import { useSession } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
 import type { RefObject, Dispatch, SetStateAction } from "react";
 import { createRef, useRef, useState } from "react";
 import type { ControlProps } from "react-select";
@@ -104,9 +107,9 @@ function chooseTimezone({
 }
 
 function useRouterHelpers() {
-  const router = useRouter();
+  const router = useNavigate();
   const searchParams = useCompatSearchParams();
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
 
   const goto = (newSearchParams: Record<string, string>) => {
     const newQuery = new URLSearchParams(searchParams.toString());
@@ -116,7 +119,7 @@ function useRouterHelpers() {
       newQuery.set(key, newSearchParams[key]);
     });
 
-    router.push(`${pathname}?${newQuery.toString()}`);
+    router({ to: `${pathname}?${newQuery.toString()}` });
   };
 
   const removeQueryParams = (queryParams: string[]) => {
@@ -126,7 +129,7 @@ function useRouterHelpers() {
       params.delete(param);
     });
 
-    router.push(`${pathname}?${params.toString()}`);
+    router({ to: `${pathname}?${params.toString()}` });
   };
 
   return { goto, removeQueryParams };
@@ -713,7 +716,7 @@ const EmbedTypeCodeAndPreviewDialogContent = ({
 }) => {
   const { t } = useLocale();
   const searchParams = useCompatSearchParams();
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const { resetState, gotoState, gotoEmbedTypeSelectionState } = useEmbedGoto(noQueryParamMode);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const dialogContentRef = useRef<HTMLDivElement>(null);

@@ -14,12 +14,12 @@ import { RedirectType } from "@calcom/prisma/enums";
 import { getRedirectWithOriginAndSearchString } from "@lib/handleOrgRedirect";
 import type { inferSSRProps } from "@lib/types/inferSSRProps";
 import type { EmbedProps } from "app/WithEmbedSSR";
-import type { GetServerSidePropsContext } from "next";
 import { z } from "zod";
 
 export type PageProps = inferSSRProps<typeof getServerSideProps> & EmbedProps;
 
-async function getUserPageProps(context: GetServerSidePropsContext) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function getUserPageProps(context: any) {
   const session = await getServerSession({ req: context.req });
   const { link, slug } = paramsSchema.parse(context.params);
   const { rescheduleUid, duration: queryDuration } = context.query;
@@ -155,6 +155,7 @@ const paramsSchema = z.object({ link: z.string(), slug: z.string().transform((s)
 
 // Booker page fetches a tiny bit of data server side, to determine early
 // whether the page should show an away state or dynamic booking not allowed.
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export const getServerSideProps = async (context: any) => {
   return await getUserPageProps(context);
 };

@@ -1,4 +1,5 @@
-import { useSearchParams } from "next/navigation";
+import { useSearch } from "@tanstack/react-router";
+
 import { useEffect, useState } from "react";
 import { shallow } from "zustand/shallow";
 
@@ -14,7 +15,7 @@ type UseCalendarsProps = {
 };
 
 export const useCalendars = ({ hasSession }: UseCalendarsProps) => {
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
   const selectedDate = useBookerStore((state) => state.selectedDate);
   const { timezone } = useTimePreferences();
   const switchEnabled =

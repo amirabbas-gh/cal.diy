@@ -1,8 +1,8 @@
 import type { SessionContextValue } from "next-auth/react";
-import Link from "next/link";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { TopBanner } from "@calcom/ui/components/top-banner";
+import { Link } from '@tanstack/react-router';
 
 export type AdminPasswordBannerProps = { data: SessionContextValue["data"] };
 
@@ -43,7 +43,7 @@ function AdminPasswordBanner({ data }: AdminPasswordBannerProps) {
         text={t(messageKey, { user: data.user.username })}
         variant="warning"
         actions={
-          <Link href={href} className="border-b border-b-black">
+          <Link to={href} className="border-b border-b-black">
             {t(labelKey)}
           </Link>
         }

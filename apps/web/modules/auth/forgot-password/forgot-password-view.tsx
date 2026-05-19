@@ -2,7 +2,6 @@
 
 // eslint-disable-next-line no-restricted-imports
 import { debounce } from "lodash";
-import Link from "next/link";
 import type { CSSProperties, SyntheticEvent } from "react";
 import React from "react";
 
@@ -11,6 +10,7 @@ import { Button } from "@calcom/ui/components/button";
 import { EmailField } from "@calcom/ui/components/form";
 
 import AuthContainer from "@components/ui/AuthContainer";
+import { Link } from '@tanstack/react-router';
 
 export type PageProps = {
   csrfToken?: string;
@@ -103,7 +103,7 @@ export default function ForgotPassword(props: PageProps) {
       footerText={
         !success && (
           <>
-            <Link href="/auth/login" className="text-emphasis font-medium">
+            <Link to="/auth/login" className="text-emphasis font-medium">
               {t("back_to_signin")}
             </Link>
           </>

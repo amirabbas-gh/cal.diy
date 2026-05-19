@@ -3,7 +3,6 @@ import { getEventTypeService } from "@calcom/features/eventtypes/di/EventTypeSer
 import { checkRateLimitAndThrowError } from "@calcom/lib/checkRateLimitAndThrowError";
 import getIP from "@calcom/lib/getIP";
 import { hashEmail, piiHasher } from "@calcom/lib/server/PiiHasher";
-import type { NextApiRequest } from "next";
 import type { TRPCContext } from "../../../createContext";
 import type { TSendVerifyEmailCodeSchema } from "./sendVerifyEmailCode.schema";
 
@@ -13,7 +12,8 @@ type SendVerifyEmailCode = {
 };
 
 export const sendVerifyEmailCodeHandler = async ({ input, req }: SendVerifyEmailCode) => {
-  const identifier = req ? piiHasher.hash(getIP(req as NextApiRequest)) : hashEmail(input.email);
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+  const identifier = req ? piiHasher.hash(getIP(req as any)) : hashEmail(input.email);
   return sendVerifyEmailCode({ input, identifier });
 };
 

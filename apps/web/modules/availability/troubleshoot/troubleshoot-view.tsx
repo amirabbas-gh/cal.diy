@@ -1,17 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 
 import { Loader } from "@calcom/ui/components/skeleton";
 
-const TroubleshooterClientOnly = dynamic(
-  () =>
-    import("@calcom/web/modules/troubleshooter/components/Troubleshooter").then((mod) => mod.Troubleshooter),
-  {
-    ssr: false,
-  }
-);
+const TroubleshooterClientOnly = lazy(() =>
+    import("@calcom/web/modules/troubleshooter/components/Troubleshooter").then((mod) => mod.Troubleshooter));
 
 function TroubleshooterPage() {
   return (

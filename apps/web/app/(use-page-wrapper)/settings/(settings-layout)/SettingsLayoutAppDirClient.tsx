@@ -18,13 +18,16 @@ import type { VerticalTabItemProps } from "@calcom/ui/components/navigation";
 import { VerticalTabItem } from "@calcom/ui/components/navigation";
 import { Skeleton } from "@calcom/ui/components/skeleton";
 import { ArrowLeftIcon } from "@coss/ui/icons";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
+
 import { useSession } from "next-auth/react";
 import type { ComponentProps } from "react";
 import React, { useEffect, useMemo, useState } from "react";
 import Shell from "~/shell/Shell";
+import { Link } from '@tanstack/react-router';
+import { Image } from '@unpic/react';
 
 const getTabs = (
   orgBranding: {
@@ -381,7 +384,7 @@ const useTabs = ({
 const BackButtonInSidebar = ({ name }: { name: string }) => {
   return (
     <Link
-      href="/event-types"
+      to="/event-types"
       className="group my-6 todesktop:mt-10 flex h-6 max-h-6 w-full flex-row items-center rounded-md px-3 py-2 font-medium text-emphasis text-sm leading-4 transition hover:bg-subtle group-hover:text-default [&[aria-current='page']]:bg-emphasis [&[aria-current='page']]:text-emphasis"
       data-testid={`vertical-tab-${name}`}>
       <ArrowLeftIcon className="h-4 w-4 stroke-[2px] md:mt-0 ltr:mr-[10px] rtl:ml-[10px] rtl:rotate-180" />
@@ -488,6 +491,7 @@ const SettingsSidebarContainer = ({
 
 const MobileSettingsContainer = (props: { onSideContainerOpen?: () => void }) => {
   const { t } = useLocale();
+  const navigate = useNavigate();
   const router = useRouter();
   const isStandalone = useIsStandalone();
 
@@ -502,7 +506,7 @@ const MobileSettingsContainer = (props: { onSideContainerOpen?: () => void }) =>
 
         <button
           className="flex items-center space-x-2 rounded-md px-3 py-1 hover:bg-emphasis rtl:space-x-reverse"
-          onClick={() => router.back()}>
+          onClick={() => router.history.back()}>
           <ArrowLeftIcon className="h-4 w-4 text-default" />
           <p className="font-semibold text-emphasis">{t("settings")}</p>
         </button>
@@ -519,7 +523,7 @@ type SettingsLayoutProps = {
 } & ComponentProps<typeof Shell>;
 
 function SettingsLayoutAppDirClient({ children, teamFeatures, permissions, ...rest }: SettingsLayoutProps) {
-  const _pathname = usePathname();
+  const _pathname = useLocation().pathname;
   const state = useState(false);
   const [sideContainerOpen, setSideContainerOpen] = state;
 

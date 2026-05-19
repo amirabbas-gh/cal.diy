@@ -1,8 +1,7 @@
-import type { GetServerSidePropsContext, NextApiResponse } from "next";
-
 import { prisma } from "@calcom/prisma";
 import { IdentityProvider } from "@calcom/prisma/enums";
 
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
 type UpdateProfileOptions = {
   ctx: {
     user: {
@@ -10,7 +9,7 @@ type UpdateProfileOptions = {
       identityProvider: IdentityProvider;
       identityProviderId: string | null;
     };
-    res?: NextApiResponse | GetServerSidePropsContext["res"];
+    res?: any | any["res"];
   };
 };
 

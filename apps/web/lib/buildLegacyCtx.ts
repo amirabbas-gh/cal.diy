@@ -1,8 +1,6 @@
 import type { SearchParams } from "app/_types";
 import { type Params } from "app/_types";
 import type { ReadonlyHeaders, ReadonlyRequestCookies } from "app/_types";
-import type { GetServerSidePropsContext, NextApiRequest } from "next";
-
 const createProxifiedObject = (object: Record<string, string>) =>
   new Proxy(object, {
     set: () => {
@@ -45,7 +43,8 @@ export function decodeParams(params: Params): Params {
 }
 
 export const buildLegacyRequest = (headers: ReadonlyHeaders, cookies: ReadonlyRequestCookies) => {
-  return { headers: buildLegacyHeaders(headers), cookies: buildLegacyCookies(cookies) } as NextApiRequest;
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+  return { headers: buildLegacyHeaders(headers), cookies: buildLegacyCookies(cookies) } as any;
 };
 
 export const buildLegacyCtx = (
@@ -54,6 +53,7 @@ export const buildLegacyCtx = (
   params: Params,
   searchParams: SearchParams
 ) => {
+  // TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
   return {
     query: { ...searchParams, ...decodeParams(params) },
     // decoding is required to be backward compatible with Pages Router
@@ -70,5 +70,5 @@ export const buildLegacyCtx = (
         );
       },
     }),
-  } as unknown as GetServerSidePropsContext;
+  } as unknown as any;
 };

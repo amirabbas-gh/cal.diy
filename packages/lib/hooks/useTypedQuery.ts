@@ -1,6 +1,9 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate } from "@tanstack/react-router";
+
 import { useCallback, useMemo, useEffect } from "react";
 import { z } from "zod";
 
@@ -39,9 +42,9 @@ export function useTypedQuery<T extends z.AnyZodObject>(schema: T) {
   type OutputOptionalKeys = OptionalKeys<Output>;
   type ArrayOutput = FilteredKeys<FullOutput, Array<unknown>>;
   type ArrayOutputKeys = keyof ArrayOutput;
-  const router = useRouter();
+  const router = useNavigate();
   const unparsedQuery = useRouterQuery();
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const parsedQuerySchema = schema.safeParse(unparsedQuery);
   let parsedQuery: Output = useMemo(() => {
     return {} as Output;
@@ -53,7 +56,7 @@ export function useTypedQuery<T extends z.AnyZodObject>(schema: T) {
         if (key in unparsedQuery || !value) return;
         const search = new URLSearchParams(parsedQuery);
         search.set(String(key), String(value));
-        router.replace(`${pathname}?${search.toString()}`);
+        router({ to: `${pathname}?${search.toString()}`, replace: true });
       });
     }
   }, [parsedQuerySchema, schema, router, pathname, unparsedQuery, parsedQuery]);
@@ -67,7 +70,7 @@ export function useTypedQuery<T extends z.AnyZodObject>(schema: T) {
       // Remove old value by key so we can merge new value
       const search = new URLSearchParams(parsedQuery);
       search.set(String(key), String(value));
-      router.replace(`${pathname}?${search.toString()}`);
+      router({ to: `${pathname}?${search.toString()}`, replace: true });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [parsedQuery, router]
@@ -77,7 +80,7 @@ export function useTypedQuery<T extends z.AnyZodObject>(schema: T) {
   function removeByKey(key: OutputOptionalKeys) {
     const search = new URLSearchParams(parsedQuery);
     search.delete(String(key));
-    router.replace(`${pathname}?${search.toString()}`);
+    router({ to: `${pathname}?${search.toString()}`, replace: true });
   }
 
   // push item to existing key
@@ -109,7 +112,7 @@ export function useTypedQuery<T extends z.AnyZodObject>(schema: T) {
   // Remove all query params from the URL
   function removeAllQueryParams() {
     if (pathname !== null) {
-      router.replace(pathname);
+      router({ to: pathname, replace: true });
     }
   }
 

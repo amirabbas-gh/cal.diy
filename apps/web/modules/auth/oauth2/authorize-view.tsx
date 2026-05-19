@@ -2,7 +2,10 @@
 
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useNavigate } from "@tanstack/react-router";
+
 import { useState, useEffect } from "react";
 
 import { APP_NAME } from "@calcom/lib/constants";
@@ -21,7 +24,7 @@ export function Authorize() {
   const { status } = useSession();
   const { data: user } = useMeQuery();
 
-  const router = useRouter();
+  const router = useNavigate();
   const searchParams = useCompatSearchParams();
 
   const client_id = (searchParams?.get("client_id") as string) || "";
@@ -114,7 +117,7 @@ export function Authorize() {
       if (registerParam) {
         urlSearchParams.set("register", registerParam);
       }
-      router.replace(`/auth/login?${urlSearchParams.toString()}`);
+      router({ to: `/auth/login?${urlSearchParams.toString()}`, replace: true });
     }
   }, [status]);
 

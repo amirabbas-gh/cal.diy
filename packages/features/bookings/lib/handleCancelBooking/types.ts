@@ -1,9 +1,8 @@
-import type { NextApiRequest } from "next";
-
 import type { BookingToDelete } from "../getBookingToDelete";
 
 export type AppRouterRequest = { appDirRequestBody: unknown };
-export type CustomRequest = (NextApiRequest | AppRouterRequest) & {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+export type CustomRequest = (any | AppRouterRequest) & {
   userId?: number;
   bookingToDelete?: BookingToDelete;
   platformClientId?: string;

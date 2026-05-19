@@ -1,7 +1,6 @@
 // @TODO: turn this into a more generic component that has the same Props API as MUI https://mui.com/material-ui/react-card/
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import React from "react";
 

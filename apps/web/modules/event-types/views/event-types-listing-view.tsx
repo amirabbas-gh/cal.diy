@@ -50,12 +50,15 @@ import { InfiniteSkeletonLoader } from "@calcom/web/modules/event-types/componen
 import { SearchIcon } from "@coss/ui/icons";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { TRPCClientError } from "@trpc/client";
-import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { useLocation, useNavigate, useSearch } from "@tanstack/react-router";
+
 import type React from "react";
 import type { FC } from "react";
 import { createContext, memo, useContext, useEffect, useState } from "react";
 import { z } from "zod";
+import { Link } from '@tanstack/react-router';
 
 type GetUserEventGroupsResponse = RouterOutputs["viewer"]["eventTypes"]["getUserEventGroups"];
 type GetEventTypesFromGroupsResponse = RouterOutputs["viewer"]["eventTypes"]["getEventTypesFromGroup"];
@@ -231,7 +234,7 @@ const Item = ({
             <EventTypeDescription eventType={type} shortenDescription />
           </div>
         ) : (
-          <Link href={`/event-types/${type.id}?tabName=setup`} title={type.title}>
+          <Link to={`/event-types/${type.id}?tabName=setup`} title={type.title}>
             <div>
               <span
                 className="break-words font-semibold text-default ltr:mr-1 rtl:ml-1"
@@ -287,9 +290,9 @@ export const InfiniteEventTypeList = ({
   debouncedSearchTerm,
 }: InfiniteEventTypeListProps): JSX.Element => {
   const { t } = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const router = useNavigate();
+  const pathname = useLocation().pathname;
+  const searchParams = useSearch();
   const { copyToClipboard } = useCopy();
   const [parent] = useAutoAnimate<HTMLUListElement>();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -435,7 +438,7 @@ export const InfiniteEventTypeList = ({
     setParamsIfDefined("id", eventType.id);
     setParamsIfDefined("length", eventType.length);
     setParamsIfDefined("pageSlug", group.profile.slug);
-    router.push(`${pathname}?${newSearchParams.toString()}`);
+    router({ to: `${pathname}?${newSearchParams.toString()}` });
   };
 
   const deleteMutation = trpc.viewer.eventTypes.delete.useMutation({
@@ -685,7 +688,7 @@ export const InfiniteEventTypeList = ({
                                       type="button"
                                       data-testid={`event-type-edit-${type.id}`}
                                       StartIcon="pencil"
-                                      onClick={() => router.push(`/event-types/${type.id}`)}>
+                                      onClick={() => router({ to: `/event-types/${type.id}` })}>
                                       {t("edit")}
                                     </DropdownItem>
                                   </DropdownMenuItem>
@@ -799,7 +802,7 @@ export const InfiniteEventTypeList = ({
                           {!readOnly && (
                             <DropdownMenuItem className="outline-none">
                               <DropdownItem
-                                onClick={() => router.push(`/event-types/${type.id}`)}
+                                onClick={() => router({ to: `/event-types/${type.id}` })}
                                 StartIcon="pencil"
                                 className="w-full rounded-none">
                                 {t("edit")}
@@ -970,7 +973,7 @@ const InfiniteScrollMain = ({
   eventTypeGroups: GetUserEventGroupsResponse["eventTypeGroups"];
   profiles: GetUserEventGroupsResponse["profiles"];
 }) => {
-  const searchParams = useSearchParams();
+  const searchParams = useSearch();
   const { data } = useTypedQuery(querySchema);
   const tabs = eventTypeGroups.map((item) => ({
     name: item.profile.name ?? "",
@@ -1047,7 +1050,7 @@ export const EventTypesCTA = ({ userEventGroupsData }: Omit<Props, "user">) => {
 };
 
 const EventTypesPage = ({ userEventGroupsData, user }: Props) => {
-  const router = useRouter();
+  const router = useNavigate();
 
   useEffect(() => {
     /**
@@ -1057,7 +1060,7 @@ const EventTypesPage = ({ userEventGroupsData, user }: Props) => {
     const redirectUrl = localStorage.getItem("onBoardingRedirect");
     localStorage.removeItem("onBoardingRedirect");
     if (redirectUrl) {
-      router.push(redirectUrl);
+      router({ to: redirectUrl });
     }
   }, [router]);
 

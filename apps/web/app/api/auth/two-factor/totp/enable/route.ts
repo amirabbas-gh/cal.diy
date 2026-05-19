@@ -1,8 +1,11 @@
 import { defaultResponderForAppDir } from "app/api/defaultResponderForAppDir";
 import { parseRequestData } from "app/api/parseRequestData";
-import { cookies, headers } from "next/headers";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+
+// TODO: next/headers migration (R4f): `getCookie` / `getHeaders` / `setCookie` / `deleteCookie` / `getCookies` — TanStack Start server context only; `draftMode` / other `next/headers` usage — https://tanstack.com/start/latest/docs/framework/react/guide/server-functions
+import { getCookies, getHeaders } from "@tanstack/start/server";
+
+
+
 
 import { ErrorCode } from "@calcom/features/auth/lib/ErrorCode";
 import { getServerSession } from "@calcom/features/auth/lib/getServerSession";
@@ -13,17 +16,17 @@ import prisma from "@calcom/prisma";
 
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 
-async function postHandler(req: NextRequest) {
+async function postHandler(req: Request) {
   const body = await parseRequestData(req);
-  const session = await getServerSession({ req: buildLegacyRequest(await headers(), await cookies()) });
+  const session = await getServerSession({ req: buildLegacyRequest(new Headers(Object.entries(getHeaders()).map(([k, v]) => [k, Array.isArray(v) ? v.join(", ") : String(v ?? "")] as [string, string])), { getAll: () => Object.entries(getCookies()).map(([name, value]) => ({ name, value: String(value ?? "") })) }) });
 
   if (!session) {
-    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    return Response.json({ message: "Not authenticated" }, { status: 401 });
   }
 
   if (!session.user?.id) {
     console.error("Session is missing a user id.");
-    return NextResponse.json({ error: ErrorCode.InternalServerError }, { status: 500 });
+    return Response.json({ error: ErrorCode.InternalServerError }, { status: 500 });
   }
 
   await checkRateLimitAndThrowError({
@@ -34,20 +37,20 @@ async function postHandler(req: NextRequest) {
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
   if (!user) {
     console.error(`Session references user that no longer exists.`);
-    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    return Response.json({ message: "Not authenticated" }, { status: 401 });
   }
 
   if (user.twoFactorEnabled) {
-    return NextResponse.json({ error: ErrorCode.TwoFactorAlreadyEnabled }, { status: 400 });
+    return Response.json({ error: ErrorCode.TwoFactorAlreadyEnabled }, { status: 400 });
   }
 
   if (!user.twoFactorSecret) {
-    return NextResponse.json({ error: ErrorCode.TwoFactorSetupRequired }, { status: 400 });
+    return Response.json({ error: ErrorCode.TwoFactorSetupRequired }, { status: 400 });
   }
 
   if (!process.env.CALENDSO_ENCRYPTION_KEY) {
     console.error("Missing encryption key; cannot proceed with two factor setup.");
-    return NextResponse.json({ error: ErrorCode.InternalServerError }, { status: 500 });
+    return Response.json({ error: ErrorCode.InternalServerError }, { status: 500 });
   }
 
   const secret = symmetricDecrypt(user.twoFactorSecret, process.env.CALENDSO_ENCRYPTION_KEY);
@@ -55,12 +58,12 @@ async function postHandler(req: NextRequest) {
     console.error(
       `Two factor secret decryption failed. Expected key with length 32 but got ${secret.length}`
     );
-    return NextResponse.json({ error: ErrorCode.InternalServerError }, { status: 500 });
+    return Response.json({ error: ErrorCode.InternalServerError }, { status: 500 });
   }
 
   const isValidToken = totpAuthenticatorCheck(body.code, secret);
   if (!isValidToken) {
-    return NextResponse.json({ error: ErrorCode.IncorrectTwoFactorCode }, { status: 400 });
+    return Response.json({ error: ErrorCode.IncorrectTwoFactorCode }, { status: 400 });
   }
 
   await prisma.user.update({
@@ -72,7 +75,7 @@ async function postHandler(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({ message: "Two-factor enabled" });
+  return Response.json({ message: "Two-factor enabled" });
 }
 
 export const POST = defaultResponderForAppDir(postHandler);

@@ -1,7 +1,5 @@
 import { calendar_v3 } from "@googleapis/calendar";
 import { OAuth2Client } from "googleapis-common";
-import type { NextApiRequest, NextApiResponse } from "next";
-
 import { createGoogleCalendarServiceWithGoogleType } from "@calcom/app-store/googlecalendar/lib/CalendarService";
 import { CredentialRepository } from "@calcom/features/credentials/repositories/CredentialRepository";
 import { buildCredentialCreateData } from "@calcom/features/credentials/services/CredentialDataService";
@@ -23,7 +21,8 @@ import { decodeOAuthState } from "../../_utils/oauth/decodeOAuthState";
 import { updateProfilePhotoGoogle } from "../../_utils/oauth/updateProfilePhotoGoogle";
 import { getGoogleAppKeys } from "../lib/getGoogleAppKeys";
 
-async function getHandler(req: NextApiRequest, res: NextApiResponse) {
+// TODO: `next/types erasure (R4j)`: replace `any` with real types (`Route.useParams`, `useLoaderData`, `FileRoutesByPath`, etc.) — https://tanstack.com/router/latest/docs/framework/react/guide/router-context
+async function getHandler(req: any, res: any) {
   const { code } = req.query;
   const state = decodeOAuthState(req);
 

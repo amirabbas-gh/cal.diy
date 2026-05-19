@@ -1,5 +1,7 @@
-import type { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { notFound, redirect } from "next/navigation";
+
+// TODO: next/navigation migration (R4g): use `throw redirect()` in loaders / beforeLoad — client nav: `useNavigate()` — https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+import { notFound, redirect } from "@tanstack/react-router";
+
 
 import { WebAppURL } from "@calcom/lib/WebAppURL";
 
@@ -33,11 +35,11 @@ const withEmbedSsrAppDir =
       const newDestinationUrl = `${urlPrefix}${destinationUrlObj.pathname}/embed?${
         destinationQueryStr ? `${destinationQueryStr}&` : ""
       }layout=${layout}&embed=${embed}`;
-      redirect(newDestinationUrl);
+      throw redirect({ to: newDestinationUrl });
     }
 
     if ("notFound" in ssrResponse) {
-      notFound();
+      throw notFound();
     }
 
     return {
